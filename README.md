@@ -1,7 +1,3 @@
-这是一个为你准备的 **War3Translator** 项目 `README.md` 模板。它结合了技术细节（如 Hook 逻辑、SSL 依赖）和用户操作指南。
-
----
-
 # War3Translator 
 
 **War3Translator** 是一款专为魔兽争霸 III（Warcraft III）对战玩家设计的实时聊天翻译插件。它通过底层内存钩子（Hook）拦截游戏网络同步包，并集成云端翻译 API，实现跨国对战时的无障碍交流。
