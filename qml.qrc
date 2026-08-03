@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>components/LanguageComponent.qml</file>
+        <file>managers/ThemeManager.qml</file>
+        <file>managers/ChatManager.h</file>
+        <file>managers/ChatManager.cpp</file>
+        <file>managers/TranslateManager.h</file>
+        <file>managers/TranslateManager.cpp</file>
+    </qresource>
+</RCC>

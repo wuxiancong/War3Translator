@@ -1,0 +1,3 @@
+D:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f CMakeFiles\Translator.dir/objects.a
+D:\Qt\Tools\mingw810_32\bin\ar.exe qc CMakeFiles\Translator.dir/objects.a @CMakeFiles\Translator.dir\objects1.rsp
+D:\Qt\Tools\mingw810_32\bin\g++.exe -O3 -DNDEBUG -Wl,--output-def=D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release/translator/translator.def -Wl,--enable-stdcall-fixup -Wl,--kill-at -shared -o translator.dll -Wl,--out-implib,libtranslator.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\Translator.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\Translator.dir\linkLibs.rsp

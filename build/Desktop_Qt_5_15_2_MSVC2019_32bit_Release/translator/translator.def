@@ -1,0 +1,6 @@
+LIBRARY "translator"
+EXPORTS
+	uninstallAllHooks
+	installAllHooks
+	getHookStatus
+	initialize

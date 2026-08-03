@@ -1,0 +1,31 @@
+{
+	"BUILD_DIR" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release/War3Translator_autogen",
+	"CMAKE_BINARY_DIR" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release",
+	"CMAKE_CURRENT_BINARY_DIR" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release",
+	"CMAKE_CURRENT_SOURCE_DIR" : "D:/Qt/workplace/War3Translator",
+	"CMAKE_SOURCE_DIR" : "D:/Qt/workplace/War3Translator",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "MinGW Makefiles",
+	"INCLUDE_DIR" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release/War3Translator_autogen/include",
+	"INPUTS" : 
+	[
+		"D:/Qt/workplace/War3Translator/main.qml",
+		"D:/Qt/workplace/War3Translator/components/LanguageComponent.qml",
+		"D:/Qt/workplace/War3Translator/managers/ChatManager.cpp",
+		"D:/Qt/workplace/War3Translator/managers/TranslateManager.cpp",
+		"D:/Qt/workplace/War3Translator/managers/ChatManager.h",
+		"D:/Qt/workplace/War3Translator/managers/TranslateManager.h",
+		"D:/Qt/workplace/War3Translator/managers/ThemeManager.qml"
+	],
+	"LOCK_FILE" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release/CMakeFiles/War3Translator_autogen.dir/AutoRcc_qml_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "qml" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_qml.cpp",
+	"RCC_EXECUTABLE" : "D:/Qt/5.15.2/mingw81_32/bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release/CMakeFiles/War3Translator_autogen.dir/AutoRcc_qml_EWIEGA46WW_Used.txt",
+	"SOURCE" : "D:/Qt/workplace/War3Translator/qml.qrc",
+	"USE_BETTER_GRAPH" : false,
+	"VERBOSITY" : 0
+}

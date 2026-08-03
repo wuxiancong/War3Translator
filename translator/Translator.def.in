@@ -1,0 +1,3 @@
+LIBRARY "translator"
+EXPORTS
+	@TRANSLATOR_EXPORTS@

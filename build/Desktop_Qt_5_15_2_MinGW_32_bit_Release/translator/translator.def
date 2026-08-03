@@ -1,0 +1,5 @@
+EXPORTS
+    getHookStatus @1
+    initialize = initialize@0 @2
+    installAllHooks = installAllHooks@0 @3
+    uninstallAllHooks = uninstallAllHooks@0 @4

@@ -1,0 +1,3 @@
+D:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f CMakeFiles\War3Translator.dir/objects.a
+D:\Qt\Tools\mingw810_32\bin\ar.exe qc CMakeFiles\War3Translator.dir/objects.a @CMakeFiles\War3Translator.dir\objects1.rsp
+D:\Qt\Tools\mingw810_32\bin\g++.exe -O3 -DNDEBUG -mwindows -Wl,--whole-archive CMakeFiles\War3Translator.dir/objects.a -Wl,--no-whole-archive -o War3Translator.exe -Wl,--out-implib,libWar3Translator.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\War3Translator.dir\linkLibs.rsp
