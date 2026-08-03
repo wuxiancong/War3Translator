@@ -63,7 +63,7 @@
 
 ## 贡献
 
-欢迎提交 Pull Request 或 Issue。如果你在使用中遇到 `TLS initialization failed` 或 `Stack Offset Error`，请参考 [Wiki](https://github.com/your-repo/wiki) 中的诊断步骤。
+欢迎提交 Pull Request 或 Issue。
 
 ---
 
