@@ -110,6 +110,8 @@ TRANSLATOR_API bool __stdcall initialize()
     }
     WriteAsyncLogTo(g_wlogWar3HookPath, L"准备初始化 War3Hook");
     initializeSharedMemory();
+    std::thread(ipcMessageThread).detach();
+
     wchar_t processPath[MAX_PATH];
     GetModuleFileNameW(NULL, processPath, MAX_PATH);
     WriteAsyncLogTo(g_wlogWar3HookPath, L"进程路径: %s", processPath);
