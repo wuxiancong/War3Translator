@@ -209,11 +209,26 @@ CMakeFiles/War3Translator.dir/helpers/ProcessHelper.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/War3Translator.dir/helpers/ProcessHelper.cpp.s"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Qt\workplace\War3Translator\helpers\ProcessHelper.cpp -o CMakeFiles\War3Translator.dir\helpers\ProcessHelper.cpp.s
 
+CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj: CMakeFiles/War3Translator.dir/flags.make
+CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
+CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj: D:/Qt/workplace/War3Translator/helpers/HardwareHelper.cpp
+CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj"
+	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj -MF CMakeFiles\War3Translator.dir\helpers\HardwareHelper.cpp.obj.d -o CMakeFiles\War3Translator.dir\helpers\HardwareHelper.cpp.obj -c D:\Qt\workplace\War3Translator\helpers\HardwareHelper.cpp
+
+CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.i"
+	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Qt\workplace\War3Translator\helpers\HardwareHelper.cpp > CMakeFiles\War3Translator.dir\helpers\HardwareHelper.cpp.i
+
+CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.s"
+	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Qt\workplace\War3Translator\helpers\HardwareHelper.cpp -o CMakeFiles\War3Translator.dir\helpers\HardwareHelper.cpp.s
+
 CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj: CMakeFiles/War3Translator.dir/flags.make
 CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
 CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj: D:/Qt/workplace/War3Translator/managers/IpcManager.cpp
 CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj -MF CMakeFiles\War3Translator.dir\managers\IpcManager.cpp.obj.d -o CMakeFiles\War3Translator.dir\managers\IpcManager.cpp.obj -c D:\Qt\workplace\War3Translator\managers\IpcManager.cpp
 
 CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.i: cmake_force
@@ -228,7 +243,7 @@ CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj: CMakeFiles/War3Trans
 CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
 CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj: D:/Qt/workplace/War3Translator/managers/ChatManager.cpp
 CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj -MF CMakeFiles\War3Translator.dir\managers\ChatManager.cpp.obj.d -o CMakeFiles\War3Translator.dir\managers\ChatManager.cpp.obj -c D:\Qt\workplace\War3Translator\managers\ChatManager.cpp
 
 CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.i: cmake_force
@@ -243,7 +258,7 @@ CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj: CMakeFiles/War3Trans
 CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
 CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj: D:/Qt/workplace/War3Translator/managers/HookManager.cpp
 CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj -MF CMakeFiles\War3Translator.dir\managers\HookManager.cpp.obj.d -o CMakeFiles\War3Translator.dir\managers\HookManager.cpp.obj -c D:\Qt\workplace\War3Translator\managers\HookManager.cpp
 
 CMakeFiles/War3Translator.dir/managers/HookManager.cpp.i: cmake_force
@@ -258,7 +273,7 @@ CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj: CMakeFiles/War3Tran
 CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
 CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj: D:/Qt/workplace/War3Translator/managers/ImageManager.cpp
 CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj -MF CMakeFiles\War3Translator.dir\managers\ImageManager.cpp.obj.d -o CMakeFiles\War3Translator.dir\managers\ImageManager.cpp.obj -c D:\Qt\workplace\War3Translator\managers\ImageManager.cpp
 
 CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.i: cmake_force
@@ -269,11 +284,26 @@ CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.s"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Qt\workplace\War3Translator\managers\ImageManager.cpp -o CMakeFiles\War3Translator.dir\managers\ImageManager.cpp.s
 
+CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj: CMakeFiles/War3Translator.dir/flags.make
+CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
+CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj: D:/Qt/workplace/War3Translator/managers/NetworkManager.cpp
+CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj"
+	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj -MF CMakeFiles\War3Translator.dir\managers\NetworkManager.cpp.obj.d -o CMakeFiles\War3Translator.dir\managers\NetworkManager.cpp.obj -c D:\Qt\workplace\War3Translator\managers\NetworkManager.cpp
+
+CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.i"
+	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Qt\workplace\War3Translator\managers\NetworkManager.cpp > CMakeFiles\War3Translator.dir\managers\NetworkManager.cpp.i
+
+CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.s"
+	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Qt\workplace\War3Translator\managers\NetworkManager.cpp -o CMakeFiles\War3Translator.dir\managers\NetworkManager.cpp.s
+
 CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj: CMakeFiles/War3Translator.dir/flags.make
 CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
 CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj: D:/Qt/workplace/War3Translator/managers/SettingsManager.cpp
 CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj -MF CMakeFiles\War3Translator.dir\managers\SettingsManager.cpp.obj.d -o CMakeFiles\War3Translator.dir\managers\SettingsManager.cpp.obj -c D:\Qt\workplace\War3Translator\managers\SettingsManager.cpp
 
 CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.i: cmake_force
@@ -288,7 +318,7 @@ CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj: CMakeFiles/War3
 CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
 CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj: D:/Qt/workplace/War3Translator/managers/TranslateManager.cpp
 CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj -MF CMakeFiles\War3Translator.dir\managers\TranslateManager.cpp.obj.d -o CMakeFiles\War3Translator.dir\managers\TranslateManager.cpp.obj -c D:\Qt\workplace\War3Translator\managers\TranslateManager.cpp
 
 CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.i: cmake_force
@@ -303,7 +333,7 @@ CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj:
 CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj: CMakeFiles/War3Translator.dir/includes_CXX.rsp
 CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj: War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp
 CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj: CMakeFiles/War3Translator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj"
 	D:\Qt\Tools\mingw810_32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj -MF CMakeFiles\War3Translator.dir\War3Translator_autogen\EWIEGA46WW\qrc_qml.cpp.obj.d -o CMakeFiles\War3Translator.dir\War3Translator_autogen\EWIEGA46WW\qrc_qml.cpp.obj -c D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\War3Translator_autogen\EWIEGA46WW\qrc_qml.cpp
 
 CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.i: cmake_force
@@ -324,10 +354,12 @@ War3Translator_OBJECTS = \
 "CMakeFiles/War3Translator.dir/helpers/FileHelper.cpp.obj" \
 "CMakeFiles/War3Translator.dir/helpers/DebugHelper.cpp.obj" \
 "CMakeFiles/War3Translator.dir/helpers/ProcessHelper.cpp.obj" \
+"CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj" \
 "CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj" \
 "CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj" \
 "CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj" \
 "CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj" \
+"CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj" \
 "CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj" \
 "CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj" \
 "CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj"
@@ -343,10 +375,12 @@ War3Translator.exe: CMakeFiles/War3Translator.dir/monitors/GameMonitor.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/helpers/FileHelper.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/helpers/DebugHelper.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/helpers/ProcessHelper.cpp.obj
+War3Translator.exe: CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj
+War3Translator.exe: CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/managers/SettingsManager.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/managers/TranslateManager.cpp.obj
 War3Translator.exe: CMakeFiles/War3Translator.dir/War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp.obj
@@ -362,8 +396,12 @@ War3Translator.exe: D:/Qt/5.15.2/mingw81_32/lib/libqtmain.a
 War3Translator.exe: CMakeFiles/War3Translator.dir/linkLibs.rsp
 War3Translator.exe: CMakeFiles/War3Translator.dir/objects1.rsp
 War3Translator.exe: CMakeFiles/War3Translator.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable War3Translator.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MinGW_32_bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Linking CXX executable War3Translator.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\War3Translator.dir\link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold "正在复制 OpenSSL 依赖库到输出目录..."
+	D:\Qt\Tools\CMake_64\bin\cmake.exe -E copy_if_different D:/Qt/workplace/War3Translator/openssl/libcrypto-1_1.dll D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold "正在复制 OpenSSL 依赖库到输出目录..."
+	D:\Qt\Tools\CMake_64\bin\cmake.exe -E copy_if_different D:/Qt/workplace/War3Translator/openssl/libssl-1_1.dll D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MinGW_32_bit_Release
 
 # Rule to build all files generated by this target.
 CMakeFiles/War3Translator.dir/build: War3Translator.exe

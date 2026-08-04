@@ -19,9 +19,89 @@
 #include "../shared/SharedMemory.h"
 #include <functional>
 #include <string>
+#include <mutex>
 #include <map>
 #define ENABLED_LOG
 typedef void (__fastcall *GameNetEventChatFromHostFunc)(int fromPid, void *pPayload, int dataSize);
+
+class TrampolineAllocator {
+private:
+    struct MemoryPool {
+        BYTE *base;
+        size_t used;
+    };
+
+    static inline std::vector<MemoryPool> g_pools;
+    static inline const size_t CHUNK_SIZE = 64  *1024;
+    static inline std::mutex g_allocMutex;
+
+    static bool createNewPool() {
+        BYTE *pNew = (BYTE*)VirtualAlloc(nullptr, CHUNK_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        if (!pNew) return false;
+
+        memset(pNew, 0x90, CHUNK_SIZE);
+        g_pools.push_back({ pNew, 0 });
+        return true;
+    }
+
+public:
+    static void *allocate(size_t size) {
+        std::lock_guard<std::mutex> lock(g_allocMutex);
+
+        // 8字节对齐
+        size_t alignedSize = (size + 7)  &~7;
+        if (alignedSize > CHUNK_SIZE) return nullptr;
+
+        // 1. 尝试在现有块中寻找可用空间
+        BYTE *allocatedAddr = nullptr;
+
+        if (g_pools.empty() || (g_pools.back().used + alignedSize > CHUNK_SIZE)) {
+            if (!createNewPool()) return nullptr;
+        }
+
+        // 2. 从最后一个池子分配内存
+        MemoryPool &currentPool = g_pools.back();
+        allocatedAddr = currentPool.base + currentPool.used;
+        currentPool.used += alignedSize;
+
+        return (void*)allocatedAddr;
+    }
+
+    static bool uninitialize(bool isProcessExiting = false, void *excludeAddress = nullptr) {
+        std::lock_guard<std::mutex> lock(g_allocMutex);
+
+        if (g_pools.empty()) return true;
+
+        bool allSuccess = true;
+
+        if (isProcessExiting) {
+            g_pools.clear();
+            return true;
+        }
+
+        std::vector<MemoryPool> preservedPools;
+
+        for (auto &pool : g_pools) {
+            if (!pool.base) continue;
+
+            bool shouldExclude = (excludeAddress != nullptr &&
+                                  (BYTE*)excludeAddress >= pool.base &&
+                                  (BYTE*)excludeAddress < (pool.base + CHUNK_SIZE));
+
+            if (shouldExclude) {
+                preservedPools.push_back(pool);
+            } else {
+                if (!VirtualFree(pool.base, 0, MEM_RELEASE)) {
+                    allSuccess = false;
+                    preservedPools.push_back(pool);
+                }
+            }
+        }
+
+        g_pools = std::move(preservedPools);
+        return allSuccess;
+    }
+};
 
 enum class HookState {
     IDLE,
@@ -79,7 +159,6 @@ bool hookGameNetEventChatFromHost();
 bool unhookGameNetEventChatFromHost();
 void cleanupSharedMemory(bool fullCleanup = true);
 bool shutdownHookSystem(bool isProcessExiting, void* excludeAddress = nullptr);
-bool freeTrampolineAllocations(bool isProcessExiting, void *excludeAddress = nullptr);
 bool inlineHookFilter(DWORD reviseAddress, BYTE *currentByteCode, size_t reviseByteSize);
 bool uninstallInlineHook(DWORD targetAddress, BYTE *originalBytes, size_t reviseByteSize);
 bool executeHookTask(const wchar_t *label, std::function<bool()> taskFunc, bool isLast, const std::wstring &logPath);

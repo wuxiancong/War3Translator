@@ -63,8 +63,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/CMakeScratch/TryCompile-dxztr7"
-      binary: "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/CMakeScratch/TryCompile-dxztr7"
+      source: "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/CMakeScratch/TryCompile-63bi6e"
+      binary: "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/CMakeScratch/TryCompile-63bi6e"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -74,30 +74,30 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/CMakeScratch/TryCompile-dxztr7'
+        Change Dir: 'D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/CMakeScratch/TryCompile-63bi6e'
         
-        Run Build Command(s): D:/Qt/Tools/CMake_64/bin/cmake.exe -E env VERBOSE=1 jom -f Makefile /nologo cmTC_45e44\\fast
+        Run Build Command(s): D:/Qt/Tools/CMake_64/bin/cmake.exe -E env VERBOSE=1 jom -f Makefile /nologo cmTC_f3181\\fast
         jom: parallel job execution disabled for Makefile
-        	D:\\Qt\\Tools\\QtCreator\\bin\\jom\\jom.exe  -f CMakeFiles\\cmTC_45e44.dir\\build.make /nologo -L CMakeFiles\\cmTC_45e44.dir\\build
-        Building CXX object CMakeFiles/cmTC_45e44.dir/CMakeCXXCompilerABI.cpp.obj
-        	D:\\Qt\\Tools\\CMake_64\\bin\\cmake.exe -E cmake_cl_compile_depends --dep-file=CMakeFiles\\cmTC_45e44.dir\\CMakeCXXCompilerABI.cpp.obj.d --working-dir=D:\\Qt\\workplace\\War3Translator\\build\\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\\CMakeScratch\\TryCompile-dxztr7 --filter-prefix="扅鶓??: ???畱??劘?  " -- C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\HostX64\\x86\\cl.exe @Z:\\Temp\\CMakeCXXCompilerABI.cpp.obj.16420.0.jom
+        	D:\\Qt\\Tools\\QtCreator\\bin\\jom\\jom.exe  -f CMakeFiles\\cmTC_f3181.dir\\build.make /nologo -L CMakeFiles\\cmTC_f3181.dir\\build
+        Building CXX object CMakeFiles/cmTC_f3181.dir/CMakeCXXCompilerABI.cpp.obj
+        	D:\\Qt\\Tools\\CMake_64\\bin\\cmake.exe -E cmake_cl_compile_depends --dep-file=CMakeFiles\\cmTC_f3181.dir\\CMakeCXXCompilerABI.cpp.obj.d --working-dir=D:\\Qt\\workplace\\War3Translator\\build\\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\\CMakeScratch\\TryCompile-63bi6e --filter-prefix="扅鶓??: ???畱??劘?  " -- C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\HostX64\\x86\\cl.exe @Z:\\Temp\\CMakeCXXCompilerABI.cpp.obj.18492.0.jom
         CMakeCXXCompilerABI.cpp
         娉ㄦ剰: 鍖呭惈鏂囦欢:  D:\\Qt\\Tools\\CMake_64\\share\\cmake-3.30\\Modules\\CMakeCompilerABI.h
-        Linking CXX executable cmTC_45e44.exe
-        	D:\\Qt\\Tools\\CMake_64\\bin\\cmake.exe -E vs_link_exe --intdir=CMakeFiles\\cmTC_45e44.dir --rc=C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\mt.exe --manifests -- C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\Hostx64\\x86\\link.exe /nologo @CMakeFiles\\cmTC_45e44.dir\\objects1.rsp @Z:\\Temp\\cmTC_45e44.exe.16420.391.jom
+        Linking CXX executable cmTC_f3181.exe
+        	D:\\Qt\\Tools\\CMake_64\\bin\\cmake.exe -E vs_link_exe --intdir=CMakeFiles\\cmTC_f3181.dir --rc=C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\mt.exe --manifests -- C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\Hostx64\\x86\\link.exe /nologo @CMakeFiles\\cmTC_f3181.dir\\objects1.rsp @Z:\\Temp\\cmTC_f3181.exe.18492.890.jom
         Visual Studio Incremental Link with embedded manifests
-        Create CMakeFiles\\cmTC_45e44.dir/manifest.rc
-        Create empty: CMakeFiles\\cmTC_45e44.dir/embed.manifest
+        Create CMakeFiles\\cmTC_f3181.dir/manifest.rc
+        Create empty: CMakeFiles\\cmTC_f3181.dir/embed.manifest
         RC Pass 1:
-        C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\rc.exe /fo CMakeFiles\\cmTC_45e44.dir/manifest.res CMakeFiles\\cmTC_45e44.dir/manifest.rc
+        C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\rc.exe /fo CMakeFiles\\cmTC_f3181.dir/manifest.res CMakeFiles\\cmTC_f3181.dir/manifest.rc
         LINK Pass 1:
-        C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\Hostx64\\x86\\link.exe /nologo @CMakeFiles\\cmTC_45e44.dir\\objects1.rsp /out:cmTC_45e44.exe /implib:cmTC_45e44.lib /pdb:D:\\Qt\\workplace\\War3Translator\\build\\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\\CMakeScratch\\TryCompile-dxztr7\\cmTC_45e44.pdb /version:0.0 /machine:X86 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\\cmTC_45e44.dir/intermediate.manifest CMakeFiles\\cmTC_45e44.dir/manifest.res
+        C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\Hostx64\\x86\\link.exe /nologo @CMakeFiles\\cmTC_f3181.dir\\objects1.rsp /out:cmTC_f3181.exe /implib:cmTC_f3181.lib /pdb:D:\\Qt\\workplace\\War3Translator\\build\\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\\CMakeScratch\\TryCompile-63bi6e\\cmTC_f3181.pdb /version:0.0 /machine:X86 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\\cmTC_f3181.dir/intermediate.manifest CMakeFiles\\cmTC_f3181.dir/manifest.res
         MT:
-        C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\mt.exe /nologo /manifest CMakeFiles\\cmTC_45e44.dir/intermediate.manifest /out:CMakeFiles\\cmTC_45e44.dir/embed.manifest /notify_update
+        C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\mt.exe /nologo /manifest CMakeFiles\\cmTC_f3181.dir/intermediate.manifest /out:CMakeFiles\\cmTC_f3181.dir/embed.manifest /notify_update
         RC Pass 2:
-        C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\rc.exe /fo CMakeFiles\\cmTC_45e44.dir/manifest.res CMakeFiles\\cmTC_45e44.dir/manifest.rc
+        C:\\PROGRA~2\\WINDOW~1\\10\\bin\\100261~1.0\\x64\\rc.exe /fo CMakeFiles\\cmTC_f3181.dir/manifest.res CMakeFiles\\cmTC_f3181.dir/manifest.rc
         FINAL LINK:
-        C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\Hostx64\\x86\\link.exe /nologo @CMakeFiles\\cmTC_45e44.dir\\objects1.rsp /out:cmTC_45e44.exe /implib:cmTC_45e44.lib /pdb:D:\\Qt\\workplace\\War3Translator\\build\\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\\CMakeScratch\\TryCompile-dxztr7\\cmTC_45e44.pdb /version:0.0 /machine:X86 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\\cmTC_45e44.dir/intermediate.manifest CMakeFiles\\cmTC_45e44.dir/manifest.res
+        C:\\PROGRA~2\\MICROS~3\\18\\BUILDT~1\\VC\\Tools\\MSVC\\1451~1.362\\bin\\Hostx64\\x86\\link.exe /nologo @CMakeFiles\\cmTC_f3181.dir\\objects1.rsp /out:cmTC_f3181.exe /implib:cmTC_f3181.lib /pdb:D:\\Qt\\workplace\\War3Translator\\build\\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\\CMakeScratch\\TryCompile-63bi6e\\cmTC_f3181.pdb /version:0.0 /machine:X86 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\\cmTC_f3181.dir/intermediate.manifest CMakeFiles\\cmTC_f3181.dir/manifest.res
         
       exitCode: 0
   -

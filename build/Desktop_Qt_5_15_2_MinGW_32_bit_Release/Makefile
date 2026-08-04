@@ -382,6 +382,30 @@ helpers/FileHelper.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/helpers/FileHelper.cpp.s
 .PHONY : helpers/FileHelper.cpp.s
 
+helpers/HardwareHelper.obj: helpers/HardwareHelper.cpp.obj
+.PHONY : helpers/HardwareHelper.obj
+
+# target to build an object file
+helpers/HardwareHelper.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj
+.PHONY : helpers/HardwareHelper.cpp.obj
+
+helpers/HardwareHelper.i: helpers/HardwareHelper.cpp.i
+.PHONY : helpers/HardwareHelper.i
+
+# target to preprocess a source file
+helpers/HardwareHelper.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.i
+.PHONY : helpers/HardwareHelper.cpp.i
+
+helpers/HardwareHelper.s: helpers/HardwareHelper.cpp.s
+.PHONY : helpers/HardwareHelper.s
+
+# target to generate assembly for a file
+helpers/HardwareHelper.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.s
+.PHONY : helpers/HardwareHelper.cpp.s
+
 helpers/ProcessHelper.obj: helpers/ProcessHelper.cpp.obj
 .PHONY : helpers/ProcessHelper.obj
 
@@ -574,6 +598,30 @@ managers/IpcManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.s
 .PHONY : managers/IpcManager.cpp.s
 
+managers/NetworkManager.obj: managers/NetworkManager.cpp.obj
+.PHONY : managers/NetworkManager.obj
+
+# target to build an object file
+managers/NetworkManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.obj
+.PHONY : managers/NetworkManager.cpp.obj
+
+managers/NetworkManager.i: managers/NetworkManager.cpp.i
+.PHONY : managers/NetworkManager.i
+
+# target to preprocess a source file
+managers/NetworkManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.i
+.PHONY : managers/NetworkManager.cpp.i
+
+managers/NetworkManager.s: managers/NetworkManager.cpp.s
+.PHONY : managers/NetworkManager.s
+
+# target to generate assembly for a file
+managers/NetworkManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/managers/NetworkManager.cpp.s
+.PHONY : managers/NetworkManager.cpp.s
+
 managers/SettingsManager.obj: managers/SettingsManager.cpp.obj
 .PHONY : managers/SettingsManager.obj
 
@@ -730,6 +778,9 @@ help:
 	@echo ... helpers/FileHelper.obj
 	@echo ... helpers/FileHelper.i
 	@echo ... helpers/FileHelper.s
+	@echo ... helpers/HardwareHelper.obj
+	@echo ... helpers/HardwareHelper.i
+	@echo ... helpers/HardwareHelper.s
 	@echo ... helpers/ProcessHelper.obj
 	@echo ... helpers/ProcessHelper.i
 	@echo ... helpers/ProcessHelper.s
@@ -754,6 +805,9 @@ help:
 	@echo ... managers/IpcManager.obj
 	@echo ... managers/IpcManager.i
 	@echo ... managers/IpcManager.s
+	@echo ... managers/NetworkManager.obj
+	@echo ... managers/NetworkManager.i
+	@echo ... managers/NetworkManager.s
 	@echo ... managers/SettingsManager.obj
 	@echo ... managers/SettingsManager.i
 	@echo ... managers/SettingsManager.s

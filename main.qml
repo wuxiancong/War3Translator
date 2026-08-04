@@ -3,9 +3,8 @@ import QtQuick.Window 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.12
-import Qt.labs.platform 1.1 // 用于系统托盘
+import Qt.labs.platform 1.1
 
-// 导入单例
 import War3Translator.ThemeManager 1.0
 import War3Translator.SettingsManager 1.0
 import War3Translator.ChatManager 1.0
@@ -19,83 +18,30 @@ ApplicationWindow {
     color: "transparent"
     flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint
 
+    // ===== 托盘图标 =====
     SystemTrayIcon {
         id: trayIcon
         visible: true
-        // 确保你的资源文件中有这个图标，路径要写对
         icon.source: (typeof appDirPath !== "undefined")
                      ? appDirPath + "/images/translator-app.ico"
                      : "qrc:/images/translator-app.ico"
         tooltip: qsTr("War3 翻译助手")
-
-        // 托盘右键菜单
         menu: Menu {
-            MenuItem {
-                text: qsTr("显示窗口")
-                onTriggered: {
-                    mainWindow.show()
-                    mainWindow.raise()
-                    mainWindow.requestActivate()
-                }
-            }
-            MenuItem {
-                text: qsTr("退出程序")
-                onTriggered: Qt.quit()
-            }
+            MenuItem { text: qsTr("显示窗口"); onTriggered: { mainWindow.show(); mainWindow.raise(); mainWindow.requestActivate() } }
+            MenuItem { text: qsTr("退出程序"); onTriggered: Qt.quit() }
         }
-
-        // 点击托盘图标逻辑
         onActivated: {
-            // reason 是点击类型（1是触发/单击，2是右键，3是双击）
             if (reason === SystemTrayIcon.Trigger) {
-                if (mainWindow.visible) {
-                    mainWindow.hide() // 如果窗口可见，点击托盘则隐藏
-                } else {
-                    mainWindow.show() // 如果窗口隐藏，点击托盘则显示
-                    mainWindow.raise()
-                    mainWindow.requestActivate()
-                }
+                if (mainWindow.visible) mainWindow.hide()
+                else { mainWindow.show(); mainWindow.raise(); mainWindow.requestActivate() }
             }
         }
     }
 
-    // 拦截关闭按钮，改为隐藏到托盘
-    onClosing: {
-        close.accepted = false
-        mainWindow.hide() // 隐藏窗口，任务栏图标会消失，但托盘图标还在
-    }
+    onClosing: { close.accepted = false; mainWindow.hide() }
 
-    // --- 业务逻辑保持不变 ---
-    Connections {
-        target: ChatManager
-        function onMessageReceived(sender, text) {
-            var targetLang = languageModel.get(targetLangCombo.currentIndex).value
-            TranslateManager.translate(text, "auto", targetLang)
-
-            chatLogModel.insert(0, {
-                                    "sender": sender,
-                                    "origin": text,
-                                    "translated": qsTr("正在翻译..."),
-                                    "isDone": false
-                                })
-        }
-    }
-
-    Connections {
-            target: TranslateManager
-            function onTranslationTaskFinished(pid, flag, extraScope, originalMessage, translatedMessage) {
-                for(var i = 0; i < chatLogModel.count; i++) {
-                    if(chatLogModel.get(i).pid === pid || chatLogModel.get(i).origin === originalMessage) {
-                        chatLogModel.setProperty(i, "translated", translatedMessage)
-                        chatLogModel.setProperty(i, "isDone", true)
-                        break
-                    }
-                }
-            }
-        }
-
+    // ===== 数据模型 =====
     ListModel { id: chatLogModel }
-
     ListModel {
         id: languageModel
         ListElement { text: qsTr("简体中文"); value: "zh_CN" }
@@ -125,7 +71,35 @@ ApplicationWindow {
         ListElement { text: qsTr("Türkçe"); value: "tr" }
     }
 
-    // --- 界面布局 ---
+    // ===== 业务逻辑 =====
+    Connections {
+        target: ChatManager
+        function onMessageReceived(sender, text) {
+            var targetLang = languageModel.get(targetLangCombo.currentIndex).value
+            TranslateManager.translate(text, "auto", targetLang)
+            chatLogModel.insert(0, {
+                                    "sender": sender,
+                                    "origin": text,
+                                    "translated": qsTr("正在翻译..."),
+                                    "isDone": false
+                                })
+        }
+    }
+
+    Connections {
+        target: TranslateManager
+        function onTranslationTaskFinished(pid, flag, extraScope, originalMessage, translatedMessage) {
+            for(var i = 0; i < chatLogModel.count; i++) {
+                if(chatLogModel.get(i).pid === pid || chatLogModel.get(i).origin === originalMessage) {
+                    chatLogModel.setProperty(i, "translated", translatedMessage)
+                    chatLogModel.setProperty(i, "isDone", true)
+                    break
+                }
+            }
+        }
+    }
+
+    // ===== 主界面 =====
     Rectangle {
         id: windowContainer
         anchors.fill: parent
@@ -137,8 +111,7 @@ ApplicationWindow {
 
         layer.enabled: true
         layer.effect: DropShadow {
-            radius: 12.0
-            samples: 25
+            radius: 12.0; samples: 25
             color: ThemeManager.shadowColor
             verticalOffset: 4
         }
@@ -147,6 +120,7 @@ ApplicationWindow {
             anchors.fill: parent
             spacing: 0
 
+            // ----- 标题栏 -----
             Rectangle {
                 id: titleBar
                 Layout.fillWidth: true
@@ -168,6 +142,7 @@ ApplicationWindow {
                     anchors.leftMargin: 15
                     anchors.rightMargin: 10
                     spacing: 10
+
                     Text { text: "⚔"; font.pixelSize: 20; color: ThemeManager.accentColor }
                     Column {
                         Text { text: qsTr("WAR3 翻译助手"); font.pixelSize: 14; font.bold: true; color: ThemeManager.textColor }
@@ -187,68 +162,576 @@ ApplicationWindow {
                         }
                     }
                     Item { Layout.fillWidth: true }
+
+                    // 主题切换
                     CustomIconButton {
                         text: ThemeManager.currentTheme === "dark" ? "🌙" : "☀"
                         onClicked: ThemeManager.toggleTheme()
                     }
+                    // 目标语言
                     ComboBox {
                         id: targetLangCombo
                         model: languageModel
                         textRole: "text"
                         implicitWidth: 100; implicitHeight: 30
                         background: Rectangle { color: ThemeManager.tertiaryColor; radius: 4 }
-                        contentItem: Text { text: targetLangCombo.displayText; color: ThemeManager.textColor; font.pixelSize: 11; verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
+                        contentItem: Text {
+                            text: targetLangCombo.displayText
+                            color: ThemeManager.textColor
+                            font.pixelSize: 11
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                        }
                         popup: Popup {
                             y: targetLangCombo.height + 5; width: 140; padding: 5
                             background: Rectangle { color: ThemeManager.tertiaryColor; radius: 8; border.color: ThemeManager.borderColor }
-                            contentItem: ListView { implicitHeight: contentHeight; model: targetLangCombo.delegateModel; clip: true }
+                            contentItem: ListView {
+                                implicitHeight: contentHeight
+                                model: targetLangCombo.delegateModel
+                                clip: true
+                            }
                         }
                         delegate: ItemDelegate {
                             width: 130; height: 35
-                            background: Rectangle { color: highlighted ? ThemeManager.alpha(ThemeManager.accentColor, 0.2) : "transparent"; radius: 4 }
-                            contentItem: Text { text: model.text; color: highlighted ? ThemeManager.accentColor : ThemeManager.textColor; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter }
+                            background: Rectangle {
+                                color: highlighted ? ThemeManager.alpha(ThemeManager.accentColor, 0.2) : "transparent"
+                                radius: 4
+                            }
+                            contentItem: Text {
+                                text: model.text
+                                color: highlighted ? ThemeManager.accentColor : ThemeManager.textColor
+                                font.pixelSize: 12
+                                verticalAlignment: Text.AlignVCenter
+                            }
                         }
                     }
-                    // 按钮修改：最小化是收起，关闭是隐藏到托盘
                     CustomIconButton { text: "−"; onClicked: mainWindow.showMinimized() }
                     CustomIconButton { text: "✕"; onClicked: mainWindow.hide(); isClose: true }
                 }
             }
 
-            ListView {
-                id: logListView
-                Layout.fillWidth: true; Layout.fillHeight: true
-                model: chatLogModel; clip: true; spacing: 15
-                topMargin: 20; bottomMargin: 20; leftMargin: 15; rightMargin: 15
-                add: Transition { NumberAnimation { properties: "opacity,scale"; from: 0; duration: 300 } }
-                delegate: Column {
-                    width: logListView.width - 30; spacing: 6
-                    Text { text: model.sender; font.pixelSize: 11; font.bold: true; color: ThemeManager.accentColor; leftPadding: 5 }
+            // ----- Tab 切换 -----
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 50
+                color: ThemeManager.secondaryColor
+                clip: true
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 20
+                    anchors.rightMargin: 20
+                    spacing: 15
+
+                    // 聊天 Tab
                     Rectangle {
-                        width: parent.width; height: innerCol.height + 20
-                        color: ThemeManager.cardBackgroundColor; radius: 10; border.color: ThemeManager.borderColor
-                        Column {
-                            id: innerCol; width: parent.width - 24; anchors.centerIn: parent; spacing: 8
-                            Text { width: parent.width; text: model.origin; font.pixelSize: 11; color: ThemeManager.textMutedColor; wrapMode: Text.Wrap }
-                            Rectangle { width: parent.width; height: 1; color: ThemeManager.borderColor; opacity: 0.5 }
-                            Text { width: parent.width; text: model.translated; font.pixelSize: 14; font.bold: true; color: ThemeManager.textColor; wrapMode: Text.Wrap }
+                        id: chatTab
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 40
+                        radius: 8
+                        color: currentTab === "chat" ? ThemeManager.accentColor : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "💬 " + qsTr("聊天")
+                            color: currentTab === "chat" ? "white" : ThemeManager.textColor
+                            font.pixelSize: 14
+                            font.bold: currentTab === "chat"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: currentTab = "chat"
+                        }
+                    }
+
+                    // 设置 Tab
+                    Rectangle {
+                        id: settingsTab
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 40
+                        radius: 8
+                        color: currentTab === "settings" ? ThemeManager.accentColor : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "⚙️ " + qsTr("设置")
+                            color: currentTab === "settings" ? "white" : ThemeManager.textColor
+                            font.pixelSize: 14
+                            font.bold: currentTab === "settings"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: currentTab = "settings"
                         }
                     }
                 }
             }
 
-            Rectangle {
-                Layout.fillWidth: true; Layout.preferredHeight: 30; color: "transparent"
-                Text { anchors.centerIn: parent; text: qsTr("War3 Translator © 2026"); font.pixelSize: 10; color: ThemeManager.textDisabledColor }
+            // ----- 内容区域（StackLayout 切换）-----
+            StackLayout {
+                id: contentStack
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                currentIndex: currentTab === "chat" ? 0 : 1
+
+                // ---------- 聊天页面 ----------
+                ColumnLayout {
+                    spacing: 0
+
+                    // 聊天记录
+                    ListView {
+                        id: logListView
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        model: chatLogModel
+                        clip: true
+                        spacing: 15
+                        topMargin: 20
+                        bottomMargin: 20
+                        leftMargin: 15
+                        rightMargin: 15
+
+                        add: Transition {
+                            NumberAnimation { properties: "opacity,scale"; from: 0; duration: 300 }
+                        }
+
+                        delegate: Column {
+                            width: logListView.width - 30
+                            spacing: 6
+
+                            Text {
+                                text: model.sender
+                                font.pixelSize: 11
+                                font.bold: true
+                                color: ThemeManager.accentColor
+                                leftPadding: 5
+                            }
+
+                            Rectangle {
+                                width: parent.width
+                                height: innerCol.height + 20
+                                color: ThemeManager.cardBackgroundColor
+                                radius: 10
+                                border.color: ThemeManager.borderColor
+
+                                Column {
+                                    id: innerCol
+                                    width: parent.width - 24
+                                    anchors.centerIn: parent
+                                    spacing: 8
+
+                                    Text {
+                                        width: parent.width
+                                        text: model.origin
+                                        font.pixelSize: 11
+                                        color: ThemeManager.textMutedColor
+                                        wrapMode: Text.Wrap
+                                    }
+
+                                    Rectangle {
+                                        width: parent.width
+                                        height: 1
+                                        color: ThemeManager.borderColor
+                                        opacity: 0.5
+                                    }
+
+                                    Text {
+                                        width: parent.width
+                                        text: model.translated
+                                        font.pixelSize: 14
+                                        font.bold: true
+                                        color: ThemeManager.textColor
+                                        wrapMode: Text.Wrap
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 底部信息
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+                        color: "transparent"
+                        Text {
+                            anchors.centerIn: parent
+                            text: qsTr("War3 Translator © 2026")
+                            font.pixelSize: 10
+                            color: ThemeManager.textDisabledColor
+                        }
+                    }
+                }
+
+                // ---------- 设置页面 ----------
+                ScrollView {
+                    id: settingsScroll
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    contentHeight: settingsColumn.implicitHeight + 40
+
+                    Column {
+                        id: settingsColumn
+                        width: settingsScroll.width - 30
+                        spacing: 25
+                        leftPadding: 15
+                        rightPadding: 15
+                        topPadding: 30
+                        bottomPadding: 20
+
+                        // 我的语言
+                        Column {
+                            width: parent.width
+                            spacing: 8
+
+                            RowLayout {
+                                spacing: 10
+
+                                Text {
+                                    text: qsTr("我的语言：")
+                                    color: ThemeManager.textColor
+                                    font.pixelSize: 13
+                                    Layout.preferredWidth: implicitWidth
+                                }
+
+                                ComboBox {
+                                    id: settingsLangCombo
+                                    model: languageModel
+                                    textRole: "text"
+                                    implicitWidth: 150
+                                    Layout.preferredWidth: 150
+                                    currentIndex: targetLangCombo.currentIndex
+                                    onCurrentIndexChanged: {
+                                        targetLangCombo.currentIndex = currentIndex
+                                    }
+                                    background: Rectangle {
+                                        color: ThemeManager.tertiaryColor
+                                        radius: 4
+                                        border.color: ThemeManager.borderColor
+                                    }
+                                    contentItem: Text {
+                                        text: settingsLangCombo.displayText
+                                        color: ThemeManager.textColor
+                                        font.pixelSize: 12
+                                        verticalAlignment: Text.AlignVCenter
+                                        horizontalAlignment: Text.AlignHCenter
+                                    }
+                                    popup: Popup {
+                                        y: settingsLangCombo.height + 5
+                                        width: 160
+                                        padding: 5
+                                        height: Math.min(contentItem.implicitHeight + topPadding + bottomPadding, 540)
+                                        background: Rectangle {
+                                            color: ThemeManager.tertiaryColor
+                                            radius: 8
+                                            border.color: ThemeManager.borderColor
+                                        }
+                                        contentItem: ListView {
+                                            implicitHeight: contentHeight
+                                            model: settingsLangCombo.delegateModel
+                                            clip: true
+                                            boundsBehavior: Flickable.StopAtBounds
+                                        }
+                                    }
+                                    delegate: ItemDelegate {
+                                        width: 150
+                                        height: 35
+                                        background: Rectangle {
+                                            color: highlighted ? ThemeManager.alpha(ThemeManager.accentColor, 0.2) : "transparent"
+                                            radius: 4
+                                        }
+                                        contentItem: Text {
+                                            text: model.text
+                                            color: highlighted ? ThemeManager.accentColor : ThemeManager.textColor
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+                                }
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("备注：设置后玩家发送过来的语言将会翻译为此语言")
+                                color: ThemeManager.textMutedColor
+                                font.pixelSize: 11
+                                font.italic: true
+                                wrapMode: Text.Wrap
+                                width: parent.width
+                                leftPadding: 0
+                            }
+                        }
+
+                        // 分隔线
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: ThemeManager.borderColor
+                            opacity: 0.3
+                        }
+
+                        // 发送语言多选
+                        Column {
+                            width: parent.width
+                            spacing: 8
+
+                            Text {
+                                text: qsTr("发送语言：")
+                                color: ThemeManager.textColor
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("备注：如果多选将会依次发送所有已翻译语言给玩家")
+                                color: ThemeManager.textMutedColor
+                                font.pixelSize: 11
+                                font.italic: true
+                                wrapMode: Text.Wrap
+                                width: parent.width
+                            }
+
+                            Rectangle {
+                                width: parent.width
+                                height: 1
+                                color: ThemeManager.borderColor
+                                opacity: 0.2
+                            }
+
+                            // 添加间距
+                            Item { height: 5 }
+
+                            // 25种语言多选列表
+                            GridView {
+                                id: languageGridView
+                                width: parent.width
+                                height: Math.min(400, Math.ceil(languageModel.count / 2) * 40 + 20)
+                                model: languageModel
+                                cellWidth: parent.width / 2
+                                cellHeight: 40
+                                clip: true
+                                boundsBehavior: Flickable.StopAtBounds
+
+                                delegate: CheckBox {
+                                    id: langCheckBox
+                                    width: languageGridView.cellWidth - 10
+                                    height: 35
+                                    text: model.text
+                                    checked: false
+
+                                    indicator: Rectangle {
+                                        implicitWidth: 18
+                                        implicitHeight: 18
+                                        x: 2
+                                        y: parent.height / 2 - height / 2
+                                        radius: 3
+                                        color: langCheckBox.checked ? ThemeManager.accentColor : "transparent"
+                                        border.color: langCheckBox.checked ? ThemeManager.accentColor : ThemeManager.borderColor
+                                        border.width: 2
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "✓"
+                                            color: "white"
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                            visible: langCheckBox.checked
+                                        }
+                                    }
+
+                                    contentItem: Text {
+                                        text: langCheckBox.text
+                                        color: ThemeManager.textColor
+                                        font.pixelSize: 12
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 28
+                                    }
+
+                                    background: Rectangle {
+                                        color: langCheckBox.hovered ? ThemeManager.alpha(ThemeManager.textColor, 0.05) : "transparent"
+                                        radius: 4
+                                    }
+                                }
+                            }
+                        }
+
+                        // 分隔线
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: ThemeManager.borderColor
+                            opacity: 0.3
+                        }
+
+                        // 添加间距
+                        Item { height: 5 }
+
+                        // 服务器选择
+                        RowLayout {
+                            width: parent.width
+                            spacing: 15
+
+                            Text {
+                                text: qsTr("服务器：")
+                                color: ThemeManager.textColor
+                                font.pixelSize: 13
+                                Layout.preferredWidth: 80
+                            }
+
+                            ComboBox {
+                                id: serverCombo
+                                model: ListModel {
+                                    id: serverModel
+                                    ListElement { name: "官方服务器"; latency: 32 }
+                                    ListElement { name: "本地服务器"; latency: 0 }
+                                    ListElement { name: "备用服务器 1"; latency: 78 }
+                                    ListElement { name: "备用服务器 2"; latency: 145 }
+                                }
+                                textRole: "name"
+                                implicitWidth: 180
+                                currentIndex: 0
+
+                                background: Rectangle {
+                                    color: ThemeManager.tertiaryColor
+                                    radius: 4
+                                    border.color: ThemeManager.borderColor
+                                }
+
+                                contentItem: Text {
+                                    text: {
+                                        var item = serverModel.get(serverCombo.currentIndex)
+                                        if (item.latency === 0) return serverCombo.displayText + " (-- ms)"
+                                        return serverCombo.displayText + " (" + item.latency + " ms)"
+                                    }
+                                    color: ThemeManager.textColor
+                                    font.pixelSize: 12
+                                    verticalAlignment: Text.AlignVCenter
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+
+                                popup: Popup {
+                                    y: serverCombo.height + 5
+                                    width: 200
+                                    padding: 5
+                                    background: Rectangle {
+                                        color: ThemeManager.tertiaryColor
+                                        radius: 8
+                                        border.color: ThemeManager.borderColor
+                                    }
+                                    contentItem: ListView {
+                                        implicitHeight: contentHeight
+                                        model: serverCombo.delegateModel
+                                        clip: true
+                                        boundsBehavior: Flickable.StopAtBounds
+                                    }
+                                }
+
+                                delegate: ItemDelegate {
+                                    width: 190
+                                    height: 35
+                                    background: Rectangle {
+                                        color: highlighted ? ThemeManager.alpha(ThemeManager.accentColor, 0.2) : "transparent"
+                                        radius: 4
+                                    }
+
+                                    contentItem: RowLayout {
+                                        spacing: 10
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 10
+                                        anchors.rightMargin: 10
+
+                                        Text {
+                                            text: model.name
+                                            color: highlighted ? ThemeManager.accentColor : ThemeManager.textColor
+                                            font.pixelSize: 12
+                                            Layout.fillWidth: true
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+
+                                        Row {
+                                            spacing: 5
+                                            Layout.alignment: Qt.AlignVCenter
+
+                                            Rectangle {
+                                                width: 8
+                                                height: 8
+                                                radius: 4
+                                                visible: model.latency > 0
+                                                color: {
+                                                    if (model.latency < 50) return ThemeManager.successColor
+                                                    else if (model.latency < 150) return ThemeManager.warningColor
+                                                    else return ThemeManager.errorColor
+                                                }
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+
+                                            Text {
+                                                text: model.latency > 0 ? model.latency + " ms" : "-- ms"
+                                                color: {
+                                                    if (model.latency === 0) return ThemeManager.textDisabledColor
+                                                    else if (model.latency < 50) return ThemeManager.successColor
+                                                    else if (model.latency < 150) return ThemeManager.warningColor
+                                                    else return ThemeManager.errorColor
+                                                }
+                                                font.pixelSize: 11
+                                                font.family: "monospace"
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 刷新延迟按钮
+                            CustomIconButton {
+                                text: "🔄"
+                                implicitWidth: 28
+                                implicitHeight: 28
+                                onClicked: {
+                                    // 更新所有服务器的延迟
+                                    for (var i = 0; i < serverModel.count; i++) {
+                                        var item = serverModel.get(i)
+                                        if (item.name === "本地服务器") {
+                                            serverModel.setProperty(i, "latency", 0)
+                                        } else {
+                                            var randomLat = Math.floor(Math.random() * 200) + 10
+                                            serverModel.setProperty(i, "latency", randomLat)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // 底部留白
+                        Item { height: 20 }
+                    }
+                }
             }
         }
     }
 
+    // ===== 属性与组件 =====
+    property string currentTab: "chat"
+
     component CustomIconButton : AbstractButton {
         id: iconBtn
         property bool isClose: false
-        implicitWidth: 32; implicitHeight: 32
-        contentItem: Text { text: iconBtn.text; font.pixelSize: 16; color: iconBtn.hovered ? (isClose ? ThemeManager.errorColor : ThemeManager.accentColor) : ThemeManager.textColor; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-        background: Rectangle { radius: 8; color: iconBtn.hovered ? ThemeManager.alpha(ThemeManager.textColor, 0.1) : "transparent" }
+        implicitWidth: 32
+        implicitHeight: 32
+        contentItem: Text {
+            text: iconBtn.text
+            font.pixelSize: 16
+            color: iconBtn.hovered ? (isClose ? ThemeManager.errorColor : ThemeManager.accentColor) : ThemeManager.textColor
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+        background: Rectangle {
+            radius: 8
+            color: iconBtn.hovered ? ThemeManager.alpha(ThemeManager.textColor, 0.1) : "transparent"
+        }
     }
 }

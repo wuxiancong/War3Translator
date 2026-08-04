@@ -33,7 +33,6 @@ std::wstring g_wlogWar3HookPath;
 bool g_allHooksInstalled = false;
 std::mutex g_installMutex;
 std::atomic<HookState> g_hookStatus(HookState::IDLE);
-std::vector<void*> g_trampolineAllocations;
 std::atomic<bool> g_isInitialized(false);
 
 std::unordered_map<std::string, TranslatedMessage> g_translatedHistoryMap;
@@ -249,7 +248,7 @@ bool shutdownHookSystem(bool isProcessExiting, void* excludeAddress)
     WriteAsyncLogTo(g_wlogWar3HookPath, L"共享内存已清理。");
 
     // 3. 释放为跳板分配的内存
-    freeTrampolineAllocations(isProcessExiting);
+    TrampolineAllocator::uninitialize(isProcessExiting);
 
     return uninstAllHooksSuccess;
 }
@@ -273,40 +272,6 @@ void cleanupSharedMemory(bool fullCleanup)
             WriteAsyncLogTo(g_wlogWar3HookPath, L"🧹 [IPC Buffer] 共享内存内容已清空 (保持连接)");
         }
     }
-}
-
-bool freeTrampolineAllocations(bool isProcessExiting, void *excludeAddress)
-{
-    bool allSuccess = true;
-
-    if (!isProcessExiting) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"准备清理内存块，排除地址: 0x%p", excludeAddress);
-
-        for (auto it = g_trampolineAllocations.begin(); it != g_trampolineAllocations.end(); ) {
-            void *trampolineMem = *it;
-
-            if (trampolineMem != nullptr && trampolineMem == excludeAddress) {
-                WriteAsyncLogTo(g_wlogWar3HookPath, L"跳过正在使用的内存块: 0x%p", trampolineMem);
-                ++it;
-                continue;
-            }
-
-            if (trampolineMem != nullptr) {
-                if (VirtualFree(trampolineMem, 0, MEM_RELEASE)) {
-                    it = g_trampolineAllocations.erase(it);
-                } else {
-                    allSuccess = false;
-                    ++it;
-                }
-            } else {
-                it = g_trampolineAllocations.erase(it);
-            }
-        }
-    } else {
-        g_trampolineAllocations.clear();
-    }
-
-    return allSuccess;
 }
 
 TRANSLATOR_API HookState getHookStatus()
@@ -399,17 +364,12 @@ bool installInlineHook(
 
     size_t totalSize = maxEndOffset;
 
-    BYTE *mainTrampoline = static_cast<BYTE*>(VirtualAlloc(nullptr, totalSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
-
-    if (mainTrampoline == nullptr) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"为跳板申请内存失败！");
-        // 恢复原始代码，避免留下一个残缺的钩子
+    BYTE *mainTrampoline = (BYTE*)TrampolineAllocator::allocate(totalSize);
+    if (!mainTrampoline) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 跳板内存池空间不足！");
         uninstallInlineHook(result.reviseAddress, originalByteCode, reviseByteSize);
         return false;
     }
-
-    // 将新分配的内存块记录下来，以便将来释放
-    g_trampolineAllocations.push_back(mainTrampoline);
 
     // 复制原始代码到 trampoline
     memcpy(mainTrampoline, originalByteCode, reviseByteSize);

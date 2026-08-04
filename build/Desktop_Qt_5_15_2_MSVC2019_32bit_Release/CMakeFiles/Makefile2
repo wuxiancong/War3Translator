@@ -73,8 +73,8 @@ clean: CMakeFiles\Translator_autogen.dir\clean
 # Target rules for target CMakeFiles/War3Translator.dir
 
 # All Build rule for target.
-CMakeFiles\War3Translator.dir\all: CMakeFiles\War3Translator_autogen_timestamp_deps.dir\all
 CMakeFiles\War3Translator.dir\all: CMakeFiles\War3Translator_autogen.dir\all
+CMakeFiles\War3Translator.dir\all: CMakeFiles\War3Translator_autogen_timestamp_deps.dir\all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\War3Translator.dir\depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\War3Translator.dir\build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles --progress-num=8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27 "Built target War3Translator"
