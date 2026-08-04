@@ -502,30 +502,6 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/main.cpp.s
 .PHONY : main.cpp.s
 
-managers/ChatManager.obj: managers/ChatManager.cpp.obj
-.PHONY : managers/ChatManager.obj
-
-# target to build an object file
-managers/ChatManager.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj
-.PHONY : managers/ChatManager.cpp.obj
-
-managers/ChatManager.i: managers/ChatManager.cpp.i
-.PHONY : managers/ChatManager.i
-
-# target to preprocess a source file
-managers/ChatManager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.i
-.PHONY : managers/ChatManager.cpp.i
-
-managers/ChatManager.s: managers/ChatManager.cpp.s
-.PHONY : managers/ChatManager.s
-
-# target to generate assembly for a file
-managers/ChatManager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\War3Translator.dir\build.make CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.s
-.PHONY : managers/ChatManager.cpp.s
-
 managers/HookManager.obj: managers/HookManager.cpp.obj
 .PHONY : managers/HookManager.obj
 
@@ -793,9 +769,6 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
-	@echo ... managers/ChatManager.obj
-	@echo ... managers/ChatManager.i
-	@echo ... managers/ChatManager.s
 	@echo ... managers/HookManager.obj
 	@echo ... managers/HookManager.i
 	@echo ... managers/HookManager.s

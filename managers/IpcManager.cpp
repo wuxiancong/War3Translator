@@ -277,41 +277,22 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
     switch (message.type) {
     case MSG_TYPE_TRANSLATE_REQUEST:
     {
+        // 1. 解析基础数据
         const auto *payload = reinterpret_cast<const NotifyTranslatePayload*>(message.payload.data);
-
         quint32 pid = payload->pid;
         quint32 flag = payload->flag;
         quint32 extraScope = payload->extraScope;
-
         QString rawText = QString::fromUtf8(payload->message,
                                             strnlen(payload->message, sizeof(payload->message))).trimmed();
         QString language = SettingsManager::instance().languageCode();
 
-        // 噪音拦截日志
+        // 2. 噪音拦截
         static QRegularExpression noiseRegex("[\\p{L}\\p{N}]");
-        if (!rawText.contains(noiseRegex)) {
-            // 噪音文本通常是垃圾信息，使用轻量日志记录
-            DebugHelper::recordTreeLog("chat_translate", QString("ℹ 忽略无意义噪音: \"%1\"").arg(rawText), 1);
-            break;
-        }
+        if (!rawText.contains(noiseRegex)) break;
 
-        DebugHelper::recordTreeLog("chat_translate", "┌─ 📥 [Translate] 捕获游戏内聊天文本", 0);
-        DebugHelper::recordTreeLog("chat_translate", QString("├─ 来源: PID=%1 | 范围: %2").arg(pid).arg(extraScope), 1);
-        DebugHelper::recordTreeLog("chat_translate", QString("├─ 文本: \"%1\"").arg(rawText), 1);
-
-        QMetaObject::invokeMethod(&TranslateManager::instance(),
-                                  "requestTranslationWithMetadata",
-                                  Qt::QueuedConnection,
-                                  Q_ARG(quint32, pid),
-                                  Q_ARG(quint32, flag),
-                                  Q_ARG(quint32, extraScope),
-                                  Q_ARG(QString, rawText),
-                                  Q_ARG(QString, language));
-
-        DebugHelper::recordTreeLog("chat_translate", "└─ 🚀 任务已进入异步翻译流水线", 0, true);
-
+        // 3. 立即确定发送者并在 UI 上显示
         QString senderName = QString("Player(%1)").arg(pid);
-        if (m_pSharedData && pid < 16) {
+        if (m_pSharedData && pid < MAX_SLOT) {
             QString nameFromMem = QString::fromLocal8Bit(m_pSharedData->pid_to_name[pid]);
             if (!nameFromMem.isEmpty()) senderName = nameFromMem;
         }
@@ -322,6 +303,21 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
                                   Q_ARG(quint32, pid),
                                   Q_ARG(QString, senderName),
                                   Q_ARG(QString, rawText));
+
+        DebugHelper::recordTreeLog("chat_translate", QString("📥 [UI] 已通知界面插入新消息占位: %1").arg(rawText), 1);
+
+        // 4. 启动翻译任务
+        QMetaObject::invokeMethod(&TranslateManager::instance(),
+                                  "requestTranslationWithMetadata",
+                                  Qt::QueuedConnection,
+                                  Q_ARG(quint32, pid),
+                                  Q_ARG(quint32, flag),
+                                  Q_ARG(quint32, extraScope),
+                                  Q_ARG(QString, rawText),
+                                  Q_ARG(QString, language));
+
+        DebugHelper::recordTreeLog("chat_translate", "🚀 任务已进入翻译流水线", 0, true);
+
         break;
     }
 

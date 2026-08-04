@@ -17,7 +17,6 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "D:/Qt/workplace/War3Translator/helpers/HardwareHelper.cpp" "CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj" "gcc" "CMakeFiles/War3Translator.dir/helpers/HardwareHelper.cpp.obj.d"
   "D:/Qt/workplace/War3Translator/helpers/ProcessHelper.cpp" "CMakeFiles/War3Translator.dir/helpers/ProcessHelper.cpp.obj" "gcc" "CMakeFiles/War3Translator.dir/helpers/ProcessHelper.cpp.obj.d"
   "D:/Qt/workplace/War3Translator/main.cpp" "CMakeFiles/War3Translator.dir/main.cpp.obj" "gcc" "CMakeFiles/War3Translator.dir/main.cpp.obj.d"
-  "D:/Qt/workplace/War3Translator/managers/ChatManager.cpp" "CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj" "gcc" "CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj.d"
   "D:/Qt/workplace/War3Translator/managers/HookManager.cpp" "CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj" "gcc" "CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj.d"
   "D:/Qt/workplace/War3Translator/managers/ImageManager.cpp" "CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj" "gcc" "CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj.d"
   "D:/Qt/workplace/War3Translator/managers/IpcManager.cpp" "CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj" "gcc" "CMakeFiles/War3Translator.dir/managers/IpcManager.cpp.obj.d"
