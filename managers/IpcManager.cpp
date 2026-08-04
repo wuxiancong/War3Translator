@@ -309,6 +309,19 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
                                   Q_ARG(QString, language));
 
         DebugHelper::recordTreeLog("chat_translate", "└─ 🚀 任务已进入异步翻译流水线", 0, true);
+
+        QString senderName = QString("Player(%1)").arg(pid);
+        if (m_pSharedData && pid < 16) {
+            QString nameFromMem = QString::fromLocal8Bit(m_pSharedData->pid_to_name[pid]);
+            if (!nameFromMem.isEmpty()) senderName = nameFromMem;
+        }
+
+        QMetaObject::invokeMethod(&IpcManager::instance(),
+                                  "incomingMessageIntercepted",
+                                  Qt::QueuedConnection,
+                                  Q_ARG(quint32, pid),
+                                  Q_ARG(QString, senderName),
+                                  Q_ARG(QString, rawText));
         break;
     }
 
@@ -331,4 +344,16 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         DebugHelper::recordTreeLog("ipc_Message", QString("⚠ [Warning] 收到未知 IPC 协议头: %1").arg(message.type), 1);
         break;
     }
+}
+
+void IpcManager::updateTranslateLanguage(const QString &code)
+{
+    if (!m_pSharedData) return;
+
+    // 将 QString 转换为 char* 写入 SharedData 结构体
+    QByteArray ba = code.toUtf8();
+    memset(m_pSharedData->translate_language, 0, sizeof(m_pSharedData->translate_language));
+    strncpy(m_pSharedData->translate_language, ba.constData(), qMin((int)ba.size(), 15));
+
+    qDebug() << "📢 [IPC] 已同步翻译目标语言至 DLL:" << code;
 }

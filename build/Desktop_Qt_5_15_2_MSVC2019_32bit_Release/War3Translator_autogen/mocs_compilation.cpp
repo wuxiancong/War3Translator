@@ -4,7 +4,6 @@
 #include "P2JUI5LXV7/moc_FileHelper.cpp"
 #include "P2JUI5LXV7/moc_HardwareHelper.cpp"
 #include "P2JUI5LXV7/moc_ProcessHelper.cpp"
-#include "DWVBZFKGEL/moc_ChatManager.cpp"
 #include "DWVBZFKGEL/moc_HookManager.cpp"
 #include "DWVBZFKGEL/moc_ImageManager.cpp"
 #include "DWVBZFKGEL/moc_IpcManager.cpp"

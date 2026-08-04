@@ -15,8 +15,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/War3Translator.dir/helpers/ProcessHelper.cpp.obj.d"
   "CMakeFiles/War3Translator.dir/main.cpp.obj"
   "CMakeFiles/War3Translator.dir/main.cpp.obj.d"
-  "CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj"
-  "CMakeFiles/War3Translator.dir/managers/ChatManager.cpp.obj.d"
   "CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj"
   "CMakeFiles/War3Translator.dir/managers/HookManager.cpp.obj.d"
   "CMakeFiles/War3Translator.dir/managers/ImageManager.cpp.obj"

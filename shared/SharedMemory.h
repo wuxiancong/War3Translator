@@ -130,6 +130,7 @@ struct MessageSlot {
 
 struct SharedData {
     char                translate_language[8];
+    char                pid_to_name[MAX_SLOT][32];
     DefaultShoutData    default_shouts[MAX_SHOUT_ITEMS];
 
     volatile LONG       fast_read_index_d2l;

@@ -5,9 +5,9 @@ import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.12
 import Qt.labs.platform 1.1
 
+import War3Translator.IpcManager 1.0
 import War3Translator.ThemeManager 1.0
 import War3Translator.SettingsManager 1.0
-import War3Translator.ChatManager 1.0
 import War3Translator.TranslateManager 1.0
 
 ApplicationWindow {
@@ -73,16 +73,15 @@ ApplicationWindow {
 
     // ===== 业务逻辑 =====
     Connections {
-        target: ChatManager
-        function onMessageReceived(sender, text) {
-            var targetLang = languageModel.get(targetLangCombo.currentIndex).value
-            TranslateManager.translate(text, "auto", targetLang)
+        target: IpcManager
+        function onIncomingMessageIntercepted(pid, sender, text) {
             chatLogModel.insert(0, {
-                                    "sender": sender,
-                                    "origin": text,
-                                    "translated": qsTr("正在翻译..."),
-                                    "isDone": false
-                                })
+                "pid": pid,
+                "sender": sender,
+                "origin": text,
+                "translated": qsTr("正在翻译..."),
+                "isDone": false
+            })
         }
     }
 
@@ -402,9 +401,18 @@ ApplicationWindow {
                                     textRole: "text"
                                     implicitWidth: 150
                                     Layout.preferredWidth: 150
-                                    currentIndex: targetLangCombo.currentIndex
+                                    currentIndex: {
+                                        for(var i=0; i<languageModel.count; i++) {
+                                            if(languageModel.get(i).value === SettingsManager.translateLanguage) return i;
+                                        }
+                                        return 0;
+                                    }
                                     onCurrentIndexChanged: {
                                         targetLangCombo.currentIndex = currentIndex
+                                    }
+                                    onActivated: {
+                                        var selectedCode = languageModel.get(index).value
+                                        SettingsManager.setTranslateLanguage(selectedCode)
                                     }
                                     background: Rectangle {
                                         color: ThemeManager.tertiaryColor

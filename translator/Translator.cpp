@@ -884,10 +884,13 @@ __attribute__((naked)) void __stdcall jumpWhenCallGameNetEventChatFromHost() {
 
 int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void **ppPayload, int *pDataSize)
 {
-    bool isPidInvalid = (fromPid < 0 || fromPid >= MAX_SLOT);
+    int realPid = fromPid & 0x000000FF;
+
+    bool isPidInvalid = (realPid < 0 || realPid >= MAX_SLOT);
 
     if (isPidInvalid) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ [NetEventChatFromHost] 警告: 检测到异常 PID (%d)，疑似栈偏移错误", fromPid);
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ [NetEventChatFromHost] 警告: 检测到异常 PID (原始: 0x%X, 提取: %d)，疑似栈偏移错误",
+                        fromPid, realPid);
         return 1;
     }
 
@@ -911,7 +914,7 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
     }
 
     WriteAsyncLogTo(g_wlogWar3HookPath, L"📥 [NetEventChatFromHost] 收到同步包");
-    WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 发送者 PID: %d", fromPid);
+    WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 原始 PID: 0x%X (提取后: %d)", fromPid, realPid);
     WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 消息标志: 0x%08X", chatFlag);
     WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 消息范围: 0x%08X", extraScope);
     WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 总计长度: %d 字节", dataSize);
@@ -937,10 +940,12 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
         WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 文本内容: [解析失败，首字节为Null]");
     } else {
         WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 文本内容: %ls", wText.c_str());
-        if (fromPid == 2) {
-            WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 检测到机器人消息");
+
+        if (realPid == 2) {
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 检测到机器人消息 (PID: %d)", realPid);
             return 2;
         }
+
         if (g_pSharedData) {
             translatedMessage = getDefaultShoutContent(rawMessage);
             if (!translatedMessage) {
@@ -948,12 +953,11 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
                 translatedMessage = getTranslationFromCache(rawMessage);
                 if (!translatedMessage) {
                     WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 缓存未找到，准备请求翻译并等待结果");
-                    requestTranslateMessage(rawMessage, chatFlag, fromPid, extraScope);
+                    requestTranslateMessage(rawMessage, chatFlag, realPid, extraScope);
                     return 0;
-                }  else {
+                } else {
                     std::wstring wTranslatedMessage = utf8ToWide(translatedMessage);
                     WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 从缓存中找到翻译，自动转为本地语言: %s", wTranslatedMessage.c_str());
-
                 }
             } else {
                 std::wstring wTranslatedMessage = utf8ToWide(translatedMessage);

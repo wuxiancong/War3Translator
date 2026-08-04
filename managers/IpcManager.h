@@ -34,6 +34,9 @@ public:
 public slots:
     void onIpcMessageReceived();
 
+signals:
+    void incomingMessageIntercepted(quint32 pid, QString sender, QString text);
+
 private:
     explicit IpcManager(QObject *parent = nullptr);
     ~IpcManager();
@@ -41,6 +44,7 @@ private:
 public:
     bool sendIpcBufferMessage(IpcMessageType type, const void* data = nullptr, quint32 size = 0);
     void dispatchIpcBufferMessage(const MessageSlot &message);
+    void updateTranslateLanguage(const QString &code);
 };
 
 #endif // IPCMANAGER_H

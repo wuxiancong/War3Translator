@@ -13,7 +13,6 @@
 #include "helpers/ProcessHelper.h"
 
 #include "managers/IpcManager.h"
-#include "managers/ChatManager.h"
 #include "managers/HookManager.h"
 #include "managers/ImageManager.h"
 #include "managers/NetworkManager.h"
@@ -140,11 +139,6 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<IpcManager>("War3Translator.IpcManager", 1, 0, "IpcManager",
                                           [](QQmlEngine*, QJSEngine*) -> QObject *{
                                               return &IpcManager::instance();
-                                          });
-
-    qmlRegisterSingletonType<ChatManager>("War3Translator.ChatManager", 1, 0, "ChatManager",
-                                          [](QQmlEngine*, QJSEngine*) -> QObject *{
-                                              return &ChatManager::instance();
                                           });
 
     qmlRegisterSingletonType<HookManager>("War3Translator.HookManager", 1, 0, "HookManager",

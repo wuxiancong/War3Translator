@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_IpcManager_t {
-    QByteArrayData data[6];
-    char stringdata0[65];
+    QByteArrayData data[10];
+    char stringdata0[108];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,14 +33,19 @@ struct qt_meta_stringdata_IpcManager_t {
 static const qt_meta_stringdata_IpcManager_t qt_meta_stringdata_IpcManager = {
     {
 QT_MOC_LITERAL(0, 0, 10), // "IpcManager"
-QT_MOC_LITERAL(1, 11, 20), // "onIpcMessageReceived"
-QT_MOC_LITERAL(2, 32, 0), // ""
-QT_MOC_LITERAL(3, 33, 8), // "resetIpc"
-QT_MOC_LITERAL(4, 42, 7), // "cleanup"
-QT_MOC_LITERAL(5, 50, 14) // "initIpcManager"
+QT_MOC_LITERAL(1, 11, 26), // "incomingMessageIntercepted"
+QT_MOC_LITERAL(2, 38, 0), // ""
+QT_MOC_LITERAL(3, 39, 3), // "pid"
+QT_MOC_LITERAL(4, 43, 6), // "sender"
+QT_MOC_LITERAL(5, 50, 4), // "text"
+QT_MOC_LITERAL(6, 55, 20), // "onIpcMessageReceived"
+QT_MOC_LITERAL(7, 76, 8), // "resetIpc"
+QT_MOC_LITERAL(8, 85, 7), // "cleanup"
+QT_MOC_LITERAL(9, 93, 14) // "initIpcManager"
 
     },
-    "IpcManager\0onIpcMessageReceived\0\0"
+    "IpcManager\0incomingMessageIntercepted\0"
+    "\0pid\0sender\0text\0onIpcMessageReceived\0"
     "resetIpc\0cleanup\0initIpcManager"
 };
 #undef QT_MOC_LITERAL
@@ -51,20 +56,26 @@ static const uint qt_meta_data_IpcManager[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
+
+ // signals: name, argc, parameters, tag, flags
+       1,    3,   39,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   34,    2, 0x0a /* Public */,
+       6,    0,   46,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-       3,    0,   35,    2, 0x02 /* Public */,
-       4,    0,   36,    2, 0x02 /* Public */,
-       5,    0,   37,    2, 0x02 /* Public */,
+       7,    0,   47,    2, 0x02 /* Public */,
+       8,    0,   48,    2, 0x02 /* Public */,
+       9,    0,   49,    2, 0x02 /* Public */,
+
+ // signals: parameters
+    QMetaType::Void, QMetaType::UInt, QMetaType::QString, QMetaType::QString,    3,    4,    5,
 
  // slots: parameters
     QMetaType::Void,
@@ -83,12 +94,22 @@ void IpcManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<IpcManager *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->onIpcMessageReceived(); break;
-        case 1: _t->resetIpc(); break;
-        case 2: _t->cleanup(); break;
-        case 3: { QString _r = _t->initIpcManager();
+        case 0: _t->incomingMessageIntercepted((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
+        case 1: _t->onIpcMessageReceived(); break;
+        case 2: _t->resetIpc(); break;
+        case 3: _t->cleanup(); break;
+        case 4: { QString _r = _t->initIpcManager();
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
         default: ;
+        }
+    } else if (_c == QMetaObject::IndexOfMethod) {
+        int *result = reinterpret_cast<int *>(_a[0]);
+        {
+            using _t = void (IpcManager::*)(quint32 , QString , QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&IpcManager::incomingMessageIntercepted)) {
+                *result = 0;
+                return;
+            }
         }
     }
 }
@@ -122,15 +143,22 @@ int IpcManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 4;
+        _id -= 5;
     }
     return _id;
+}
+
+// SIGNAL 0
+void IpcManager::incomingMessageIntercepted(quint32 _t1, QString _t2, QString _t3)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t3))) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

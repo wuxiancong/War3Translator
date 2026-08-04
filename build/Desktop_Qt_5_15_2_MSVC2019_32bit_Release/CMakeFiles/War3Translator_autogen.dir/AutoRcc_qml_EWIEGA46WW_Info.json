@@ -11,10 +11,6 @@
 	[
 		"D:/Qt/workplace/War3Translator/main.qml",
 		"D:/Qt/workplace/War3Translator/components/LanguageComponent.qml",
-		"D:/Qt/workplace/War3Translator/managers/ChatManager.cpp",
-		"D:/Qt/workplace/War3Translator/managers/TranslateManager.cpp",
-		"D:/Qt/workplace/War3Translator/managers/ChatManager.h",
-		"D:/Qt/workplace/War3Translator/managers/TranslateManager.h",
 		"D:/Qt/workplace/War3Translator/managers/ThemeManager.qml"
 	],
 	"LOCK_FILE" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/War3Translator_autogen.dir/AutoRcc_qml_EWIEGA46WW_Lock.lock",

@@ -1,4 +1,5 @@
 #include "../helpers/HardwareHelper.h"
+#include "../managers/IpcManager.h"
 #include "SettingsManager.h"
 #include <QCoreApplication>
 #include <QStandardPaths>
@@ -19,6 +20,7 @@ SettingsManager::SettingsManager(QObject *parent)
 
     // 从本地读取上次保存的语言，默认 zh_CN
     m_languageCode = m_settings->value("base/languageCode", "zh_CN").toString();
+    m_mTranslateLanguage = m_settings->value("base/translateLanguage", "zh_CN").toString();
     initializeclientId();
 }
 
@@ -93,6 +95,24 @@ void SettingsManager::setLanguageCode(const QString &code) {
 
     // 发送改变信号，触发 QML 的 Connections
     emit languageCodeChanged();
+}
+
+void SettingsManager::setTranslateLanguage(const QString &code) {
+    if (m_mTranslateLanguage == code) return;
+
+    qDebug() << "🎯 翻译目标语言切换为:" << code;
+
+    m_mTranslateLanguage = code;
+
+    // 1. 持久化保存
+    m_settings->setValue("base/translateLanguage", code);
+    m_settings->sync();
+
+    // 2. 【核心】同步到共享内存，让游戏内的 DLL 知道要把聊天翻译成什么
+    IpcManager::instance().updateTranslateLanguage(code);
+
+    // 3. 通知 QML 更新 UI
+    emit translateLanguageChanged();
 }
 
 bool SettingsManager::isDefaultShoutContent(const QString &content)

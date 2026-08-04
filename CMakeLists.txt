@@ -40,8 +40,6 @@ set(PROJECT_SOURCES
 
     managers/IpcManager.h
     managers/IpcManager.cpp
-    managers/ChatManager.h
-    managers/ChatManager.cpp
     managers/HookManager.h
     managers/HookManager.cpp
     managers/ImageManager.h
