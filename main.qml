@@ -172,7 +172,7 @@ ApplicationWindow {
                         id: targetLangCombo
                         model: languageModel
                         textRole: "text"
-                        implicitWidth: 100; implicitHeight: 30
+                        implicitWidth: 150; implicitHeight: 30
                         background: Rectangle { color: ThemeManager.tertiaryColor; radius: 4 }
                         contentItem: Text {
                             text: targetLangCombo.displayText
@@ -406,9 +406,6 @@ ApplicationWindow {
                                             if(languageModel.get(i).value === SettingsManager.translateLanguage) return i;
                                         }
                                         return 0;
-                                    }
-                                    onCurrentIndexChanged: {
-                                        targetLangCombo.currentIndex = currentIndex
                                     }
                                     onActivated: {
                                         var selectedCode = languageModel.get(index).value
