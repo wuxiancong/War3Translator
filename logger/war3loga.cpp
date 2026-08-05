@@ -7,6 +7,10 @@ static std::mutex g_instanceMutex;
 static AsyncLogContext* g_pAsyncLogContext = nullptr;
 static std::once_flag g_asyncInitOnceFlag;
 
+static size_t calculateTaskMemory(const LogTask& task) {
+    return (task.path.size() + task.rawMsg.size()) * sizeof(wchar_t) + sizeof(LogTask) + 32;
+}
+
 static std::string wideToUtf8(const std::wstring& wstr) {
     if (wstr.empty()) return "";
     int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), nullptr, 0, nullptr, nullptr);
@@ -40,69 +44,68 @@ static void logWriterThread() {
         std::queue<LogTask> localTasks;
         {
             std::unique_lock<std::mutex> lock(ctx->mutex);
-            // 等待唤醒
             ctx->cv.wait(lock, [ctx] {
                 return !ctx->queue.empty() || !ctx->running.load(std::memory_order_acquire);
             });
 
-            // 如果收到停止信号且队列已空，彻底退出
-            if (ctx->queue.empty() && !ctx->running.load(std::memory_order_acquire)) {
-                break;
-            }
+            if (ctx->queue.empty() && !ctx->running.load(std::memory_order_acquire)) break;
 
-            // 双缓冲交换：极短时间占锁，瞬间拿走所有任务
+            // 极速交换队列，减少占锁时间
             std::swap(localTasks, ctx->queue);
             ctx->queueSize.store(0, std::memory_order_relaxed);
+            // 内存计数在下面循环中扣除
         }
 
-        // --- 在锁外处理所有耗时操作 ---
         while (!localTasks.empty()) {
             LogTask& task = localTasks.front();
+            size_t taskSize = calculateTaskMemory(task);
 
-            // 1. 获取时间戳
+            // 1. 生成时间戳
             SYSTEMTIME st;
             GetLocalTime(&st);
             wchar_t finalWBuffer[2560];
             StringCchPrintfW(finalWBuffer, 2560, L"[%02d:%02d:%02d.%03d] %s\r\n",
-                             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, task.message.c_str());
+                             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, task.rawMsg.c_str());
 
-            // 2. 转换为 UTF-8
-            std::string utf8Data = wideToUtf8(finalWBuffer);
+            // 2. 转换 UTF8
+            std::string utf8Str = wideToUtf8(finalWBuffer);
 
             // 3. 写入文件
-            if (!utf8Data.empty()) {
-                HANDLE hFile = GetHandle(task.path);
-                if (hFile != INVALID_HANDLE_VALUE) {
-                    DWORD written;
-                    WriteFile(hFile, utf8Data.c_str(), (DWORD)utf8Data.size(), &written, nullptr);
-                }
+            HANDLE hFile = GetHandle(task.path);
+            if (hFile != INVALID_HANDLE_VALUE) {
+                DWORD written;
+                WriteFile(hFile, utf8Str.c_str(), (DWORD)utf8Str.size(), &written, nullptr);
             }
+
+            ctx->totalBytesUsed.fetch_sub(taskSize, std::memory_order_relaxed);
             localTasks.pop();
         }
     }
 
-    // 线程退出前关闭所有句柄
-    for (auto& pair : handleCache) {
-        if (pair.second != INVALID_HANDLE_VALUE) CloseHandle(pair.second);
-    }
+    for (auto& pair : handleCache) if (pair.second != INVALID_HANDLE_VALUE) CloseHandle(pair.second);
+}
+
+size_t getAsyncLogMemoryUsage() {
+    auto *ctx = getAsyncLogContext();
+    return ctx ? ctx->totalBytesUsed.load(std::memory_order_relaxed) : 0;
 }
 
 size_t clearAsyncLogQueue() {
     auto *ctx = getAsyncLogContext();
     if (!ctx) return 0;
-    size_t clearedCount = 0;
+    size_t count = 0;
     {
         std::lock_guard<std::mutex> lock(ctx->mutex);
-        clearedCount = ctx->queue.size();
+        count = ctx->queue.size();
         std::queue<LogTask> empty;
         std::swap(ctx->queue, empty);
         ctx->queueSize.store(0);
+        ctx->totalBytesUsed.store(0);
     }
-    return clearedCount;
+    return count;
 }
 
 void writeAsyncLogTo(const std::wstring &wlogPath, const wchar_t *fmt, ...) {
-    // 第一次调用时初始化
     if (!g_logSystemInitialized.load(std::memory_order_relaxed)) {
         std::call_once(g_asyncInitOnceFlag, []() {
             auto *ctx = getAsyncLogContext();
@@ -113,26 +116,26 @@ void writeAsyncLogTo(const std::wstring &wlogPath, const wchar_t *fmt, ...) {
         });
     }
 
-    // 系统关闭中或参数无效则直接返回
     if (!g_logSystemInitialized.load(std::memory_order_acquire) || wlogPath.empty() || !fmt) return;
 
     auto *ctx = g_pAsyncLogContext;
 
-    // 如果后台线程写得太慢，积压超过10000条日志，则丢弃新日志，绝对不Sleep，保证游戏流畅。
     if (ctx->queueSize.load(std::memory_order_relaxed) > 10000) return;
 
-    // 前台仅执行基础格式化（栈操作，极快）
     wchar_t msgBuffer[2048];
     va_list args;
     va_start(args, fmt);
     StringCchVPrintfW(msgBuffer, 2048, fmt, args);
     va_end(args);
 
-    // 入队原始数据，剩余的重活交给后台
+    LogTask task = { wlogPath, msgBuffer };
+    size_t taskSize = calculateTaskMemory(task);
+
     {
         std::lock_guard<std::mutex> lock(ctx->mutex);
-        ctx->queue.push({ wlogPath, msgBuffer });
+        ctx->queue.push(std::move(task));
         ctx->queueSize.fetch_add(1, std::memory_order_relaxed);
+        ctx->totalBytesUsed.fetch_add(taskSize, std::memory_order_relaxed);
     }
     ctx->cv.notify_one();
 }
@@ -141,20 +144,13 @@ bool shutdownLogaSystem(bool forceImmediate) {
     auto *ctx = g_pAsyncLogContext;
     if (!ctx || !ctx->initialized.load()) return false;
 
-    // 标志系统正在关闭
     g_logSystemInitialized.store(false);
-
-    if (forceImmediate) {
-        clearAsyncLogQueue();
-    }
+    if (forceImmediate) clearAsyncLogQueue();
 
     ctx->running.store(false, std::memory_order_release);
     ctx->cv.notify_all();
 
-    if (ctx->worker.joinable()) {
-        ctx->worker.join();
-    }
-
+    if (ctx->worker.joinable()) ctx->worker.join();
     ctx->initialized.store(false);
     return true;
 }

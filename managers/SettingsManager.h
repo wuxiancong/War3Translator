@@ -21,6 +21,7 @@ struct ShoutItem {
 class SettingsManager : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList translateLanguages READ translateLanguages WRITE setTranslateLanguages NOTIFY translateLanguagesChanged)
     Q_PROPERTY(QString translateLanguage READ translateLanguage WRITE setTranslateLanguage NOTIFY translateLanguageChanged)
     Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
@@ -32,9 +33,10 @@ public:
     static QString serverNameToString(ServerName serverName);
 
     // Getter
+    bool isLoading() const { return m_isLoading; }
     QString languageCode() const { return m_languageCode; }
     QString translateLanguage() const { return m_translateLanguage; }
-    bool isLoading() const { return m_isLoading; }
+    QStringList translateLanguages() const { return m_translateLanguages; }
     QByteArray appSecret() const;
     QString getRegistryPath(const QString &key = "");
     QString getConfigFilePath(const QString &fileName = "GameConfig.ini") const;
@@ -45,6 +47,7 @@ public:
     // Setter
     Q_INVOKABLE void setLanguageCode(const QString &code);
     Q_INVOKABLE void setTranslateLanguage(const QString &code);
+    Q_INVOKABLE void setTranslateLanguages(const QStringList &languages);
     Q_INVOKABLE bool isDefaultShoutContent(const QString &content);
     Q_INVOKABLE bool isDefaultSchemeName(const QString &name) const;
     Q_INVOKABLE QString serverAddresses(quint32 index = 0) const;
@@ -53,21 +56,23 @@ public:
     Q_INVOKABLE QString clientId() const;
 
 signals:
+    void isLoadingChanged();
     void languageCodeChanged();
     void languageAboutToChange(); // 语言即将改变的信号
     void translateLanguageChanged();
-    void isLoadingChanged();
+    void translateLanguagesChanged();
 
 private:
     explicit SettingsManager(QObject *parent = nullptr);
 
-    QString m_languageCode;
-    QString m_translateLanguage;
     bool m_isLoading;
-    QSettings *m_settings; // 用于持久化保存配置
-    QList<ShoutItem> m_shoutTemplate;
     QString m_clientId;
     QString m_hardwareId;
+    QSettings *m_settings;
+    QString m_languageCode;
+    QString m_translateLanguage;
+    QStringList m_translateLanguages;
+    QList<ShoutItem> m_shoutTemplate;
 };
 
 #endif // SETTINGSMANAGER_H

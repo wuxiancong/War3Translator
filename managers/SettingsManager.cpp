@@ -44,6 +44,7 @@ SettingsManager::SettingsManager(QObject *parent)
     // 3. 加载语言配置
     m_languageCode      = readChain("Base/languageCode", "zh_CN").toString();
     m_translateLanguage = readChain("Base/translateLanguage", "zh_CN").toString();
+    m_translateLanguages = readChain("Base/translateLanguages", QStringList() << "zh_CN").toStringList();
 
     // 4. 保持你原本的主实例化指针指向本地
     m_settings = new QSettings(localPath, QSettings::IniFormat, this);
@@ -161,6 +162,46 @@ void SettingsManager::setTranslateLanguage(const QString &code) {
 
     // 通知 QML 更新 UI
     emit translateLanguageChanged();
+}
+
+void SettingsManager::setTranslateLanguages(const QStringList &languages)
+{
+    if (m_translateLanguages.size() == languages.size()) {
+        bool allSame = true;
+        for(int i = 0; i < languages.size(); ++i) {
+            if(m_translateLanguages.at(i) != languages.at(i)) {
+                allSame = false;
+                break;
+            }
+        }
+        if (allSame) return;
+    }
+
+    if (IpcManager::instance().m_pSharedData) {
+        auto *pSharedData = IpcManager::instance().m_pSharedData;
+
+        // 1. 更新数量
+        uint32_t count = qMin((uint32_t)languages.size(), (uint32_t)MAX_TARGET_LANGUAGES);
+        pSharedData->translate_languages_count = count;
+
+        // 2. 清理并填充数组
+        memset(pSharedData->translate_languages, 0, sizeof(pSharedData->translate_languages));
+        for (uint32_t i = 0; i < count; ++i) {
+            QByteArray ba = languages.at(i).toUtf8();
+            strncpy(pSharedData->translate_languages[i], ba.constData(), 7);
+        }
+
+        qDebug() << "📢 [IPC] 已同步多语言发送列表，数量:" << count;
+    }
+
+    qDebug() << "📝 更新发送语种列表:" << languages;
+
+    m_translateLanguages = languages;
+
+    // 同步到三端持久化
+    saveConfigToAllEnds("Base/translateLanguages", languages);
+
+    emit translateLanguagesChanged();
 }
 
 bool SettingsManager::isDefaultShoutContent(const QString &content)

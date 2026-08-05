@@ -23,6 +23,8 @@
 #include <map>
 #define ENABLED_LOG
 typedef void (__fastcall *GameNetEventChatFromHostFunc)(int fromPid, void *pPayload, int dataSize);
+typedef void (__fastcall *GameChatInputLogicInGameFunc)(void *eventObject);
+typedef void (__fastcall *GamePrimaryGameUIVtable_Func)();
 
 class TrampolineAllocator {
 private:
@@ -145,7 +147,7 @@ bool isCommonWar3Version(const std::string &version);
 DWORD getModuleBaseAddress(const char *moduleName);
 std::string getWar3Version(const char *war3PathA);
 std::wstring getDllDirectoryW(HMODULE hModule);
-DWORD WINAPI startupHookSystem(LPVOID lpParam);
+DWORD __stdcall startupHookSystem(LPVOID lpParam);
 DWORD getModuleSize(DWORD baseAddress);
 bool isWar3Exe(const char *fullPath);
 std::string getCurrentWar3Version();
@@ -157,6 +159,8 @@ bool isWar3Process();
 
 bool hookGameNetEventChatFromHost();
 bool unhookGameNetEventChatFromHost();
+bool hookGamePrimaryGameUIVtable_();
+bool unhookGamePrimaryGameUIVtable_();
 void cleanupSharedMemory(bool fullCleanup = true);
 bool shutdownHookSystem(bool isProcessExiting, void* excludeAddress = nullptr);
 bool inlineHookFilter(DWORD reviseAddress, BYTE *currentByteCode, size_t reviseByteSize);
@@ -185,11 +189,15 @@ void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, u
 const char *getTranslationFromCache(const char *sourceText);
 const char *getDefaultShoutContent(const char *content);
 
+void chatSendGeneral(const char *message, DWORD recipient);
+void chatSendInternal(const char *message, DWORD recipient);
 bool sendIpcBufferMessage(IpcMessageType msgType, const void *data, size_t dataSize, const wchar_t *logTag);
 
 int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void **ppPayload, int *pDataSize);
+int __stdcall doSomeThingsBeforeCallGamePrimaryGameUIVtable_(void *primaryGameUI);
 
-[[maybe_unused]] static void WINAPI jumpWhenCallGameNetEventChatFromHost();
+[[maybe_unused]] static void __stdcall jumpWhenCallGameNetEventChatFromHost();
+[[maybe_unused]] static void __stdcall jumpWhenCallGamePrimaryGameUIVtable_();
 #ifdef ENABLED_LOG
 void logBytecode(const BYTE *data, size_t size, const wchar_t *description, bool uppercase = true);;
 #endif

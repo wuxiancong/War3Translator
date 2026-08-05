@@ -496,11 +496,59 @@ ApplicationWindow {
                             width: parent.width
                             spacing: 8
 
-                            Text {
-                                text: qsTr("发送语言：")
-                                color: ThemeManager.textColor
-                                font.pixelSize: 13
-                                font.bold: true
+                            RowLayout {
+                                width: parent.width
+
+                                Text {
+                                    text: qsTr("发送语言：")
+                                    color: ThemeManager.textColor
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                    Layout.fillWidth: true
+                                }
+
+                                // 全选按钮
+                                CheckBox {
+                                    id: selectAllCheckBox
+                                    text: qsTr("全选")
+                                    checked: SettingsManager.translateLanguages.length === languageModel.count
+
+                                    indicator: Rectangle {
+                                        implicitWidth: 16
+                                        implicitHeight: 16
+                                        radius: 3
+                                        color: selectAllCheckBox.checked ? ThemeManager.accentColor : "transparent"
+                                        border.color: selectAllCheckBox.checked ? ThemeManager.accentColor : ThemeManager.borderColor
+                                        border.width: 2
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "✓"
+                                            color: "white"
+                                            font.pixelSize: 10
+                                            visible: selectAllCheckBox.checked
+                                        }
+                                    }
+
+                                    contentItem: Text {
+                                        text: selectAllCheckBox.text
+                                        color: ThemeManager.textColor
+                                        font.pixelSize: 12
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 22
+                                    }
+
+                                    onClicked: {
+                                        if (checked) {
+                                            var allLangs = []
+                                            for (var i = 0; i < languageModel.count; i++) {
+                                                allLangs.push(languageModel.get(i).value)
+                                            }
+                                            SettingsManager.setTranslateLanguages(allLangs)
+                                        } else {
+                                            SettingsManager.setTranslateLanguages([])
+                                        }
+                                    }
+                                }
                             }
 
                             Text {
@@ -526,6 +574,7 @@ ApplicationWindow {
                             GridView {
                                 id: languageGridView
                                 width: parent.width
+                                // 动态计算高度
                                 height: Math.min(400, Math.ceil(languageModel.count / 2) * 40 + 20)
                                 model: languageModel
                                 cellWidth: parent.width / 2
@@ -538,7 +587,26 @@ ApplicationWindow {
                                     width: languageGridView.cellWidth - 10
                                     height: 35
                                     text: model.text
-                                    checked: false
+
+                                    checked: SettingsManager.translateLanguages.indexOf(model.value) !== -1
+
+                                    onClicked: {
+                                        var currentList = SettingsManager.translateLanguages
+                                        var langValue = model.value
+                                        var indexInList = currentList.indexOf(langValue)
+
+                                        if (checked) {
+                                            if (indexInList === -1) {
+                                                currentList.push(langValue)
+                                            }
+                                        } else {
+                                            if (indexInList !== -1) {
+                                                currentList.splice(indexInList, 1)
+                                            }
+                                        }
+
+                                        SettingsManager.setTranslateLanguages(currentList)
+                                    }
 
                                     indicator: Rectangle {
                                         implicitWidth: 18
@@ -603,10 +671,9 @@ ApplicationWindow {
                                 id: serverCombo
                                 model: ListModel {
                                     id: serverModel
-                                    ListElement { name: "官方服务器"; latency: 32 }
                                     ListElement { name: "本地服务器"; latency: 0 }
-                                    ListElement { name: "备用服务器 1"; latency: 78 }
-                                    ListElement { name: "备用服务器 2"; latency: 145 }
+                                    ListElement { name: "香港服务器"; latency: 32 }
+                                    ListElement { name: "中国服务器"; latency: 78 }
                                 }
                                 textRole: "name"
                                 implicitWidth: 180

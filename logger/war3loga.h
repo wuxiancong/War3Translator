@@ -12,8 +12,8 @@
 #define ENABLED_ASYNC_LOG
 
 struct LogTask {
-    std::wstring path;    // 文件路径
-    std::wstring message; // 原始宽字符消息
+    std::wstring path;
+    std::wstring rawMsg;
 };
 
 struct AsyncLogContext {
@@ -24,16 +24,22 @@ struct AsyncLogContext {
     std::thread worker;
     std::atomic<bool> initialized{false};
     std::atomic<size_t> queueSize{0};
+    std::atomic<size_t> totalBytesUsed{0};
 };
 
 /**
  * @brief 关闭日志系统
- * @param forceImmediate 如果为 true，则立即清空队列并退出，确保魔兽瞬间关闭。
+ * @param forceImmediate 为 true 时瞬间清空队列并退出，不等待写入，用于 War3 退出。
  */
 bool shutdownLogaSystem(bool forceImmediate = false);
 
 /**
- * @brief 紧急清空日志队列，释放内存。
+ * @brief 获取当前日志积压占用的内存字节数
+ */
+size_t getAsyncLogMemoryUsage();
+
+/**
+ * @brief 紧急清空日志队列并返回清空的条数
  */
 size_t clearAsyncLogQueue();
 
@@ -43,7 +49,7 @@ size_t clearAsyncLogQueue();
 void writeAsyncLogTo(const std::wstring &wlogPath, const wchar_t *fmt, ...);
 
 /**
- * @brief 辅助：格式化包含文件、行号的详细信息
+ * @brief 格式化详细消息宏辅助
  */
 std::wstring formatAsyncMsg(const char *file, int line, const char *function, const wchar_t *msg);
 
@@ -55,4 +61,4 @@ std::wstring formatAsyncMsg(const char *file, int line, const char *function, co
 #define WriteAsyncLogTo(...) ((void)0)
 #endif
 
-#endif // WAR3LOGA_H
+#endif

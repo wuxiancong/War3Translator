@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_SettingsManager_t {
-    QByteArrayData data[21];
-    char stringdata0[292];
+    QByteArrayData data[25];
+    char stringdata0[369];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,35 +33,42 @@ struct qt_meta_stringdata_SettingsManager_t {
 static const qt_meta_stringdata_SettingsManager_t qt_meta_stringdata_SettingsManager = {
     {
 QT_MOC_LITERAL(0, 0, 15), // "SettingsManager"
-QT_MOC_LITERAL(1, 16, 19), // "languageCodeChanged"
-QT_MOC_LITERAL(2, 36, 0), // ""
-QT_MOC_LITERAL(3, 37, 21), // "languageAboutToChange"
-QT_MOC_LITERAL(4, 59, 24), // "translateLanguageChanged"
-QT_MOC_LITERAL(5, 84, 16), // "isLoadingChanged"
-QT_MOC_LITERAL(6, 101, 15), // "setLanguageCode"
-QT_MOC_LITERAL(7, 117, 4), // "code"
-QT_MOC_LITERAL(8, 122, 20), // "setTranslateLanguage"
-QT_MOC_LITERAL(9, 143, 21), // "isDefaultShoutContent"
-QT_MOC_LITERAL(10, 165, 7), // "content"
-QT_MOC_LITERAL(11, 173, 19), // "isDefaultSchemeName"
-QT_MOC_LITERAL(12, 193, 4), // "name"
-QT_MOC_LITERAL(13, 198, 15), // "serverAddresses"
-QT_MOC_LITERAL(14, 214, 5), // "index"
-QT_MOC_LITERAL(15, 220, 10), // "serverPort"
-QT_MOC_LITERAL(16, 231, 10), // "hardwareId"
-QT_MOC_LITERAL(17, 242, 8), // "clientId"
-QT_MOC_LITERAL(18, 251, 17), // "translateLanguage"
-QT_MOC_LITERAL(19, 269, 12), // "languageCode"
-QT_MOC_LITERAL(20, 282, 9) // "isLoading"
+QT_MOC_LITERAL(1, 16, 16), // "isLoadingChanged"
+QT_MOC_LITERAL(2, 33, 0), // ""
+QT_MOC_LITERAL(3, 34, 19), // "languageCodeChanged"
+QT_MOC_LITERAL(4, 54, 21), // "languageAboutToChange"
+QT_MOC_LITERAL(5, 76, 24), // "translateLanguageChanged"
+QT_MOC_LITERAL(6, 101, 25), // "translateLanguagesChanged"
+QT_MOC_LITERAL(7, 127, 15), // "setLanguageCode"
+QT_MOC_LITERAL(8, 143, 4), // "code"
+QT_MOC_LITERAL(9, 148, 20), // "setTranslateLanguage"
+QT_MOC_LITERAL(10, 169, 21), // "setTranslateLanguages"
+QT_MOC_LITERAL(11, 191, 9), // "languages"
+QT_MOC_LITERAL(12, 201, 21), // "isDefaultShoutContent"
+QT_MOC_LITERAL(13, 223, 7), // "content"
+QT_MOC_LITERAL(14, 231, 19), // "isDefaultSchemeName"
+QT_MOC_LITERAL(15, 251, 4), // "name"
+QT_MOC_LITERAL(16, 256, 15), // "serverAddresses"
+QT_MOC_LITERAL(17, 272, 5), // "index"
+QT_MOC_LITERAL(18, 278, 10), // "serverPort"
+QT_MOC_LITERAL(19, 289, 10), // "hardwareId"
+QT_MOC_LITERAL(20, 300, 8), // "clientId"
+QT_MOC_LITERAL(21, 309, 18), // "translateLanguages"
+QT_MOC_LITERAL(22, 328, 17), // "translateLanguage"
+QT_MOC_LITERAL(23, 346, 12), // "languageCode"
+QT_MOC_LITERAL(24, 359, 9) // "isLoading"
 
     },
-    "SettingsManager\0languageCodeChanged\0"
-    "\0languageAboutToChange\0translateLanguageChanged\0"
-    "isLoadingChanged\0setLanguageCode\0code\0"
-    "setTranslateLanguage\0isDefaultShoutContent\0"
-    "content\0isDefaultSchemeName\0name\0"
-    "serverAddresses\0index\0serverPort\0"
-    "hardwareId\0clientId\0translateLanguage\0"
+    "SettingsManager\0isLoadingChanged\0\0"
+    "languageCodeChanged\0languageAboutToChange\0"
+    "translateLanguageChanged\0"
+    "translateLanguagesChanged\0setLanguageCode\0"
+    "code\0setTranslateLanguage\0"
+    "setTranslateLanguages\0languages\0"
+    "isDefaultShoutContent\0content\0"
+    "isDefaultSchemeName\0name\0serverAddresses\0"
+    "index\0serverPort\0hardwareId\0clientId\0"
+    "translateLanguages\0translateLanguage\0"
     "languageCode\0isLoading"
 };
 #undef QT_MOC_LITERAL
@@ -72,56 +79,62 @@ static const uint qt_meta_data_SettingsManager[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      13,   14, // methods
-       3,  102, // properties
+      15,   14, // methods
+       4,  116, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       4,       // signalCount
+       5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   79,    2, 0x06 /* Public */,
-       3,    0,   80,    2, 0x06 /* Public */,
-       4,    0,   81,    2, 0x06 /* Public */,
-       5,    0,   82,    2, 0x06 /* Public */,
+       1,    0,   89,    2, 0x06 /* Public */,
+       3,    0,   90,    2, 0x06 /* Public */,
+       4,    0,   91,    2, 0x06 /* Public */,
+       5,    0,   92,    2, 0x06 /* Public */,
+       6,    0,   93,    2, 0x06 /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-       6,    1,   83,    2, 0x02 /* Public */,
-       8,    1,   86,    2, 0x02 /* Public */,
-       9,    1,   89,    2, 0x02 /* Public */,
-      11,    1,   92,    2, 0x02 /* Public */,
-      13,    1,   95,    2, 0x02 /* Public */,
-      13,    0,   98,    2, 0x22 /* Public | MethodCloned */,
-      15,    0,   99,    2, 0x02 /* Public */,
-      16,    0,  100,    2, 0x02 /* Public */,
-      17,    0,  101,    2, 0x02 /* Public */,
+       7,    1,   94,    2, 0x02 /* Public */,
+       9,    1,   97,    2, 0x02 /* Public */,
+      10,    1,  100,    2, 0x02 /* Public */,
+      12,    1,  103,    2, 0x02 /* Public */,
+      14,    1,  106,    2, 0x02 /* Public */,
+      16,    1,  109,    2, 0x02 /* Public */,
+      16,    0,  112,    2, 0x22 /* Public | MethodCloned */,
+      18,    0,  113,    2, 0x02 /* Public */,
+      19,    0,  114,    2, 0x02 /* Public */,
+      20,    0,  115,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
 
  // methods: parameters
-    QMetaType::Void, QMetaType::QString,    7,
-    QMetaType::Void, QMetaType::QString,    7,
-    QMetaType::Bool, QMetaType::QString,   10,
-    QMetaType::Bool, QMetaType::QString,   12,
-    QMetaType::QString, QMetaType::UInt,   14,
+    QMetaType::Void, QMetaType::QString,    8,
+    QMetaType::Void, QMetaType::QString,    8,
+    QMetaType::Void, QMetaType::QStringList,   11,
+    QMetaType::Bool, QMetaType::QString,   13,
+    QMetaType::Bool, QMetaType::QString,   15,
+    QMetaType::QString, QMetaType::UInt,   17,
     QMetaType::QString,
     QMetaType::UShort,
     QMetaType::QString,
     QMetaType::QString,
 
  // properties: name, type, flags
-      18, QMetaType::QString, 0x00495103,
-      19, QMetaType::QString, 0x00495103,
-      20, QMetaType::Bool, 0x00495001,
+      21, QMetaType::QStringList, 0x00495103,
+      22, QMetaType::QString, 0x00495103,
+      23, QMetaType::QString, 0x00495103,
+      24, QMetaType::Bool, 0x00495001,
 
  // properties: notify_signal_id
-       2,
-       0,
+       4,
        3,
+       1,
+       0,
 
        0        // eod
 };
@@ -132,25 +145,27 @@ void SettingsManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         auto *_t = static_cast<SettingsManager *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->languageCodeChanged(); break;
-        case 1: _t->languageAboutToChange(); break;
-        case 2: _t->translateLanguageChanged(); break;
-        case 3: _t->isLoadingChanged(); break;
-        case 4: _t->setLanguageCode((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 5: _t->setTranslateLanguage((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 6: { bool _r = _t->isDefaultShoutContent((*reinterpret_cast< const QString(*)>(_a[1])));
+        case 0: _t->isLoadingChanged(); break;
+        case 1: _t->languageCodeChanged(); break;
+        case 2: _t->languageAboutToChange(); break;
+        case 3: _t->translateLanguageChanged(); break;
+        case 4: _t->translateLanguagesChanged(); break;
+        case 5: _t->setLanguageCode((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 6: _t->setTranslateLanguage((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 7: _t->setTranslateLanguages((*reinterpret_cast< const QStringList(*)>(_a[1]))); break;
+        case 8: { bool _r = _t->isDefaultShoutContent((*reinterpret_cast< const QString(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 7: { bool _r = _t->isDefaultSchemeName((*reinterpret_cast< const QString(*)>(_a[1])));
+        case 9: { bool _r = _t->isDefaultSchemeName((*reinterpret_cast< const QString(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 8: { QString _r = _t->serverAddresses((*reinterpret_cast< quint32(*)>(_a[1])));
+        case 10: { QString _r = _t->serverAddresses((*reinterpret_cast< quint32(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
-        case 9: { QString _r = _t->serverAddresses();
+        case 11: { QString _r = _t->serverAddresses();
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
-        case 10: { quint16 _r = _t->serverPort();
+        case 12: { quint16 _r = _t->serverPort();
             if (_a[0]) *reinterpret_cast< quint16*>(_a[0]) = std::move(_r); }  break;
-        case 11: { QString _r = _t->hardwareId();
+        case 13: { QString _r = _t->hardwareId();
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
-        case 12: { QString _r = _t->clientId();
+        case 14: { QString _r = _t->clientId();
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
@@ -158,29 +173,36 @@ void SettingsManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         int *result = reinterpret_cast<int *>(_a[0]);
         {
             using _t = void (SettingsManager::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::languageCodeChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::isLoadingChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
             using _t = void (SettingsManager::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::languageAboutToChange)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::languageCodeChanged)) {
                 *result = 1;
                 return;
             }
         }
         {
             using _t = void (SettingsManager::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::translateLanguageChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::languageAboutToChange)) {
                 *result = 2;
                 return;
             }
         }
         {
             using _t = void (SettingsManager::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::isLoadingChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::translateLanguageChanged)) {
                 *result = 3;
+                return;
+            }
+        }
+        {
+            using _t = void (SettingsManager::*)();
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&SettingsManager::translateLanguagesChanged)) {
+                *result = 4;
                 return;
             }
         }
@@ -191,9 +213,10 @@ void SettingsManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: *reinterpret_cast< QString*>(_v) = _t->translateLanguage(); break;
-        case 1: *reinterpret_cast< QString*>(_v) = _t->languageCode(); break;
-        case 2: *reinterpret_cast< bool*>(_v) = _t->isLoading(); break;
+        case 0: *reinterpret_cast< QStringList*>(_v) = _t->translateLanguages(); break;
+        case 1: *reinterpret_cast< QString*>(_v) = _t->translateLanguage(); break;
+        case 2: *reinterpret_cast< QString*>(_v) = _t->languageCode(); break;
+        case 3: *reinterpret_cast< bool*>(_v) = _t->isLoading(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -201,8 +224,9 @@ void SettingsManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: _t->setTranslateLanguage(*reinterpret_cast< QString*>(_v)); break;
-        case 1: _t->setLanguageCode(*reinterpret_cast< QString*>(_v)); break;
+        case 0: _t->setTranslateLanguages(*reinterpret_cast< QStringList*>(_v)); break;
+        case 1: _t->setTranslateLanguage(*reinterpret_cast< QString*>(_v)); break;
+        case 2: _t->setLanguageCode(*reinterpret_cast< QString*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {
@@ -239,56 +263,62 @@ int SettingsManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 13)
+        if (_id < 15)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 13;
+        _id -= 15;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 13)
+        if (_id < 15)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 13;
+        _id -= 15;
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyDesignable) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyScriptable) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyStored) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyEditable) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyUser) {
-        _id -= 3;
+        _id -= 4;
     }
 #endif // QT_NO_PROPERTIES
     return _id;
 }
 
 // SIGNAL 0
-void SettingsManager::languageCodeChanged()
+void SettingsManager::isLoadingChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }
 
 // SIGNAL 1
-void SettingsManager::languageAboutToChange()
+void SettingsManager::languageCodeChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, nullptr);
 }
 
 // SIGNAL 2
-void SettingsManager::translateLanguageChanged()
+void SettingsManager::languageAboutToChange()
 {
     QMetaObject::activate(this, &staticMetaObject, 2, nullptr);
 }
 
 // SIGNAL 3
-void SettingsManager::isLoadingChanged()
+void SettingsManager::translateLanguageChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 3, nullptr);
+}
+
+// SIGNAL 4
+void SettingsManager::translateLanguagesChanged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 4, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

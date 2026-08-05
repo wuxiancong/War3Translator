@@ -130,6 +130,10 @@ struct MessageSlot {
 
 struct SharedData {
     char                translate_language[8];
+
+    uint32_t            translate_languages_count;
+    char                translate_languages[MAX_TARGET_LANGUAGES][8];
+
     char                pid_to_name[MAX_SLOT][32];
     DefaultShoutData    default_shouts[MAX_SHOUT_ITEMS];
 
