@@ -58,15 +58,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
     )
 else()
-    if(ANDROID)
-        add_library(War3Translator SHARED
-            ${PROJECT_SOURCES}
-        )
-else()
     add_executable(War3Translator
         ${PROJECT_SOURCES}
     )
-endif()
 endif()
 
 target_link_libraries(War3Translator

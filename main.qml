@@ -167,26 +167,38 @@ ApplicationWindow {
                         text: ThemeManager.currentTheme === "dark" ? "🌙" : "☀"
                         onClicked: ThemeManager.toggleTheme()
                     }
-                    // 目标语言
+                    // 界面语言
                     ComboBox {
-                        id: targetLangCombo
+                        id: langCombo
                         model: languageModel
                         textRole: "text"
-                        implicitWidth: 150; implicitHeight: 30
+                        implicitWidth: 150
+                        implicitHeight: 30
+                        Layout.preferredWidth: 150
+                        currentIndex: {
+                            for(var i = 0; i < languageModel.count; i++) {
+                                if(languageModel.get(i).value === SettingsManager.languageCode) return i;
+                            }
+                            return 0;
+                        }
+                        onActivated: {
+                            var selectedCode = languageModel.get(index).value
+                            SettingsManager.setLanguageCode(selectedCode)
+                        }
                         background: Rectangle { color: ThemeManager.tertiaryColor; radius: 4 }
                         contentItem: Text {
-                            text: targetLangCombo.displayText
+                            text: langCombo.displayText
                             color: ThemeManager.textColor
                             font.pixelSize: 11
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
                         }
                         popup: Popup {
-                            y: targetLangCombo.height + 5; width: 140; padding: 5
+                            y: langCombo.height + 5; width: 140; padding: 5
                             background: Rectangle { color: ThemeManager.tertiaryColor; radius: 8; border.color: ThemeManager.borderColor }
                             contentItem: ListView {
                                 implicitHeight: contentHeight
-                                model: targetLangCombo.delegateModel
+                                model: langCombo.delegateModel
                                 clip: true
                             }
                         }
@@ -254,7 +266,7 @@ ApplicationWindow {
 
                         Text {
                             anchors.centerIn: parent
-                            text: "⚙️ " + qsTr("设置")
+                            text: "⚙ " + qsTr("设置")
                             color: currentTab === "settings" ? "white" : ThemeManager.textColor
                             font.pixelSize: 14
                             font.bold: currentTab === "settings"

@@ -15,12 +15,40 @@ SettingsManager &SettingsManager::instance()
 SettingsManager::SettingsManager(QObject *parent)
     : QObject(parent), m_isLoading(false)
 {
-    // 初始化 QSettings (保存到：用户文档/YourApp/config.ini)
-    m_settings = new QSettings("YourCompany", "War3Launcher", this);
+    // 1. 获取三端路径
+    QString localPath   = getConfigFilePath("GameConfig.ini");
+    QString appDataPath = getAppDataConfigPath("GameConfig.ini");
+    QString regKeyPath  = getRegistryPath("");
 
-    // 从本地读取上次保存的语言，默认 zh_CN
-    m_languageCode = m_settings->value("base/languageCode", "zh_CN").toString();
-    m_mTranslateLanguage = m_settings->value("base/translateLanguage", "zh_CN").toString();
+    // 2. 三段式读取逻辑 (本地 .ini -> AppData .ini -> 注册表)
+    auto readChain = [&](const QString &groupAndKey, const QVariant &defaultValue) -> QVariant {
+        // 第一步：尝试从本地 exe 同级 ini 读取
+        if (QFile::exists(localPath)) {
+            QSettings local(localPath, QSettings::IniFormat);
+            if (local.contains(groupAndKey)) return local.value(groupAndKey);
+        }
+        // 第二步：尝试从 AppData 目录 ini 读取
+        if (QFile::exists(appDataPath)) {
+            QSettings appData(appDataPath, QSettings::IniFormat);
+            if (appData.contains(groupAndKey)) return appData.value(groupAndKey);
+        }
+        // 第三步：尝试从 Windows 注册表读取
+        QSettings reg(regKeyPath, QSettings::NativeFormat);
+        if (reg.contains(groupAndKey)) {
+            return reg.value(groupAndKey);
+        }
+        // 都找不到，返回默认值
+        return defaultValue;
+    };
+
+    // 3. 加载语言配置
+    m_languageCode      = readChain("Base/languageCode", "zh_CN").toString();
+    m_translateLanguage = readChain("Base/translateLanguage", "zh_CN").toString();
+
+    // 4. 保持你原本的主实例化指针指向本地
+    m_settings = new QSettings(localPath, QSettings::IniFormat, this);
+
+    // 5. 调用你原本的客户端 ID 初始化
     initializeclientId();
 }
 
@@ -79,39 +107,59 @@ void SettingsManager::initializeclientId()
     qDebug() << "🛡 软件/硬件ID已通过 RegisterManager 风格完成全量同步";
 }
 
+void SettingsManager::saveConfigToAllEnds(const QString &groupAndKey, const QVariant &value)
+{
+    QString localPath   = getConfigFilePath("GameConfig.ini");
+    QString appDataPath = getAppDataConfigPath("GameConfig.ini");
+    QString regKeyPath  = getRegistryPath("");
+
+    // 1. 写入本地 INI
+    QSettings localSettings(localPath, QSettings::IniFormat);
+    localSettings.setValue(groupAndKey, value);
+    localSettings.sync();
+
+    // 2. 写入 AppData INI
+    QSettings appSettings(appDataPath, QSettings::IniFormat);
+    appSettings.setValue(groupAndKey, value);
+    appSettings.sync();
+
+    // 3. 写入注册表
+    QSettings regSettings(regKeyPath, QSettings::NativeFormat);
+    regSettings.setValue(groupAndKey, value);
+    regSettings.sync();
+}
+
 void SettingsManager::setLanguageCode(const QString &code) {
     if (m_languageCode == code) return;
 
     qDebug() << "🌐 [C++] 切换语言为:" << code;
 
-    // 发送“即将改变”信号（用于 UI 做一些清理工作）
+    // 发送即将改变信号
     emit languageAboutToChange();
 
     m_languageCode = code;
 
-    // 持久化保存到硬盘
-    m_settings->setValue("base/languageCode", code);
-    m_settings->sync();
+    // 全量持久化同步保存到三端硬盘/注册表
+    saveConfigToAllEnds("Base/languageCode", code);
 
     // 发送改变信号，触发 QML 的 Connections
     emit languageCodeChanged();
 }
 
 void SettingsManager::setTranslateLanguage(const QString &code) {
-    if (m_mTranslateLanguage == code) return;
+    if (m_translateLanguage == code) return;
 
     qDebug() << "🎯 翻译目标语言切换为:" << code;
 
-    m_mTranslateLanguage = code;
+    m_translateLanguage = code;
 
-    // 1. 持久化保存
-    m_settings->setValue("base/translateLanguage", code);
-    m_settings->sync();
+    // 全量持久化同步保存到三端硬盘/注册表
+    saveConfigToAllEnds("Base/translateLanguage", code);
 
-    // 2. 【核心】同步到共享内存，让游戏内的 DLL 知道要把聊天翻译成什么
+    // 同步到共享内存，让游戏内的 DLL 知道要把聊天翻译成什么
     IpcManager::instance().updateTranslateLanguage(code);
 
-    // 3. 通知 QML 更新 UI
+    // 通知 QML 更新 UI
     emit translateLanguageChanged();
 }
 

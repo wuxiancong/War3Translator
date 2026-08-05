@@ -50,8 +50,8 @@ QT_MOC_LITERAL(14, 214, 5), // "index"
 QT_MOC_LITERAL(15, 220, 10), // "serverPort"
 QT_MOC_LITERAL(16, 231, 10), // "hardwareId"
 QT_MOC_LITERAL(17, 242, 8), // "clientId"
-QT_MOC_LITERAL(18, 251, 12), // "languageCode"
-QT_MOC_LITERAL(19, 264, 17), // "translateLanguage"
+QT_MOC_LITERAL(18, 251, 17), // "translateLanguage"
+QT_MOC_LITERAL(19, 269, 12), // "languageCode"
 QT_MOC_LITERAL(20, 282, 9) // "isLoading"
 
     },
@@ -61,8 +61,8 @@ QT_MOC_LITERAL(20, 282, 9) // "isLoading"
     "setTranslateLanguage\0isDefaultShoutContent\0"
     "content\0isDefaultSchemeName\0name\0"
     "serverAddresses\0index\0serverPort\0"
-    "hardwareId\0clientId\0languageCode\0"
-    "translateLanguage\0isLoading"
+    "hardwareId\0clientId\0translateLanguage\0"
+    "languageCode\0isLoading"
 };
 #undef QT_MOC_LITERAL
 
@@ -119,8 +119,8 @@ static const uint qt_meta_data_SettingsManager[] = {
       20, QMetaType::Bool, 0x00495001,
 
  // properties: notify_signal_id
-       0,
        2,
+       0,
        3,
 
        0        // eod
@@ -191,8 +191,8 @@ void SettingsManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: *reinterpret_cast< QString*>(_v) = _t->languageCode(); break;
-        case 1: *reinterpret_cast< QString*>(_v) = _t->translateLanguage(); break;
+        case 0: *reinterpret_cast< QString*>(_v) = _t->translateLanguage(); break;
+        case 1: *reinterpret_cast< QString*>(_v) = _t->languageCode(); break;
         case 2: *reinterpret_cast< bool*>(_v) = _t->isLoading(); break;
         default: break;
         }
@@ -201,8 +201,8 @@ void SettingsManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: _t->setLanguageCode(*reinterpret_cast< QString*>(_v)); break;
-        case 1: _t->setTranslateLanguage(*reinterpret_cast< QString*>(_v)); break;
+        case 0: _t->setTranslateLanguage(*reinterpret_cast< QString*>(_v)); break;
+        case 1: _t->setLanguageCode(*reinterpret_cast< QString*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {

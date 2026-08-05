@@ -1,9 +1,9 @@
 #ifndef SETTINGSMANAGER_H
 #define SETTINGSMANAGER_H
 
+#include <QSettings>
 #include <QObject>
 #include <QString>
-#include <QSettings>
 #include <QDebug>
 
 enum ServerName {
@@ -21,10 +21,8 @@ struct ShoutItem {
 class SettingsManager : public QObject
 {
     Q_OBJECT
-    // 定义属性，使其可以在 QML 中通过 SettingsManager.languageCode 访问
-    Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
     Q_PROPERTY(QString translateLanguage READ translateLanguage WRITE setTranslateLanguage NOTIFY translateLanguageChanged)
-    // 如果你之前的 main.qml 用到了这个，也加上
+    Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
 
 public:
@@ -35,12 +33,13 @@ public:
 
     // Getter
     QString languageCode() const { return m_languageCode; }
-    QString translateLanguage() const { return m_mTranslateLanguage; }
+    QString translateLanguage() const { return m_translateLanguage; }
     bool isLoading() const { return m_isLoading; }
     QByteArray appSecret() const;
     QString getRegistryPath(const QString &key = "");
     QString getConfigFilePath(const QString &fileName = "GameConfig.ini") const;
     QString getAppDataConfigPath(const QString &fileName = "GameConfig.ini") const;
+    void saveConfigToAllEnds(const QString &groupAndKey, const QVariant &value);
     void initializeclientId();
 
     // Setter
@@ -63,7 +62,7 @@ private:
     explicit SettingsManager(QObject *parent = nullptr);
 
     QString m_languageCode;
-    QString m_mTranslateLanguage;
+    QString m_translateLanguage;
     bool m_isLoading;
     QSettings *m_settings; // 用于持久化保存配置
     QList<ShoutItem> m_shoutTemplate;
