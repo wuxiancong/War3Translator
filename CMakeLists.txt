@@ -109,6 +109,7 @@ target_link_libraries(Translator PRIVATE psapi version)
 set_target_properties(Translator PROPERTIES OUTPUT_NAME "translator" PREFIX "")
 target_compile_definitions(Translator PRIVATE TRANSLATOR_EXPORTS)
 set(TRANSLATOR_FUNC_LIST
+    "isWar3TranslatorInitialized"
     "uninstallAllHooks"
     "installAllHooks"
     "getHookStatus"

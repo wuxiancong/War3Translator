@@ -241,6 +241,19 @@ TRANSLATOR_API bool __stdcall initialize()
     return true;
 }
 
+TRANSLATOR_API HookState __stdcall getHookStatus()
+{
+    return g_hookStatus.load();
+}
+
+TRANSLATOR_API uint32_t __stdcall isWar3TranslatorInitialized()
+{
+    if (!g_isInitialized.load()) {
+        return 0;
+    }
+    return TRANSLATOR_MAGIC;
+}
+
 bool initializeSharedMemory()
 {
     // 1. 创建或打开文件映射对象
@@ -384,9 +397,21 @@ void cleanupSharedMemory(bool fullCleanup)
     }
 }
 
-TRANSLATOR_API HookState getHookStatus()
+void freeTrampolineAllocation(void **ppAddress, const wchar_t *hookName)
 {
-    return g_hookStatus.load();
+    if (ppAddress == nullptr || *ppAddress == nullptr) {
+        return;
+    }
+
+    void *address = *ppAddress;
+
+    if (VirtualFree(address, 0, MEM_RELEASE)) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"🧹 [内存清理] 已释放 [%ls] 的废弃跳板: 0x%p", hookName, address);
+        *ppAddress = nullptr;
+    } else {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [内存清理] 释放 [%ls] 跳板失败 (0x%p), 错误码: %lu",
+                        hookName, address, GetLastError());
+    }
 }
 
 bool installInlineHook(
@@ -828,6 +853,23 @@ TRANSLATOR_API bool __stdcall uninstallAllHooks()
     return totalSuccess;
 }
 
+bool verifyWar3HookIdentity()
+{
+    HMODULE hModule = GetModuleHandleW(L"hook.dll");
+    if (!hModule) return false;
+
+    typedef uint32_t (__stdcall *tGetMagic)();
+    auto pfn = (tGetMagic)GetProcAddress(hModule, "isWar3HookInitialized");
+
+    if (pfn && pfn() == WAR3HOOK_MAGIC) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 身份验证成功：发现正版 War3Hook 模块。");
+        return true;
+    }
+
+    WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 身份验证失败：发现 hook.dll 但身份验证（Magic）不匹配。");
+    return false;
+}
+
 // ============================================================================
 // GameChatRecipientInGame_ Hook 实现
 // ============================================================================
@@ -1094,23 +1136,6 @@ bool hookGameNetEventChatFromHost()
     return success;
 }
 
-void freeTrampolineAllocation(void **ppAddress, const wchar_t *hookName)
-{
-    if (ppAddress == nullptr || *ppAddress == nullptr) {
-        return;
-    }
-
-    void *address = *ppAddress;
-
-    if (VirtualFree(address, 0, MEM_RELEASE)) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"🧹 [内存清理] 已释放 [%ls] 的废弃跳板: 0x%p", hookName, address);
-        *ppAddress = nullptr;
-    } else {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [内存清理] 释放 [%ls] 跳板失败 (0x%p), 错误码: %lu",
-                        hookName, address, GetLastError());
-    }
-}
-
 bool unhookGameNetEventChatFromHost()
 {
     return uninstallInlineHook(DWORD(g_gameNetEventChatFromHostReturnAddress) - 5, g_originalBytesForCallGameNetEventChatFromHost, 5);
@@ -1335,6 +1360,17 @@ bool hookGamePrimaryGameUIVtable_()
 
             // 1. 获取跳板地址
             BYTE *trampoline = (BYTE*)inlineHookResult.trampolineAddress;
+            if(isReadable(trampoline, 10)) {
+                BYTE trampBytes[10];
+                memcpy(trampBytes, trampoline, 10);
+                std::wstring hexTramp = L"";
+                for(int i=0; i<10; i++) {
+                    wchar_t buf[4];
+                    swprintf_s(buf, L"%02X ", trampBytes[i]);
+                    hexTramp += buf;
+                }
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 [诊断] 跳板前10字节内容: %ls", hexTramp.c_str());
+            }
 
             // 2. 动态提取虚表地址 (解析 mov [reg], imm32)
             void *gamePrimaryGameUIVtable_BaseAddress = nullptr;
@@ -1365,6 +1401,9 @@ bool hookGamePrimaryGameUIVtable_()
             } else {
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [严重错误] 无法从跳板指令中解析虚表地址, Opcode: %02X %02X",
                                 trampoline[0], trampoline[1]);
+                if(trampoline[0] == 0xE9) {
+                    WriteAsyncLogTo(g_wlogWar3HookPath, L"💡 [分析] 跳板起始为 JMP，证明 Hook 了别人的 Hook，无法直接解析偏移。");
+                }
             }
         }
 

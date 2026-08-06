@@ -10,13 +10,14 @@
 #define SHARED_MEM_NAME L"Global\\War3Translator_SharedMemory"
 #define IPC_EVENT__NAME L"Global\\War3Translator_L2D_Event"
 
-#define MAX_SLOT 16
 #define BUFFER_SIZE 1024
+#define MAX_SLOT 16
 #define MAX_PACKET_SIZE 1500
-
 #define MAX_SHOUT_ITEMS 7
 #define MAX_SHOUT_TEXT_LEN 128
 #define MAX_TARGET_LANGUAGES 25
+#define WAR3HOOK_MAGIC 0x5733484B
+#define TRANSLATOR_MAGIC 0x57335431
 
 const uint16_t PROTOCOL_MAGIC        = 0xF801;                  // 魔数
 const uint8_t  PROTOCOL_VERSION      = 0x01;                    // 版本号

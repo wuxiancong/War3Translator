@@ -155,6 +155,7 @@ DWORD getModuleSize(DWORD baseAddress);
 bool isWar3Exe(const char *fullPath);
 std::string getCurrentWar3Version();
 bool detectAndSetWar3Version();
+bool verifyWar3HookIdentity();
 bool initializeSharedMemory();
 void handleIpcMessages();
 void ipcMessageThread();
@@ -217,9 +218,10 @@ int __stdcall doSomeThingsBeforeCallGameChatEditBarUIVtable2(void *chatEditBar);
 void logBytecode(const BYTE *data, size_t size, const wchar_t *description, bool uppercase = true);;
 #endif
 extern "C" {
-TRANSLATOR_API HookState getHookStatus();
 TRANSLATOR_API bool __stdcall initialize();
 TRANSLATOR_API bool __stdcall installAllHooks();
 TRANSLATOR_API bool __stdcall uninstallAllHooks();
+TRANSLATOR_API HookState __stdcall getHookStatus();
+TRANSLATOR_API uint32_t __stdcall isWar3TranslatorInitialized();
 }
 #endif // TRANSLATOR_H
