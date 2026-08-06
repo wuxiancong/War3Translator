@@ -98,6 +98,7 @@ struct NotifyTranslatePayload {
     uint32_t            pid;                                        // 发送者 PID
     uint32_t            flag;                                       // 消息标志 (0x10/0x20)
     uint32_t            extraScope;                                 // 消息范围 (0/1/2/3/A)
+    uint32_t            direction;                                  // 0: 接收(Incoming), 1: 发送(Outgoing)
     char                message[512];                               // 消息内容 (UTF-8)
 };
 
@@ -105,6 +106,7 @@ struct TranslatedResultPayload {
     uint32_t            pid;
     uint32_t            flag;
     uint32_t            extraScope;
+    uint32_t            direction;                                  // 0: 接收(Incoming), 1: 发送(Outgoing)
     char                originalMessage[512];                       // 原文 (作为 Map 的 Key)
     char                translatedMessage[512];                     // 译文 (作为 Map 的 Value)
 };

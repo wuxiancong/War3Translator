@@ -22,9 +22,12 @@
 #include <mutex>
 #include <map>
 #define ENABLED_LOG
+typedef void (__fastcall *GameChatRecipientInGame_Func)(bool networkFlag, const char *text, int recipient, float duration);
 typedef void (__fastcall *GameNetEventChatFromHostFunc)(int fromPid, void *pPayload, int dataSize);
 typedef void (__fastcall *GameChatInputLogicInGameFunc)(void *eventObject);
 typedef void (__fastcall *GamePrimaryGameUIVtable_Func)();
+typedef void (__fastcall *GameChatEditBarUIVtable1Func)();
+typedef void (__fastcall *GameChatEditBarUIVtable2Func)();
 
 class TrampolineAllocator {
 private:
@@ -50,18 +53,18 @@ public:
     static void *allocate(size_t size) {
         std::lock_guard<std::mutex> lock(g_allocMutex);
 
-        // 8◊÷Ω⁄∂‘∆Î
+        // 8Â≠óËäÇÂØπÈΩê
         size_t alignedSize = (size + 7)  &~7;
         if (alignedSize > CHUNK_SIZE) return nullptr;
 
-        // 1. ≥¢ ‘‘⁄œ÷”–øÈ÷–—∞’“ø…”√ø’º‰
+        // 1. Â∞ùËØïÂú®Áé∞ÊúâÂùó‰∏≠ÂØªÊâæÂèØÁî®Á©∫Èó¥
         BYTE *allocatedAddr = nullptr;
 
         if (g_pools.empty() || (g_pools.back().used + alignedSize > CHUNK_SIZE)) {
             if (!createNewPool()) return nullptr;
         }
 
-        // 2. ¥”◊Ó∫Û“ª∏ˆ≥ÿ◊”∑÷≈‰ƒ⁄¥Ê
+        // 2. ‰ªéÊúÄÂêé‰∏Ä‰∏™Ê±†Â≠êÂàÜÈÖçÂÜÖÂ≠ò
         MemoryPool &currentPool = g_pools.back();
         allocatedAddr = currentPool.base + currentPool.used;
         currentPool.used += alignedSize;
@@ -157,10 +160,16 @@ void handleIpcMessages();
 void ipcMessageThread();
 bool isWar3Process();
 
+bool hookGameChatRecipientInGame_();
+bool unhookGameChatRecipientInGame_();
 bool hookGameNetEventChatFromHost();
 bool unhookGameNetEventChatFromHost();
 bool hookGamePrimaryGameUIVtable_();
 bool unhookGamePrimaryGameUIVtable_();
+bool hookGameChatEditBarUIVtable1();
+bool unhookGameChatEditBarUIVtable1();
+bool hookGameChatEditBarUIVtable2();
+bool unhookGameChatEditBarUIVtable2();
 void cleanupSharedMemory(bool fullCleanup = true);
 bool shutdownHookSystem(bool isProcessExiting, void* excludeAddress = nullptr);
 bool inlineHookFilter(DWORD reviseAddress, BYTE *currentByteCode, size_t reviseByteSize);
@@ -185,7 +194,7 @@ bool isNotWord(const char *message);
 bool isFastMessage(IpcMessageType type);
 bool isReadable(const void *address, size_t size = 4);
 
-void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope);
+void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint32_t direction = 0);
 const char *getTranslationFromCache(const char *sourceText);
 const char *getDefaultShoutContent(const char *content);
 
@@ -193,11 +202,17 @@ void chatSendGeneral(const char *message, DWORD recipient);
 void chatSendInternal(const char *message, DWORD recipient);
 bool sendIpcBufferMessage(IpcMessageType msgType, const void *data, size_t dataSize, const wchar_t *logTag);
 
+int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool networkFlag, const char *text, int recipient, float duration);
 int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void **ppPayload, int *pDataSize);
 int __stdcall doSomeThingsBeforeCallGamePrimaryGameUIVtable_(void *primaryGameUI);
+int __stdcall doSomeThingsBeforeCallGameChatEditBarUIVtable1(void *chatManager);
+int __stdcall doSomeThingsBeforeCallGameChatEditBarUIVtable2(void *chatEditBar);
 
+[[maybe_unused]] static void __stdcall jumpWhenCallGameChatRecipientInGame_();
 [[maybe_unused]] static void __stdcall jumpWhenCallGameNetEventChatFromHost();
 [[maybe_unused]] static void __stdcall jumpWhenCallGamePrimaryGameUIVtable_();
+[[maybe_unused]] static void __stdcall jumpWhenCallGameChatEditBarUIVtable1();
+[[maybe_unused]] static void __stdcall jumpWhenCallGameChatEditBarUIVtable2();
 #ifdef ENABLED_LOG
 void logBytecode(const BYTE *data, size_t size, const wchar_t *description, bool uppercase = true);;
 #endif

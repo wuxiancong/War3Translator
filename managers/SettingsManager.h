@@ -45,6 +45,7 @@ public:
     void initializeclientId();
 
     // Setter
+    Q_INVOKABLE static QString getLanguageName(const QString &code);
     Q_INVOKABLE void setLanguageCode(const QString &code);
     Q_INVOKABLE void setTranslateLanguage(const QString &code);
     Q_INVOKABLE void setTranslateLanguages(const QStringList &languages);

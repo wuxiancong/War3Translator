@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_IpcManager_t {
-    QByteArrayData data[10];
-    char stringdata0[108];
+    QByteArrayData data[11];
+    char stringdata0[118];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -38,15 +38,17 @@ QT_MOC_LITERAL(2, 38, 0), // ""
 QT_MOC_LITERAL(3, 39, 3), // "pid"
 QT_MOC_LITERAL(4, 43, 6), // "sender"
 QT_MOC_LITERAL(5, 50, 4), // "text"
-QT_MOC_LITERAL(6, 55, 20), // "onIpcMessageReceived"
-QT_MOC_LITERAL(7, 76, 8), // "resetIpc"
-QT_MOC_LITERAL(8, 85, 7), // "cleanup"
-QT_MOC_LITERAL(9, 93, 14) // "initIpcManager"
+QT_MOC_LITERAL(6, 55, 9), // "direction"
+QT_MOC_LITERAL(7, 65, 20), // "onIpcMessageReceived"
+QT_MOC_LITERAL(8, 86, 8), // "resetIpc"
+QT_MOC_LITERAL(9, 95, 7), // "cleanup"
+QT_MOC_LITERAL(10, 103, 14) // "initIpcManager"
 
     },
     "IpcManager\0incomingMessageIntercepted\0"
-    "\0pid\0sender\0text\0onIpcMessageReceived\0"
-    "resetIpc\0cleanup\0initIpcManager"
+    "\0pid\0sender\0text\0direction\0"
+    "onIpcMessageReceived\0resetIpc\0cleanup\0"
+    "initIpcManager"
 };
 #undef QT_MOC_LITERAL
 
@@ -64,18 +66,18 @@ static const uint qt_meta_data_IpcManager[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    3,   39,    2, 0x06 /* Public */,
+       1,    4,   39,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       6,    0,   46,    2, 0x0a /* Public */,
+       7,    0,   48,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-       7,    0,   47,    2, 0x02 /* Public */,
-       8,    0,   48,    2, 0x02 /* Public */,
-       9,    0,   49,    2, 0x02 /* Public */,
+       8,    0,   49,    2, 0x02 /* Public */,
+       9,    0,   50,    2, 0x02 /* Public */,
+      10,    0,   51,    2, 0x02 /* Public */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::UInt, QMetaType::QString, QMetaType::QString,    3,    4,    5,
+    QMetaType::Void, QMetaType::UInt, QMetaType::QString, QMetaType::QString, QMetaType::UInt,    3,    4,    5,    6,
 
  // slots: parameters
     QMetaType::Void,
@@ -94,7 +96,7 @@ void IpcManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<IpcManager *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->incomingMessageIntercepted((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
+        case 0: _t->incomingMessageIntercepted((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< quint32(*)>(_a[4]))); break;
         case 1: _t->onIpcMessageReceived(); break;
         case 2: _t->resetIpc(); break;
         case 3: _t->cleanup(); break;
@@ -105,7 +107,7 @@ void IpcManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (IpcManager::*)(quint32 , QString , QString );
+            using _t = void (IpcManager::*)(quint32 , QString , QString , quint32 );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&IpcManager::incomingMessageIntercepted)) {
                 *result = 0;
                 return;
@@ -155,9 +157,9 @@ int IpcManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void IpcManager::incomingMessageIntercepted(quint32 _t1, QString _t2, QString _t3)
+void IpcManager::incomingMessageIntercepted(quint32 _t1, QString _t2, QString _t3, quint32 _t4)
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t3))) };
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t3))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t4))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_WARNING_POP

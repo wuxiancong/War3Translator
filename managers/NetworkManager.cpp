@@ -1116,48 +1116,55 @@ void NetworkManager::onPublicSocketReadyRead()
     }
 }
 
-void NetworkManager::onTranslationFinished(quint32 pid, quint32 flag, quint32 extraScope, QString originalMessage, QString translatedMessage)
+void NetworkManager::onTranslationFinished(quint32 pid, quint32 flag, quint32 extraScope,
+                                           quint32 direction, QString originalMessage, QString translatedMessage)
 {
     DebugHelper::recordTreeLog("chat_translate", "┌─ 🔔 [NetworkManager] 接收到翻译任务结果", 0);
 
     QString finalMessage = translatedMessage;
     bool isFallback = false;
 
+    // 翻译失败逻辑处理
     if (finalMessage.isEmpty()) {
         finalMessage = originalMessage;
         isFallback = true;
         DebugHelper::recordTreeLog("chat_translate", "├─ ⚠ 翻译失败/结果为空，执行原文回退策略", 1);
     }
 
-    if (!isFallback && originalMessage == translatedMessage) {
-        DebugHelper::recordTreeLog("chat_translate", "├─ ℹ️ 翻译结果与原文完全一致，无需转换)", 1);
-    }
+    // 方向日志
+    QString dirStr = (direction == 1) ? "Outgoing (发送)" : "Incoming (接收)";
+    DebugHelper::recordTreeLog("chat_translate", QString("├─ 方向: %1").arg(dirStr), 1);
 
     DebugHelper::recordTreeLog("chat_translate",
                                QString("├─ 👤 上下文: PID=%1 | Flag=0x%2 | Scope=0x%3")
-                                   .arg(pid).arg(QString::number(flag, 16).toUpper(), QString::number(extraScope, 16).toUpper()), 1);
+                                   .arg(pid)
+                                   .arg(QString::number(flag, 16).toUpper())
+                                   .arg(QString::number(extraScope, 16).toUpper()), 1);
 
     DebugHelper::recordTreeLog("chat_translate",
                                QString("├─ 📝 内容: \"%1\" -> \"%2\"")
                                    .arg(originalMessage, finalMessage), 1);
 
+    // 填充 IPC 载荷
     TranslatedResultPayload payload;
     memset(&payload, 0, sizeof(payload));
     payload.pid = pid;
     payload.flag = flag;
     payload.extraScope = extraScope;
+    payload.direction = direction;
 
     QByteArray srcBa = originalMessage.toUtf8();
     QByteArray dstBa = finalMessage.toUtf8();
 
+    // 使用安全拷贝
     qstrncpy(payload.originalMessage, srcBa.data(), sizeof(payload.originalMessage));
     qstrncpy(payload.translatedMessage, dstBa.data(), sizeof(payload.translatedMessage));
 
-    sendIpcBufferMessage(MSG_TYPE_TRANSLATE_RESPONSE, &payload, sizeof(payload));
+    // 发送至 DLL
+    IpcManager::instance().sendIpcBufferMessage(MSG_TYPE_TRANSLATE_RESPONSE, &payload, sizeof(payload));
 
     DebugHelper::recordTreeLog("chat_translate",
-                               QString("└─ 🚀 结果已发回 DLL (状态: %1)")
-                                   .arg(isFallback ? "回退原文" : "翻译成功"), 0, true);
+                               QString("└─ 🚀 译文已通过 IPC 回传 DLL (方向: %1)").arg(direction), 0, true);
 }
 
 void NetworkManager::handleIncomingDatagram(const QNetworkDatagram &datagram)

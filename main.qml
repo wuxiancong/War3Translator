@@ -74,26 +74,65 @@ ApplicationWindow {
     // ===== 业务逻辑 =====
     Connections {
         target: IpcManager
-        function onIncomingMessageIntercepted(pid, sender, text) {
+        function onIncomingMessageIntercepted(pid, sender, text, direction) {
+            var currentTime = Qt.formatDateTime(new Date(), "hh:mm:ss")
             chatLogModel.insert(0, {
                 "pid": pid,
                 "sender": sender,
                 "origin": text,
-                "translated": qsTr("正在翻译..."),
-                "isDone": false
+                "time": currentTime,
+                "translated": "",
+                "isDone": false,
+                "direction": direction
             })
         }
     }
 
     Connections {
         target: TranslateManager
-        function onTranslationTaskFinished(pid, flag, extraScope, originalMessage, translatedMessage) {
+
+        function onTranslationTaskFinished(pid, flag, extraScope, direction, originalMessage, translatedMessage, targetLang) {
+            console.log("▶ [QML 翻译回调]");
+            console.log("   ├─ 玩家PID:", pid, " | 方向:", direction, " (1=发送/本地, 0=接收/他人)");
+            console.log("   ├─ 目标语种:", targetLang);
+            console.log("   └─ 文本内容: \"" + originalMessage + "\" -> \"" + translatedMessage + "\"");
+
+            var foundMatch = false;
+
             for(var i = 0; i < chatLogModel.count; i++) {
-                if(chatLogModel.get(i).pid === pid || chatLogModel.get(i).origin === originalMessage) {
-                    chatLogModel.setProperty(i, "translated", translatedMessage)
-                    chatLogModel.setProperty(i, "isDone", true)
-                    break
+                var item = chatLogModel.get(i);
+
+                if(item.pid === pid && item.origin === originalMessage) {
+                    foundMatch = true;
+
+                    console.log("   ✅ 在数据模型索引 " + i + " 处找到对应条目");
+
+                    if (item.direction === 1) {
+                        var langName = SettingsManager.getLanguageName(targetLang);
+                        var langTag = "[" + langName + "] ";
+
+                        console.log("   ├─ 模式: 发送 (多语种追加)");
+                        console.log("   ├─ 当前已存译文:", item.translated);
+
+                        var newText = item.translated === "" ? langTag + translatedMessage
+                                                             : item.translated + "\n" + langTag + translatedMessage;
+
+                        chatLogModel.setProperty(i, "translated", newText);
+                        console.log("   └─ 已成功更新模型中的拼接文本。");
+                    }
+                    else {
+                        console.log("   ├─ 模式: 接收 (单语种替换)");
+                        chatLogModel.setProperty(i, "translated", translatedMessage);
+                    }
+
+                    chatLogModel.setProperty(i, "isDone", true);
+                    break;
                 }
+            }
+
+            if (!foundMatch) {
+                console.warn("   ❌ [警告] 在 chatLogModel 中未找到匹配项！");
+                console.warn("      期待的 PID:", pid, " 期待的原文: \"" + originalMessage + "\"");
             }
         }
     }
@@ -280,7 +319,7 @@ ApplicationWindow {
                 }
             }
 
-            // ----- 内容区域（StackLayout 切换）-----
+            // ----- 内容区域 -----
             StackLayout {
                 id: contentStack
                 Layout.fillWidth: true
@@ -291,86 +330,98 @@ ApplicationWindow {
                 ColumnLayout {
                     spacing: 0
 
-                    // 聊天记录
                     ListView {
                         id: logListView
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         model: chatLogModel
                         clip: true
-                        spacing: 15
-                        topMargin: 20
-                        bottomMargin: 20
-                        leftMargin: 15
-                        rightMargin: 15
+                        spacing: 20
+                        topMargin: 20; bottomMargin: 20; leftMargin: 15; rightMargin: 15
 
-                        add: Transition {
-                            NumberAnimation { properties: "opacity,scale"; from: 0; duration: 300 }
-                        }
-
-                        delegate: Column {
+                        delegate: Item {
                             width: logListView.width - 30
-                            spacing: 6
+                            height: mainCol.height + 10
 
-                            Text {
-                                text: model.sender
-                                font.pixelSize: 11
-                                font.bold: true
-                                color: ThemeManager.accentColor
-                                leftPadding: 5
-                            }
+                            readonly property bool isMe: model.direction === 1
 
-                            Rectangle {
+                            ColumnLayout {
+                                id: mainCol
                                 width: parent.width
-                                height: innerCol.height + 20
-                                color: ThemeManager.cardBackgroundColor
-                                radius: 10
-                                border.color: ThemeManager.borderColor
+                                spacing: 4
 
-                                Column {
-                                    id: innerCol
-                                    width: parent.width - 24
-                                    anchors.centerIn: parent
-                                    spacing: 8
+                                // 1. 发送者名字：根据身份靠左或靠右
+                                Text {
+                                    id: senderNameText
+                                    text: isMe ? qsTr("我") : model.sender
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    color: isMe ? ThemeManager.accentColor : ThemeManager.successColor
+                                    Layout.alignment: isMe ? Qt.AlignRight : Qt.AlignLeft
+                                }
 
-                                    Text {
-                                        width: parent.width
-                                        text: model.origin
-                                        font.pixelSize: 11
-                                        color: ThemeManager.textMutedColor
-                                        wrapMode: Text.Wrap
+                                // 2. 消息气泡容器
+                                Rectangle {
+                                    id: bubbleContainer
+                                    Layout.alignment: isMe ? Qt.AlignRight : Qt.AlignLeft
+                                    Layout.preferredWidth: Math.min(innerContent.implicitWidth + 24, mainCol.width * 0.85)
+                                    Layout.preferredHeight: innerContent.height + 20
+                                    color: ThemeManager.cardBackgroundColor
+                                    radius: 10
+                                    border.color: ThemeManager.borderColor
+                                    border.width: 1
+
+                                    layer.enabled: true
+                                    layer.effect: DropShadow {
+                                        transparentBorder: true
+                                        radius: 4; samples: 8
+                                        color: "#20000000"
                                     }
 
-                                    Rectangle {
-                                        width: parent.width
-                                        height: 1
-                                        color: ThemeManager.borderColor
-                                        opacity: 0.5
-                                    }
+                                    ColumnLayout {
+                                        id: innerContent
+                                        anchors.centerIn: parent
+                                        width: parent.width - 24
+                                        spacing: 8
+                                        Layout.alignment: Qt.AlignLeft
 
-                                    Text {
-                                        width: parent.width
-                                        text: model.translated
-                                        font.pixelSize: 14
-                                        font.bold: true
-                                        color: ThemeManager.textColor
-                                        wrapMode: Text.Wrap
+                                        // 3. 原文内容
+                                        Text {
+                                            Layout.fillWidth: true
+                                            text: "<font color='" + (isMe ? "#BBBBBB" : "#888888") + "'>[" + model.time + "]</font> " + model.origin
+                                            font.pixelSize: 11
+                                            color: ThemeManager.textMutedColor
+                                            textFormat: Text.StyledText
+                                            wrapMode: Text.Wrap
+                                            horizontalAlignment: Text.AlignLeft
+                                        }
+
+                                        // 分隔线
+                                        Rectangle {
+                                            Layout.fillWidth: true
+                                            height: 1
+                                            color: ThemeManager.borderColor
+                                            opacity: 0.3
+                                            visible: model.translated !== ""
+                                        }
+
+                                        // 4. 译文内容
+                                        Text {
+                                            Layout.fillWidth: true
+                                            text: {
+                                                if (model.translated !== "") return model.translated
+                                                if (!model.isDone) return qsTr("正在翻译...")
+                                                return qsTr("未获取到译文")
+                                            }
+                                            font.pixelSize: 13
+                                            font.bold: true
+                                            color: ThemeManager.textColor
+                                            wrapMode: Text.Wrap
+                                            horizontalAlignment: Text.AlignLeft
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-
-                    // 底部信息
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 30
-                        color: "transparent"
-                        Text {
-                            anchors.centerIn: parent
-                            text: qsTr("War3 Translator © 2026")
-                            font.pixelSize: 10
-                            color: ThemeManager.textDisabledColor
                         }
                     }
                 }

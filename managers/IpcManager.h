@@ -35,7 +35,7 @@ public slots:
     void onIpcMessageReceived();
 
 signals:
-    void incomingMessageIntercepted(quint32 pid, QString sender, QString text);
+    void incomingMessageIntercepted(quint32 pid, QString sender, QString text, quint32 direction);
 
 private:
     explicit IpcManager(QObject *parent = nullptr);

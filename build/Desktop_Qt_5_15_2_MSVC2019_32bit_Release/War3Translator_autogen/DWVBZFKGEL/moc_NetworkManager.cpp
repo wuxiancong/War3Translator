@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_NetworkManager_t {
-    QByteArrayData data[58];
-    char stringdata0[883];
+    QByteArrayData data[59];
+    char stringdata0[893];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -79,17 +79,18 @@ QT_MOC_LITERAL(43, 690, 21), // "onTranslationFinished"
 QT_MOC_LITERAL(44, 712, 3), // "pid"
 QT_MOC_LITERAL(45, 716, 4), // "flag"
 QT_MOC_LITERAL(46, 721, 10), // "extraScope"
-QT_MOC_LITERAL(47, 732, 15), // "originalMessage"
-QT_MOC_LITERAL(48, 748, 17), // "translatedMessage"
-QT_MOC_LITERAL(49, 766, 13), // "stopListening"
-QT_MOC_LITERAL(50, 780, 12), // "gracefulExit"
-QT_MOC_LITERAL(51, 793, 17), // "handleChatCommand"
-QT_MOC_LITERAL(52, 811, 8), // "fullText"
-QT_MOC_LITERAL(53, 820, 8), // "userName"
-QT_MOC_LITERAL(54, 829, 18), // "sendCommandMessage"
-QT_MOC_LITERAL(55, 848, 7), // "command"
-QT_MOC_LITERAL(56, 856, 4), // "text"
-QT_MOC_LITERAL(57, 861, 21) // "sendTranslatedMessage"
+QT_MOC_LITERAL(47, 732, 9), // "direction"
+QT_MOC_LITERAL(48, 742, 15), // "originalMessage"
+QT_MOC_LITERAL(49, 758, 17), // "translatedMessage"
+QT_MOC_LITERAL(50, 776, 13), // "stopListening"
+QT_MOC_LITERAL(51, 790, 12), // "gracefulExit"
+QT_MOC_LITERAL(52, 803, 17), // "handleChatCommand"
+QT_MOC_LITERAL(53, 821, 8), // "fullText"
+QT_MOC_LITERAL(54, 830, 8), // "userName"
+QT_MOC_LITERAL(55, 839, 18), // "sendCommandMessage"
+QT_MOC_LITERAL(56, 858, 7), // "command"
+QT_MOC_LITERAL(57, 866, 4), // "text"
+QT_MOC_LITERAL(58, 871, 21) // "sendTranslatedMessage"
 
     },
     "NetworkManager\0networkDisconnected\0\0"
@@ -112,10 +113,11 @@ QT_MOC_LITERAL(57, 861, 21) // "sendTranslatedMessage"
     "onPublicSocketReadyRead\0onSocketError\0"
     "onSocketStateChanged\0state\0"
     "onTranslationFinished\0pid\0flag\0"
-    "extraScope\0originalMessage\0translatedMessage\0"
-    "stopListening\0gracefulExit\0handleChatCommand\0"
-    "fullText\0userName\0sendCommandMessage\0"
-    "command\0text\0sendTranslatedMessage"
+    "extraScope\0direction\0originalMessage\0"
+    "translatedMessage\0stopListening\0"
+    "gracefulExit\0handleChatCommand\0fullText\0"
+    "userName\0sendCommandMessage\0command\0"
+    "text\0sendTranslatedMessage"
 };
 #undef QT_MOC_LITERAL
 
@@ -158,14 +160,14 @@ static const uint qt_meta_data_NetworkManager[] = {
       39,    0,  207,    2, 0x08 /* Private */,
       40,    1,  208,    2, 0x08 /* Private */,
       41,    1,  211,    2, 0x08 /* Private */,
-      43,    5,  214,    2, 0x08 /* Private */,
+      43,    6,  214,    2, 0x08 /* Private */,
 
  // methods: name, argc, parameters, tag, flags
-      49,    0,  225,    2, 0x02 /* Public */,
-      50,    0,  226,    2, 0x02 /* Public */,
-      51,    2,  227,    2, 0x02 /* Public */,
-      54,    3,  232,    2, 0x02 /* Public */,
-      57,    4,  239,    2, 0x02 /* Public */,
+      50,    0,  227,    2, 0x02 /* Public */,
+      51,    0,  228,    2, 0x02 /* Public */,
+      52,    2,  229,    2, 0x02 /* Public */,
+      55,    3,  234,    2, 0x02 /* Public */,
+      58,    4,  241,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -193,14 +195,14 @@ static const uint qt_meta_data_NetworkManager[] = {
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 32,   20,
     QMetaType::Void, 0x80000000 | 35,   42,
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString, QMetaType::QString,   44,   45,   46,   47,   48,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString, QMetaType::QString,   44,   45,   46,   47,   48,   49,
 
  // methods: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString, QMetaType::QString,   52,   53,
-    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString,   53,   55,   56,
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString,   44,   45,   46,   48,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString,   53,   54,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString,   54,   56,   57,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString,   44,   45,   46,   49,
 
        0        // eod
 };
@@ -234,7 +236,7 @@ void NetworkManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 20: _t->onPublicSocketReadyRead(); break;
         case 21: _t->onSocketError((*reinterpret_cast< QAbstractSocket::SocketError(*)>(_a[1]))); break;
         case 22: _t->onSocketStateChanged((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
-        case 23: _t->onTranslationFinished((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< quint32(*)>(_a[2])),(*reinterpret_cast< quint32(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5]))); break;
+        case 23: _t->onTranslationFinished((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< quint32(*)>(_a[2])),(*reinterpret_cast< quint32(*)>(_a[3])),(*reinterpret_cast< quint32(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5])),(*reinterpret_cast< QString(*)>(_a[6]))); break;
         case 24: _t->stopListening(); break;
         case 25: _t->gracefulExit(); break;
         case 26: _t->handleChatCommand((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;

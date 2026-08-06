@@ -130,6 +130,39 @@ void SettingsManager::saveConfigToAllEnds(const QString &groupAndKey, const QVar
     regSettings.sync();
 }
 
+QString SettingsManager::getLanguageName(const QString &code)
+{
+    static const QMap<QString, QString> langMap = {
+        {"zh_CN", tr("简体中文")},
+        {"zh_TW", tr("繁體中文")},
+        {"en",    tr("英语")},
+        {"ru",    tr("俄语")},
+        {"es",    tr("西班牙语")},
+        {"de",    tr("德语")},
+        {"fr",    tr("法语")},
+        {"it",    tr("意大利语")},
+        {"ja",    tr("日语")},
+        {"ko",    tr("韩语")},
+        {"pl",    tr("波兰语")},
+        {"pt",    tr("葡萄牙语")},
+        {"uk",    tr("乌克兰语")},
+        {"ar",    tr("阿拉伯语")},
+        {"bg",    tr("保加利亚语")},
+        {"ca",    tr("加泰罗尼亚语")},
+        {"cs",    tr("捷克语")},
+        {"da",    tr("丹麦语")},
+        {"fi",    tr("芬兰语")},
+        {"gd",    tr("苏格兰盖尔语")},
+        {"he",    tr("希伯来语")},
+        {"hu",    tr("匈牙利语")},
+        {"lv",    tr("拉脱维亚语")},
+        {"sk",    tr("斯洛伐克语")},
+        {"tr",    tr("土耳其语")}
+    };
+
+    return langMap.value(code, code);
+}
+
 void SettingsManager::setLanguageCode(const QString &code) {
     if (m_languageCode == code) return;
 

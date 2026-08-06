@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_TranslateManager_t {
-    QByteArrayData data[23];
-    char stringdata0[333];
+    QByteArrayData data[24];
+    char stringdata0[343];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -40,28 +40,30 @@ QT_MOC_LITERAL(4, 51, 23), // "translationTaskFinished"
 QT_MOC_LITERAL(5, 75, 3), // "pid"
 QT_MOC_LITERAL(6, 79, 4), // "flag"
 QT_MOC_LITERAL(7, 84, 10), // "extraScope"
-QT_MOC_LITERAL(8, 95, 15), // "originalMessage"
-QT_MOC_LITERAL(9, 111, 17), // "translatedMessage"
-QT_MOC_LITERAL(10, 129, 30), // "requestTranslationWithMetadata"
-QT_MOC_LITERAL(11, 160, 7), // "message"
-QT_MOC_LITERAL(12, 168, 8), // "language"
-QT_MOC_LITERAL(13, 177, 22), // "requestAllTranslations"
-QT_MOC_LITERAL(14, 200, 10), // "sourceText"
-QT_MOC_LITERAL(15, 211, 14), // "sourceLangCode"
-QT_MOC_LITERAL(16, 226, 19), // "translateSingleSync"
-QT_MOC_LITERAL(17, 246, 14), // "targetLangCode"
-QT_MOC_LITERAL(18, 261, 14), // "getTranslation"
-QT_MOC_LITERAL(19, 276, 19), // "getTranslationCount"
-QT_MOC_LITERAL(20, 296, 18), // "cancelTasksForText"
-QT_MOC_LITERAL(21, 315, 4), // "text"
-QT_MOC_LITERAL(22, 320, 12) // "isProcessing"
+QT_MOC_LITERAL(8, 95, 9), // "direction"
+QT_MOC_LITERAL(9, 105, 15), // "originalMessage"
+QT_MOC_LITERAL(10, 121, 17), // "translatedMessage"
+QT_MOC_LITERAL(11, 139, 8), // "language"
+QT_MOC_LITERAL(12, 148, 30), // "requestTranslationWithMetadata"
+QT_MOC_LITERAL(13, 179, 7), // "message"
+QT_MOC_LITERAL(14, 187, 22), // "requestAllTranslations"
+QT_MOC_LITERAL(15, 210, 10), // "sourceText"
+QT_MOC_LITERAL(16, 221, 14), // "sourceLangCode"
+QT_MOC_LITERAL(17, 236, 19), // "translateSingleSync"
+QT_MOC_LITERAL(18, 256, 14), // "targetLangCode"
+QT_MOC_LITERAL(19, 271, 14), // "getTranslation"
+QT_MOC_LITERAL(20, 286, 19), // "getTranslationCount"
+QT_MOC_LITERAL(21, 306, 18), // "cancelTasksForText"
+QT_MOC_LITERAL(22, 325, 4), // "text"
+QT_MOC_LITERAL(23, 330, 12) // "isProcessing"
 
     },
     "TranslateManager\0cacheUpdated\0\0"
     "isProcessingChanged\0translationTaskFinished\0"
-    "pid\0flag\0extraScope\0originalMessage\0"
-    "translatedMessage\0requestTranslationWithMetadata\0"
-    "message\0language\0requestAllTranslations\0"
+    "pid\0flag\0extraScope\0direction\0"
+    "originalMessage\0translatedMessage\0"
+    "language\0requestTranslationWithMetadata\0"
+    "message\0requestAllTranslations\0"
     "sourceText\0sourceLangCode\0translateSingleSync\0"
     "targetLangCode\0getTranslation\0"
     "getTranslationCount\0cancelTasksForText\0"
@@ -76,7 +78,7 @@ static const uint qt_meta_data_TranslateManager[] = {
        0,       // classname
        0,    0, // classinfo
        9,   14, // methods
-       1,  104, // properties
+       1,  110, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
@@ -85,31 +87,31 @@ static const uint qt_meta_data_TranslateManager[] = {
  // signals: name, argc, parameters, tag, flags
        1,    0,   59,    2, 0x06 /* Public */,
        3,    0,   60,    2, 0x06 /* Public */,
-       4,    5,   61,    2, 0x06 /* Public */,
+       4,    7,   61,    2, 0x06 /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-      10,    5,   72,    2, 0x02 /* Public */,
-      13,    2,   83,    2, 0x02 /* Public */,
-      16,    2,   88,    2, 0x02 /* Public */,
-      18,    2,   93,    2, 0x02 /* Public */,
-      19,    1,   98,    2, 0x02 /* Public */,
-      20,    1,  101,    2, 0x02 /* Public */,
+      12,    6,   76,    2, 0x02 /* Public */,
+      14,    2,   89,    2, 0x02 /* Public */,
+      17,    2,   94,    2, 0x02 /* Public */,
+      19,    2,   99,    2, 0x02 /* Public */,
+      20,    1,  104,    2, 0x02 /* Public */,
+      21,    1,  107,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString, QMetaType::QString,    5,    6,    7,    8,    9,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString, QMetaType::QString, QMetaType::QString,    5,    6,    7,    8,    9,   10,   11,
 
  // methods: parameters
-    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString, QMetaType::QString,    5,    6,    7,   11,   12,
-    QMetaType::Void, QMetaType::QString, QMetaType::QString,   14,   15,
-    QMetaType::QString, QMetaType::QString, QMetaType::QString,   14,   17,
-    QMetaType::QString, QMetaType::QString, QMetaType::QString,   14,   17,
-    QMetaType::UChar, QMetaType::QString,   14,
-    QMetaType::Void, QMetaType::QString,   21,
+    QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt, QMetaType::QString, QMetaType::QString,    5,    6,    7,    8,   13,   11,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString,   15,   16,
+    QMetaType::QString, QMetaType::QString, QMetaType::QString,   15,   18,
+    QMetaType::QString, QMetaType::QString, QMetaType::QString,   15,   18,
+    QMetaType::UChar, QMetaType::QString,   15,
+    QMetaType::Void, QMetaType::QString,   22,
 
  // properties: name, type, flags
-      22, QMetaType::Bool, 0x00495001,
+      23, QMetaType::Bool, 0x00495001,
 
  // properties: notify_signal_id
        1,
@@ -125,8 +127,8 @@ void TranslateManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         switch (_id) {
         case 0: _t->cacheUpdated(); break;
         case 1: _t->isProcessingChanged(); break;
-        case 2: _t->translationTaskFinished((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< quint32(*)>(_a[2])),(*reinterpret_cast< quint32(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5]))); break;
-        case 3: _t->requestTranslationWithMetadata((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< quint32(*)>(_a[2])),(*reinterpret_cast< quint32(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5]))); break;
+        case 2: _t->translationTaskFinished((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< quint32(*)>(_a[2])),(*reinterpret_cast< quint32(*)>(_a[3])),(*reinterpret_cast< quint32(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5])),(*reinterpret_cast< QString(*)>(_a[6])),(*reinterpret_cast< QString(*)>(_a[7]))); break;
+        case 3: _t->requestTranslationWithMetadata((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< quint32(*)>(_a[2])),(*reinterpret_cast< quint32(*)>(_a[3])),(*reinterpret_cast< quint32(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5])),(*reinterpret_cast< QString(*)>(_a[6]))); break;
         case 4: _t->requestAllTranslations((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
         case 5: { QString _r = _t->translateSingleSync((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
@@ -154,7 +156,7 @@ void TranslateManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
             }
         }
         {
-            using _t = void (TranslateManager::*)(quint32 , quint32 , quint32 , QString , QString );
+            using _t = void (TranslateManager::*)(quint32 , quint32 , quint32 , quint32 , QString , QString , QString );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&TranslateManager::translationTaskFinished)) {
                 *result = 2;
                 return;
@@ -246,9 +248,9 @@ void TranslateManager::isProcessingChanged()
 }
 
 // SIGNAL 2
-void TranslateManager::translationTaskFinished(quint32 _t1, quint32 _t2, quint32 _t3, QString _t4, QString _t5)
+void TranslateManager::translationTaskFinished(quint32 _t1, quint32 _t2, quint32 _t3, quint32 _t4, QString _t5, QString _t6, QString _t7)
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t3))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t4))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t5))) };
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t3))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t4))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t5))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t6))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t7))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_WARNING_POP

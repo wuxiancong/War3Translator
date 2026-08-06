@@ -180,7 +180,7 @@ private slots:
     void onSocketStateChanged(QAbstractSocket::SocketState state) const;
 
     // 翻译处理
-    void onTranslationFinished(quint32 pid, quint32 flag, quint32 extraScope, QString originalMessage, QString translatedMessage);
+    void onTranslationFinished(quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString originalMessage, QString translatedMessage);
 private:
     // Socket相关
     QTcpSocket *m_tcpSocket;

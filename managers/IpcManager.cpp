@@ -282,59 +282,88 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         quint32 pid = payload->pid;
         quint32 flag = payload->flag;
         quint32 extraScope = payload->extraScope;
+        quint32 direction = payload->direction; // 0: 接收, 1: 发送
 
-        // 转换原始文本
+        // 转换原始文本并清理
         QString rawText = QString::fromUtf8(payload->message, strnlen(payload->message, sizeof(payload->message))).trimmed();
 
-        // 获取翻译目标语言
-        QString targetLang = SettingsManager::instance().translateLanguage();
-
-        DebugHelper::recordTreeLog("chat_translate", "┌─ 📥 [Translate Request] 拦截到游戏内聊天", 0);
+        // 2. 日志头：记录方向
+        QString dirStr = (direction == 1) ? "Outgoing (发送)" : "Incoming (接收)";
+        DebugHelper::recordTreeLog("chat_translate", QString("┌─ 📥 [Translate Request] %1").arg(dirStr), 0);
         DebugHelper::recordTreeLog("chat_translate", QString("├─ 原始文本: \"%1\"").arg(rawText), 1);
-        DebugHelper::recordTreeLog("chat_translate", QString("├─ 目标语种: %1").arg(targetLang), 1);
         DebugHelper::recordTreeLog("chat_translate", QString("├─ 消息属性: PID=%1 | Flag=0x%2 | Scope=0x%3")
                                                          .arg(pid)
                                                          .arg(QString::number(flag, 16).toUpper())
                                                          .arg(QString::number(extraScope, 16).toUpper()), 1);
 
-        // 2. 噪音拦截
+        // 3. 噪音拦截
         static QRegularExpression noiseRegex("[\\p{L}\\p{N}]");
         if (!rawText.contains(noiseRegex)) {
-            DebugHelper::recordTreeLog("chat_translate", "└─ ⏩ [跳过] 文本不包含字母或数字，判定为噪音符号", 0, true);
+            DebugHelper::recordTreeLog("chat_translate", "└─ ⏩ [跳过] 文本为纯符号噪音", 0, true);
             break;
         }
 
-        // 3. 确定发送者名称
-        QString senderName = QString("Player(%1)").arg(pid);
-        if (m_pSharedData && pid < MAX_SLOT) {
-            QString nameFromMem = QString::fromLocal8Bit(m_pSharedData->pid_to_name[pid]);
-            if (!nameFromMem.isEmpty()) senderName = nameFromMem;
+        // 4. 确定显示名称
+        QString senderName;
+        if (direction == 1) {
+            senderName = "Me (我)";
+        } else {
+            senderName = QString("Player(%1)").arg(pid);
+            if (m_pSharedData && pid < MAX_SLOT) {
+                QString nameFromMem = QString::fromLocal8Bit(m_pSharedData->pid_to_name[pid]);
+                if (!nameFromMem.isEmpty()) senderName = nameFromMem;
+            }
         }
-
         DebugHelper::recordTreeLog("chat_translate", QString("├─ 👤 发送者识别: %1").arg(senderName), 1);
 
-        // 立即在 UI 上显示占位符
-        QMetaObject::invokeMethod(&IpcManager::instance(),
+        // 5. 立即在 UI 上显示占位符
+        QMetaObject::invokeMethod(this,
                                   "incomingMessageIntercepted",
                                   Qt::QueuedConnection,
                                   Q_ARG(quint32, pid),
                                   Q_ARG(QString, senderName),
-                                  Q_ARG(QString, rawText));
-
-        DebugHelper::recordTreeLog("chat_translate", "├─ 📝 [UI] 已发送占位信号 (Pending状态)", 1);
-
-        // 4. 启动翻译任务
-        QMetaObject::invokeMethod(&TranslateManager::instance(),
-                                  "requestTranslationWithMetadata",
-                                  Qt::QueuedConnection,
-                                  Q_ARG(quint32, pid),
-                                  Q_ARG(quint32, flag),
-                                  Q_ARG(quint32, extraScope),
                                   Q_ARG(QString, rawText),
-                                  Q_ARG(QString, targetLang));
+                                  Q_ARG(quint32, direction));
 
-        DebugHelper::recordTreeLog("chat_translate", QString("└─ 🚀 翻译任务启动: 目标 [%1] -> 正在请求 API...").arg(targetLang), 0, true);
+        // 6. 根据方向执行翻译任务分发
+        if (direction == 0) {
+            QString targetLang = SettingsManager::instance().translateLanguage();
+            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 接收模式: 翻译至 %1").arg(targetLang), 1);
 
+            QMetaObject::invokeMethod(&TranslateManager::instance(),
+                                      "requestTranslationWithMetadata",
+                                      Qt::QueuedConnection,
+                                      Q_ARG(quint32, pid),
+                                      Q_ARG(quint32, flag),
+                                      Q_ARG(quint32, extraScope),
+                                      Q_ARG(quint32, direction),
+                                      Q_ARG(QString, rawText),
+                                      Q_ARG(QString, targetLang));
+        }
+        else {
+            QStringList targetLangs = SettingsManager::instance().translateLanguages();
+            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 发送模式: 语种总数 %1").arg(targetLangs.size()), 1);
+
+            if (targetLangs.isEmpty()) {
+                DebugHelper::recordTreeLog("chat_translate", "│  ⚠️ [警告] 未勾选任何发送语种，将默认翻译为英文", 1);
+                targetLangs << "en";
+            }
+
+            for (const QString &lang : targetLangs) {
+                DebugHelper::recordTreeLog("chat_translate", QString("│  ├─ 分派任务: [%1]").arg(lang), 1);
+                QMetaObject::invokeMethod(&TranslateManager::instance(),
+                                          "requestTranslationWithMetadata",
+                                          Qt::QueuedConnection,
+                                          Q_ARG(quint32, pid),
+                                          Q_ARG(quint32, flag),
+                                          Q_ARG(quint32, extraScope),
+                                          Q_ARG(quint32, direction),
+                                          Q_ARG(QString, rawText),
+                                          Q_ARG(QString, lang));
+            }
+        }
+
+        DebugHelper::recordTreeLog("chat_translate", "└─ 🚀 任务已进入异步翻译流水线", 0, true);
         break;
     }
 

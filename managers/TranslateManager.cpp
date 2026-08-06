@@ -67,7 +67,7 @@ void TranslateManager::initTranslateManager()
     loadCache();
 }
 
-void TranslateManager::requestTranslationWithMetadata(quint32 pid, quint32 flag, quint32 extraScope, QString message, QString language)
+void TranslateManager::requestTranslationWithMetadata(quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString message, QString language)
 {
     QElapsedTimer timer;
     timer.start();
@@ -95,7 +95,7 @@ void TranslateManager::requestTranslationWithMetadata(quint32 pid, quint32 flag,
     DebugHelper::recordTreeLog("chat_translate",
                                QString("└─ 🏁 任务执行完毕 (API耗时: %1 ms)，正在发射 translationTaskFinished 信号").arg(timer.elapsed()), 0, true);
 
-    emit translationTaskFinished(pid, flag, extraScope, message, translatedMessage);
+    emit translationTaskFinished(pid, flag, extraScope, direction, message, translatedMessage, language);
 }
 
 void TranslateManager::requestAllTranslations(const QString &sourceText, const QString &sourceLangCode)
