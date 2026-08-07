@@ -8,7 +8,7 @@
 
 // 定义共享内存的名称，必须在两个进程中完全一致
 #define SHARED_MEM_NAME L"Global\\War3Translator_SharedMemory"
-#define IPC_EVENT__NAME L"Global\\War3Translator_L2D_Event"
+#define IPC_EVENTS_NAME L"Global\\War3Translator_L2D_Event"
 
 #define BUFFER_SIZE 1024
 #define MAX_SLOT 16

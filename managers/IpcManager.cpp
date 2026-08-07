@@ -83,7 +83,7 @@ QString IpcManager::initIpcManager()
     bool alreadyExists = (GetLastError() == ERROR_ALREADY_EXISTS);
 
     // 2. 创建同步事件
-    m_hIpcEvent = CreateEventW(NULL, FALSE, FALSE, IPC_EVENT__NAME);
+    m_hIpcEvent = CreateEventW(NULL, FALSE, FALSE, IPC_EVENTS_NAME);
     if (m_hIpcEvent == NULL) {
         DWORD winErr = GetLastError();
         QString err = QString("CreateEvent 失败，错误码: %1").arg(winErr);
@@ -330,6 +330,8 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         // 6. 执行翻译任务分发
         if (direction == 0) {
             QString targetLang = SettingsManager::instance().translateLanguage();
+            if (targetLang.isEmpty()) break;
+
             DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 接收模式: 翻译至 %1").arg(targetLang), 1);
 
             QMetaObject::invokeMethod(&TranslateManager::instance(),
@@ -345,7 +347,7 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         }
         else {
             QStringList targetLangs = SettingsManager::instance().translateLanguages();
-            if (targetLangs.isEmpty()) targetLangs << "en";
+            if (targetLangs.isEmpty()) break;
 
             DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 发送模式: 语种总数 %1").arg(targetLangs.size()), 1);
 
@@ -371,17 +373,18 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
     case MSG_TYPE_TRANSLATE_MAPPED:
     {
         const auto *payload = reinterpret_cast<const TranslatedResultPayload*>(message.payload.data);
-        QString translatedMessage = QString::fromUtf8(payload->translatedMessage).trimmed();
+        quint32 direction = payload->direction;
+        if (direction == 0) {
+            quint64 msgId = payload->msgId;
+            QString translatedMessage = QString::fromUtf8(payload->translatedMessage).trimmed();
+            DebugHelper::recordTreeLog("ipc_mapped", QString("┌─ ✅ [Mapped] 接收到 DLL 确认 | ID: %1").arg(msgId), 0);
+            DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 目标: PID=%1").arg(payload->pid), 1);
+            DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 内容: \"%1\"").arg(translatedMessage), 1);
 
-        quint64 msgId = payload->msgId;
+            NetworkManager::instance().sendTranslatedMessage(payload->pid, payload->flag, payload->extraScope, translatedMessage);
 
-        DebugHelper::recordTreeLog("ipc_mapped", QString("┌─ ✅ [Mapped] 接收到 DLL 确认 | ID: %1").arg(msgId), 0);
-        DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 目标: PID=%1").arg(payload->pid), 1);
-        DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 内容: \"%1\"").arg(translatedMessage), 1);
-
-        NetworkManager::instance().sendTranslatedMessage(payload->pid, payload->flag, payload->extraScope, translatedMessage);
-
-        DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文重发确认已同步至服务器", 0, true);
+            DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文重发确认已同步至服务器", 0, true);
+        }
         break;
     }
 

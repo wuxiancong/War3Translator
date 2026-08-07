@@ -305,7 +305,7 @@ bool initializeSharedMemory()
     }
 
     // 2. 创建或打开同步事件
-    g_hIpcEvent = CreateEventW(NULL, FALSE, FALSE, IPC_EVENT__NAME);
+    g_hIpcEvent = CreateEventW(NULL, FALSE, FALSE, IPC_EVENTS_NAME);
 
     if (!g_hIpcEvent) {
         WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 创建进程事件失败，错误码: %d", GetLastError());
@@ -2083,7 +2083,7 @@ void ipcMessageThread()
     WriteAsyncLogTo(g_wlogWar3HookPath, L"🚀 IPC 信号驱动线程已启动 (双通道监控模式)");
 
     if (g_hIpcEvent == NULL) {
-        g_hIpcEvent = CreateEventW(NULL, FALSE, FALSE, IPC_EVENT__NAME);
+        g_hIpcEvent = CreateEventW(NULL, FALSE, FALSE, IPC_EVENTS_NAME);
     }
 
     while (true) {

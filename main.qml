@@ -76,6 +76,7 @@ ApplicationWindow {
         target: IpcManager
         function onIncomingMessageIntercepted(pid, sender, text, direction) {
             var currentTime = Qt.formatDateTime(new Date(), "hh:mm:ss")
+            var currentLangCount = SettingsManager.translateLanguages.length
             chatLogModel.insert(0, {
                                     "pid": pid,
                                     "sender": sender,
@@ -83,7 +84,8 @@ ApplicationWindow {
                                     "time": currentTime,
                                     "translated": "",
                                     "isDone": false,
-                                    "direction": direction
+                                    "direction": direction,
+                                    "configLangCount": currentLangCount
                                 })
         }
     }
@@ -413,6 +415,7 @@ ApplicationWindow {
                                         // 4. 译文内容
                                         Text {
                                             Layout.fillWidth: true
+                                            visible: model.configLangCount > 0
                                             text: {
                                                 if (model.translated !== "") return model.translated
                                                 if (!model.isDone) return qsTr("正在翻译...")
@@ -423,6 +426,7 @@ ApplicationWindow {
                                             color: ThemeManager.textColor
                                             wrapMode: Text.Wrap
                                             horizontalAlignment: Text.AlignLeft
+                                            height: visible ? undefined : 0
                                         }
                                     }
                                 }
