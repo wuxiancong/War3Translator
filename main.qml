@@ -708,6 +708,90 @@ ApplicationWindow {
                             opacity: 0.3
                         }
 
+                        Column {
+                            width: parent.width
+                            spacing: 12
+
+                            RowLayout {
+                                width: parent.width
+                                spacing: 15
+
+                                Text {
+                                    text: qsTr("发送间隔：")
+                                    color: ThemeManager.textColor
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                    Layout.preferredWidth: 80
+                                }
+
+                                Slider {
+                                    id: intervalSlider
+                                    Layout.fillWidth: true
+                                    from: 500
+                                    to: 5000
+                                    stepSize: 100
+                                    value: SettingsManager.translateSendInterval
+
+                                    onMoved: {
+                                        SettingsManager.setTranslateSendInterval(value)
+                                    }
+
+                                    background: Rectangle {
+                                        x: intervalSlider.leftPadding
+                                        y: intervalSlider.topPadding + intervalSlider.availableHeight / 2 - height / 2
+                                        implicitHeight: 4
+                                        width: intervalSlider.availableWidth
+                                        height: implicitHeight
+                                        radius: 2
+                                        color: ThemeManager.alpha(ThemeManager.textColor, 0.1)
+
+                                        Rectangle {
+                                            width: intervalSlider.visualPosition * parent.width
+                                            height: parent.height
+                                            color: ThemeManager.accentColor
+                                            radius: 2
+                                        }
+                                    }
+
+                                    handle: Rectangle {
+                                        x: intervalSlider.leftPadding + intervalSlider.visualPosition * (intervalSlider.availableWidth - width)
+                                        y: intervalSlider.topPadding + intervalSlider.availableHeight / 2 - height / 2
+                                        implicitWidth: 16
+                                        implicitHeight: 16
+                                        radius: 8
+                                        color: intervalSlider.pressed ? ThemeManager.alpha(ThemeManager.accentColor, 0.8) : ThemeManager.accentColor
+                                        border.color: "white"
+                                        border.width: 1
+                                    }
+                                }
+
+                                Text {
+                                    text: (SettingsManager.translateSendInterval / 1000).toFixed(1) + " s"
+                                    color: ThemeManager.accentColor
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                    Layout.preferredWidth: 40
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("备注：设置翻译后依次发送消息的时间间隔，防止由于发送过快导致被游戏屏蔽")
+                                color: ThemeManager.textMutedColor
+                                font.pixelSize: 11
+                                font.italic: true
+                                wrapMode: Text.Wrap
+                                width: parent.width
+                            }
+                        }
+
+                        // 分隔线
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: ThemeManager.borderColor
+                            opacity: 0.3
+                        }
+
                         // 添加间距
                         Item { height: 5 }
 

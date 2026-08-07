@@ -42,9 +42,10 @@ SettingsManager::SettingsManager(QObject *parent)
     };
 
     // 3. 加载语言配置
-    m_languageCode      = readChain("Base/languageCode", "zh_CN").toString();
-    m_translateLanguage = readChain("Base/translateLanguage", "zh_CN").toString();
-    m_translateLanguages = readChain("Base/translateLanguages", QStringList() << "zh_CN").toStringList();
+    m_languageCode          = readChain("Base/languageCode", "zh_CN").toString();
+    m_translateLanguage     = readChain("Base/translateLanguage", "zh_CN").toString();
+    m_translateLanguages    = readChain("Base/translateLanguages", QStringList() << "zh_CN").toStringList();
+    m_translateSendInterval = readChain("Base/translateSendInterval", 1500).toUInt();
 
     // 4. 保持你原本的主实例化指针指向本地
     m_settings = new QSettings(localPath, QSettings::IniFormat, this);
@@ -235,6 +236,25 @@ void SettingsManager::setTranslateLanguages(const QStringList &languages)
     saveConfigToAllEnds("Base/translateLanguages", languages);
 
     emit translateLanguagesChanged();
+}
+
+void SettingsManager::setTranslateSendInterval(quint32 interval)
+{
+    if (m_translateSendInterval == interval) return;
+    if (interval < MIN_SEND_INTERVAL) interval = MIN_SEND_INTERVAL;
+
+    qDebug() << "⏱ 翻译发送间隔更新为:" << interval << "ms";
+
+    m_translateSendInterval = interval;
+
+    saveConfigToAllEnds("Base/translateShoutInterval", interval);
+
+    if (IpcManager::instance().m_pSharedData) {
+        IpcManager::instance().m_pSharedData->translate_send_interval = interval;
+        qDebug() << "📢 [IPC] 发送间隔已同步至共享内存";
+    }
+
+    emit translateSendIntervalChanged();
 }
 
 bool SettingsManager::isDefaultShoutContent(const QString &content)

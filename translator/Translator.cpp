@@ -40,6 +40,7 @@ std::atomic<uint64_t> g_msgIdCounter(1);
 std::set<uint64_t> g_processedMsgIds;
 std::mutex g_processedIdsMutex;
 thread_local bool g_isProcessingInternalChat  = false;
+uint32_t g_lastTranslateSendInterval = 0;
 
 std::unordered_map<std::string, TranslatedMessage> g_translatedHistoryMap;
 std::mutex g_translatedHistoryMutex;
@@ -937,8 +938,13 @@ void startupHookWindow(HWND hWnd)
         WriteAsyncLogTo(g_wlogWar3HookPath, L"  ✅ WndProc 挂钩成功！原始地址: 0x%p", (void*)g_oldWndProc);
 
         // 3. --- 挂钩成功后立刻开启定时器 ---
-        SetTimer(hWnd, TIMER_CHAT_SENDER, 1500, NULL);
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"  - [Timer] 已开启翻译自动发送定时器 (1.5s 间隔)");
+        uint32_t interval = 1500;
+        if (g_pSharedData && g_pSharedData->translate_send_interval > 0) {
+            interval = g_pSharedData->translate_send_interval;
+            if (interval < MIN_SEND_INTERVAL) interval = MIN_SEND_INTERVAL;
+        }
+        SetTimer(hWnd, TIMER_CHAT_SENDER, interval, NULL);
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ [WndProc] 挂钩成功，发送间隔: %u ms", interval);
     }
 
     WriteAsyncLogTo(g_wlogWar3HookPath, L"--- [WndProc 挂钩结束] ---");
@@ -948,6 +954,16 @@ LRESULT CALLBACK newWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_TIMER && wParam == TIMER_CHAT_SENDER)
     {
+        if (g_pSharedData) {
+            uint32_t currentSharedInterval = g_pSharedData->translate_send_interval;
+            if (currentSharedInterval < MIN_SEND_INTERVAL) currentSharedInterval = MIN_SEND_INTERVAL;
+            if (currentSharedInterval != g_lastTranslateSendInterval) {
+                SetTimer(hWnd, TIMER_CHAT_SENDER, currentSharedInterval, NULL);
+                g_lastTranslateSendInterval = currentSharedInterval;
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"⏱ [Timer] 检测到配置变更，间隔重置为: %u ms", currentSharedInterval);
+            }
+        }
+
         TranslatedChatTask task;
         bool hasTask = false;
 
@@ -964,7 +980,7 @@ LRESULT CALLBACK newWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             {
                 std::lock_guard<std::mutex> lock(g_processedIdsMutex);
                 g_processedMsgIds.insert(task.msgId);
-                if(g_processedMsgIds.size() > 100) g_processedMsgIds.erase(g_processedMsgIds.begin());
+                if(g_processedMsgIds.size() > 500) g_processedMsgIds.erase(g_processedMsgIds.begin());
             }
 
             g_isProcessingInternalChat  = true;

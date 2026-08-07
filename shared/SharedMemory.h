@@ -16,6 +16,7 @@
 #define MAX_SHOUT_ITEMS 7
 #define MAX_SHOUT_TEXT_LEN 128
 #define MAX_TARGET_LANGUAGES 25
+#define MIN_SEND_INTERVAL 500
 #define WAR3HOOK_MAGIC 0x5733484B
 #define TRANSLATOR_MAGIC 0x57335431
 
@@ -135,7 +136,7 @@ struct MessageSlot {
 
 struct SharedData {
     char                translate_language[8];
-
+    uint32_t            translate_send_interval;
     uint32_t            translate_languages_count;
     char                translate_languages[MAX_TARGET_LANGUAGES][8];
 
