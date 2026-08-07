@@ -1906,7 +1906,7 @@ void dispatchIpcBufferMessage(const MessageSlot &slot)
             }
             else {
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"🚀 [IPC/Out] 收到自发消息翻译回应 (准备注入发送流)");
-                chatSendGeneral(payload->translatedMessage, payload->extraScope);
+                // chatSendGeneral(payload->translatedMessage, payload->extraScope);
             }
 
             WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 方向: %ls", direction == 1 ? L"Outgoing (发)" : L"Incoming (收)");
