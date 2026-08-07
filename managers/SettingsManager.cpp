@@ -222,7 +222,7 @@ void SettingsManager::setTranslateLanguages(const QStringList &languages)
         memset(pSharedData->translate_languages, 0, sizeof(pSharedData->translate_languages));
         for (uint32_t i = 0; i < count; ++i) {
             QByteArray ba = languages.at(i).toUtf8();
-            strncpy(pSharedData->translate_languages[i], ba.constData(), 7);
+            strncpy_s(pSharedData->translate_languages[i], ba.constData(), 7);
         }
 
         qDebug() << "📢 [IPC] 已同步多语言发送列表，数量:" << count;
@@ -247,7 +247,7 @@ void SettingsManager::setTranslateSendInterval(quint32 interval)
 
     m_translateSendInterval = interval;
 
-    saveConfigToAllEnds("Base/translateShoutInterval", interval);
+    saveConfigToAllEnds("Base/translateSendInterval", interval);
 
     if (IpcManager::instance().m_pSharedData) {
         IpcManager::instance().m_pSharedData->translate_send_interval = interval;
