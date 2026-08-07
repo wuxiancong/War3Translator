@@ -223,5 +223,6 @@ TRANSLATOR_API bool __stdcall installAllHooks();
 TRANSLATOR_API bool __stdcall uninstallAllHooks();
 TRANSLATOR_API HookState __stdcall getHookStatus();
 TRANSLATOR_API uint32_t __stdcall isWar3TranslatorInitialized();
+TRANSLATOR_API void *__stdcall getOriginalGameChatInputLogicInGame();
 }
 #endif // TRANSLATOR_H

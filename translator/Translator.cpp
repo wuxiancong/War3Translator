@@ -254,6 +254,11 @@ TRANSLATOR_API uint32_t __stdcall isWar3TranslatorInitialized()
     return TRANSLATOR_MAGIC;
 }
 
+TRANSLATOR_API void *__stdcall getOriginalGameChatInputLogicInGame()
+{
+    return (void*)g_originalGameChatInputLogicInGame;
+}
+
 bool initializeSharedMemory()
 {
     // 1. 创建或打开文件映射对象
@@ -1402,7 +1407,25 @@ bool hookGamePrimaryGameUIVtable_()
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [严重错误] 无法从跳板指令中解析虚表地址, Opcode: %02X %02X",
                                 trampoline[0], trampoline[1]);
                 if(trampoline[0] == 0xE9) {
-                    WriteAsyncLogTo(g_wlogWar3HookPath, L"💡 [分析] 跳板起始为 JMP，证明 Hook 了别人的 Hook，无法直接解析偏移。");
+                    WriteAsyncLogTo(g_wlogWar3HookPath, L"💡 [救援模式] 指令已被改写，尝试请求对端 DLL 的变量...");
+                    for (int i = 0; i < 5; i++) {
+                        HMODULE hPeer = GetModuleHandleW(L"hook.dll");
+                        if (hPeer) {
+                            typedef void *(__stdcall *tGetter)();
+                            auto pGetter = (tGetter)GetProcAddress(hPeer, "getOriginalGameChatInputLogicInGame");
+                            if (pGetter) {
+                                g_originalGameChatInputLogicInGame = (GameChatInputLogicInGameFunc)pGetter();
+                                if (g_originalGameChatInputLogicInGame) {
+                                    WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ [救援成功] 从 %ls 获取到函数地址: 0x%p", L"hook.dll", g_originalGameChatInputLogicInGame);
+                                    break;
+                                }
+                            }
+                        }
+                        Sleep(50);
+                    }
+                    if (!g_originalGameChatInputLogicInGame) {
+                        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [致命错误] 无论自力更生还是邻居救援，都未能获取到地址。内容: %02X %02X", trampoline[0], trampoline[1]);
+                    }
                 }
             }
         }
@@ -1883,7 +1906,7 @@ void dispatchIpcBufferMessage(const MessageSlot &slot)
             }
             else {
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"🚀 [IPC/Out] 收到自发消息翻译回应 (准备注入发送流)");
-                // chatSendInternal(payload->translatedMessage, payload->extraScope);
+                chatSendGeneral(payload->translatedMessage, payload->extraScope);
             }
 
             WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 方向: %ls", direction == 1 ? L"Outgoing (发)" : L"Incoming (收)");
@@ -2245,7 +2268,7 @@ void chatSendInternal(const char *message, DWORD recipient)
     WriteAsyncLogTo(g_wlogWar3ChatPath, L"   ├── ⚡ 事件模拟: ContextSet=0x%p", g_chatEditBar);
 
     // --- 5. 执行 ASM 调用 ---
-    WriteAsyncLogTo(g_wlogWar3ChatPath, L"   └── 🚀 执行原始 Call (g_originalGameChatInputLogicInGame)");
+    WriteAsyncLogTo(g_wlogWar3ChatPath, L"   └── 🚀 执行原始 Call (g_originalGameChatInputLogicInGame: 0x%p)", g_originalGameChatInputLogicInGame);
 
 #if defined(_MSC_VER)
     __asm {

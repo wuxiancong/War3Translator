@@ -1,5 +1,7 @@
 LIBRARY "translator"
 EXPORTS
+	getOriginalGameChatInputLogicInGame
+	isWar3TranslatorInitialized
 	uninstallAllHooks
 	installAllHooks
 	getHookStatus

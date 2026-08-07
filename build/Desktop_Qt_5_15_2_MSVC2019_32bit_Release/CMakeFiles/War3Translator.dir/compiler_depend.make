@@ -290,19 +290,81 @@ War3Translator_autogen\timestamp: D:\Qt\5.15.2\msvc2019\include\QtCore\QAtomicIn
   D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake \
   D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Widgets\Qt5Widgets_QWindowsVistaStylePlugin.cmake \
   D:\Qt\Tools\CMake_64\bin\cmake.exe \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCXXCompiler.cmake.in \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCXXCompilerABI.cpp \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCXXInformation.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCommonLanguageInclude.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCompilerIdDetection.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCXXCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompilerABI.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompilerId.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompilerSupport.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineRCCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineSystem.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeFindBinUtils.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeGenericSystem.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeInitializeConfigs.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeJOMFindMake.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeLanguageInformation.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseArguments.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseImplicitIncludeInfo.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseImplicitLinkInfo.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseLibraryArchitecture.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeRCCompiler.cmake.in \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeRCInformation.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeSystem.cmake.in \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeSystemSpecificInformation.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeSystemSpecificInitialize.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeTestCXXCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeTestCompilerCommon.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeTestRCCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\ADSP-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\ARMCC-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\ARMClang-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\AppleClang-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Borland-DetermineCompiler.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\CMakeCommonCompilerMacros.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Clang-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Clang-DetermineCompilerInternal.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Cray-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\CrayClang-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Embarcadero-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Fujitsu-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\GHS-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\HP-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IAR-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Intel-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\MSVC-CXX.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\MSVC-DetermineCompiler.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\MSVC.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\NVHPC-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\NVIDIA-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\OrangeC-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\PGI-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\PathScale-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\SCO-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\TI-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\TIClang-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Tasking-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Watcom-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\XL-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\GNUInstallDirs.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Internal\CMakeDetermineLinkerId.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Internal\FeatureTesting.cmake \
+  D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Platform\Windows-Determine-CXX.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Platform\Windows-Initialize.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Platform\Windows-MSVC-CXX.cmake \
   D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Platform\Windows-MSVC.cmake \
@@ -377,6 +439,8 @@ D:\Qt\workplace\War3Translator\helpers\FileHelper.cpp:
 
 War3Translator_autogen\mocs_compilation.cpp:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeTestCXXCompiler.cmake:
+
 D:\Qt\workplace\War3Translator\helpers\HardwareHelper.cpp:
 
 D:\Qt\workplace\War3Translator\helpers\ProcessHelper.cpp:
@@ -439,6 +503,8 @@ D:\Qt\5.15.2\msvc2019\include\QtQml\qqmlengine.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\QQueue:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineRCCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\include\QtCore\QDebug:
 
 D:\Qt\5.15.2\msvc2019\include\QtGui\qpen.h:
@@ -446,6 +512,8 @@ D:\Qt\5.15.2\msvc2019\include\QtGui\qpen.h:
 D:\Qt\5.15.2\msvc2019\include\QtCore\qpointer.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\QMutex:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Borland-DetermineCompiler.cmake:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\QFlags:
 
@@ -471,6 +539,8 @@ D:\Qt\5.15.2\msvc2019\include\QtCore\QSharedDataPointer:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qalgorithms.h:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Cray-DetermineCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5Qml_QQmlDebugServerFactory.cmake:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\QSharedPointer:
@@ -492,6 +562,8 @@ D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseArguments.cmake:
 D:\Qt\5.15.2\msvc2019\include\QtCore\QUrl:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qatomic.h:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qsize.h:
 
@@ -538,6 +610,8 @@ D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Widgets\Qt5Widgets_QWindowsVistaStylePlugin.c
 D:\Qt\5.15.2\msvc2019\include\QtCore\qdatastream.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qdatetime.h:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCompilerIdDetection.cmake:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qdeadlinetimer.h:
 
@@ -621,6 +695,8 @@ D:\Qt\5.15.2\msvc2019\include\QtCore\qobject_impl.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qobjectdefs.h:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\include\QtCore\qobjectdefs_impl.h:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5Qml_QLocalClientConnectionFactory.cmake:
@@ -675,6 +751,8 @@ D:\Qt\5.15.2\msvc2019\include\QtCore\qstringliteral.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qstringmatcher.h:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseImplicitLinkInfo.cmake:
+
 D:\Qt\5.15.2\msvc2019\include\QtCore\qstringview.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qsystemdetection.h:
@@ -701,6 +779,8 @@ D:\Qt\5.15.2\msvc2019\include\QtCore\qvarlengtharray.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qvector.h:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Platform\Windows-Determine-CXX.cmake:
+
 D:\Qt\5.15.2\msvc2019\include\QtCore\qversiontagging.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtCore\qwineventnotifier.h:
@@ -715,11 +795,15 @@ D:\Qt\5.15.2\msvc2019\include\QtGui\QPainter:
 
 D:\Qt\5.15.2\msvc2019\include\QtGui\QPixmap:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeTestCompilerCommon.cmake:
+
 D:\Qt\5.15.2\msvc2019\include\QtGui\qbrush.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtGui\qcolor.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtGui\qcursor.h:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCXXCompiler.cmake:
 
 D:\Qt\5.15.2\msvc2019\include\QtGui\qfont.h:
 
@@ -773,6 +857,8 @@ D:\Qt\5.15.2\msvc2019\include\QtNetwork\QSslConfiguration:
 
 D:\Qt\workplace\War3Translator\managers\NetworkManager.h:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\XL-CXX-DetermineCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\include\QtNetwork\QSslPreSharedKeyAuthenticator:
 
 D:\Qt\5.15.2\msvc2019\include\QtNetwork\QTcpSocket:
@@ -815,6 +901,8 @@ D:\Qt\5.15.2\msvc2019\include\QtQml\qjsengine.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtQml\qjsvalue.h:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5Qml_QQmlPreviewServiceFactory.cmake:
 
 D:\Qt\5.15.2\msvc2019\include\QtQml\qqmlerror.h:
@@ -829,11 +917,15 @@ D:\Qt\5.15.2\msvc2019\include\QtQml\qqmlprivate.h:
 
 D:\Qt\5.15.2\msvc2019\include\QtQml\qqmlpropertyvaluesource.h:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\SCO-DetermineCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake:
 
 D:\Qt\5.15.2\msvc2019\include\QtQml\qtqmlglobal.h:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\GHS-DetermineCompiler.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake:
 
@@ -869,6 +961,8 @@ D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5Qml_QQuickProfilerAdapterFactory.cmake
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Core\Qt5CoreMacros.cmake:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeTestRCCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake:
@@ -882,6 +976,10 @@ D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5Gui_QSvgPlugin.cmake:
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5Gui_QWindowsDirect2DIntegrationPlugin.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Watcom-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake:
 
@@ -911,11 +1009,17 @@ D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5QmlConfigExtras.cmake:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Clang-DetermineCompiler.cmake:
+
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5Qml_QQmlDebuggerServiceFactory.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5Qml_QQmlInspectorServiceFactory.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Intel-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompilerId.cmake:
 
 D:\Qt\5.15.2\msvc2019\lib\cmake\Qt5Qml\Qt5Qml_QQmlNativeDebugConnectorFactory.cmake:
 
@@ -937,15 +1041,99 @@ D:\Qt\workplace\War3Translator\helpers\ProcessHelper.h:
 
 D:\Qt\Tools\CMake_64\bin\cmake.exe:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCXXCompiler.cmake.in:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeCXXCompilerABI.cpp:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompilerABI.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineCompilerSupport.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeDetermineSystem.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeFindBinUtils.cmake:
+
 D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeGenericSystem.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Clang-DetermineCompilerInternal.cmake:
 
 D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeInitializeConfigs.cmake:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeJOMFindMake.cmake:
+
 D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeLanguageInformation.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseImplicitIncludeInfo.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeParseLibraryArchitecture.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeRCCompiler.cmake.in:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeSystem.cmake.in:
 
 D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\CMakeSystemSpecificInitialize.cmake:
 
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\ADSP-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\ARMCC-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\MSVC-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\ARMClang-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\AppleClang-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\CrayClang-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Embarcadero-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Fujitsu-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake:
+
+CMakeFiles\3.30.5\CMakeRCCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\HP-CXX-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IAR-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake:
+
 D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\MSVC.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\NVHPC-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\NVIDIA-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Internal\FeatureTesting.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\OrangeC-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\PGI-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\PathScale-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\TI-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\TIClang-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\Tasking-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake:
+
+D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Internal\CMakeDetermineLinkerId.cmake:
 
 D:\Qt\Tools\CMake_64\share\cmake-3.30\Modules\Platform\Windows-MSVC-CXX.cmake:
 
@@ -962,8 +1150,6 @@ D:\Qt\workplace\War3Translator\SingleApplication.h:
 .qtcreator\cmake-helper\package-manager.cmake:
 
 CMakeFiles\3.30.5\CMakeCXXCompiler.cmake:
-
-CMakeFiles\3.30.5\CMakeRCCompiler.cmake:
 
 D:\Qt\workplace\War3Translator\helpers\FileHelper.h:
 
