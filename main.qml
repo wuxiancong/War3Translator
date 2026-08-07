@@ -630,13 +630,12 @@ ApplicationWindow {
                             GridView {
                                 id: languageGridView
                                 width: parent.width
-                                // 动态计算高度
-                                height: Math.min(400, Math.ceil(languageModel.count / 2) * 40 + 20)
+                                height: contentHeight
+                                interactive: false
                                 model: languageModel
                                 cellWidth: parent.width / 2
                                 cellHeight: 40
-                                clip: true
-                                boundsBehavior: Flickable.StopAtBounds
+                                clip: false
 
                                 delegate: CheckBox {
                                     id: langCheckBox
