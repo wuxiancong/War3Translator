@@ -279,6 +279,8 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
     {
         // 1. 解析基础数据
         const auto *payload = reinterpret_cast<const NotifyTranslatePayload*>(message.payload.data);
+
+        quint64 msgId = payload->msgId;
         quint32 pid = payload->pid;
         quint32 flag = payload->flag;
         quint32 extraScope = payload->extraScope;
@@ -287,9 +289,9 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         // 转换原始文本并清理
         QString rawText = QString::fromUtf8(payload->message, strnlen(payload->message, sizeof(payload->message))).trimmed();
 
-        // 2. 日志头：记录方向
+        // 2. 日志头：记录方向和 ID
         QString dirStr = (direction == 1) ? "Outgoing (发送)" : "Incoming (接收)";
-        DebugHelper::recordTreeLog("chat_translate", QString("┌─ 📥 [Translate Request] %1").arg(dirStr), 0);
+        DebugHelper::recordTreeLog("chat_translate", QString("┌─ 📥 [Translate Request] %1 | ID: %2").arg(dirStr).arg(msgId), 0);
         DebugHelper::recordTreeLog("chat_translate", QString("├─ 原始文本: \"%1\"").arg(rawText), 1);
         DebugHelper::recordTreeLog("chat_translate", QString("├─ 消息属性: PID=%1 | Flag=0x%2 | Scope=0x%3")
                                                          .arg(pid)
@@ -316,7 +318,7 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         }
         DebugHelper::recordTreeLog("chat_translate", QString("├─ 👤 发送者识别: %1").arg(senderName), 1);
 
-        // 5. 立即在 UI 上显示占位符
+        // 5. 在 UI 上显示拦截信息
         QMetaObject::invokeMethod(this,
                                   "incomingMessageIntercepted",
                                   Qt::QueuedConnection,
@@ -325,7 +327,7 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
                                   Q_ARG(QString, rawText),
                                   Q_ARG(quint32, direction));
 
-        // 6. 根据方向执行翻译任务分发
+        // 6. 执行翻译任务分发
         if (direction == 0) {
             QString targetLang = SettingsManager::instance().translateLanguage();
             DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 接收模式: 翻译至 %1").arg(targetLang), 1);
@@ -333,6 +335,7 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
             QMetaObject::invokeMethod(&TranslateManager::instance(),
                                       "requestTranslationWithMetadata",
                                       Qt::QueuedConnection,
+                                      Q_ARG(quint64, msgId),
                                       Q_ARG(quint32, pid),
                                       Q_ARG(quint32, flag),
                                       Q_ARG(quint32, extraScope),
@@ -342,18 +345,16 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         }
         else {
             QStringList targetLangs = SettingsManager::instance().translateLanguages();
-            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 发送模式: 语种总数 %1").arg(targetLangs.size()), 1);
+            if (targetLangs.isEmpty()) targetLangs << "en";
 
-            if (targetLangs.isEmpty()) {
-                DebugHelper::recordTreeLog("chat_translate", "│  ⚠️ [警告] 未勾选任何发送语种，将默认翻译为英文", 1);
-                targetLangs << "en";
-            }
+            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 发送模式: 语种总数 %1").arg(targetLangs.size()), 1);
 
             for (const QString &lang : targetLangs) {
                 DebugHelper::recordTreeLog("chat_translate", QString("│  ├─ 分派任务: [%1]").arg(lang), 1);
                 QMetaObject::invokeMethod(&TranslateManager::instance(),
                                           "requestTranslationWithMetadata",
                                           Qt::QueuedConnection,
+                                          Q_ARG(quint64, msgId),
                                           Q_ARG(quint32, pid),
                                           Q_ARG(quint32, flag),
                                           Q_ARG(quint32, extraScope),
@@ -372,13 +373,15 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         const auto *payload = reinterpret_cast<const TranslatedResultPayload*>(message.payload.data);
         QString translatedMessage = QString::fromUtf8(payload->translatedMessage).trimmed();
 
-        DebugHelper::recordTreeLog("ipc_mapped", "┌─ ✅ [Mapped] 接收到 DLL 端内存改写确认", 0);
+        quint64 msgId = payload->msgId;
+
+        DebugHelper::recordTreeLog("ipc_mapped", QString("┌─ ✅ [Mapped] 接收到 DLL 确认 | ID: %1").arg(msgId), 0);
         DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 目标: PID=%1").arg(payload->pid), 1);
         DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 内容: \"%1\"").arg(translatedMessage), 1);
 
         NetworkManager::instance().sendTranslatedMessage(payload->pid, payload->flag, payload->extraScope, translatedMessage);
 
-        DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文重发指令已下发至网络层", 0, true);
+        DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文重发确认已同步至服务器", 0, true);
         break;
     }
 

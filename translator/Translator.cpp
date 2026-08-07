@@ -18,6 +18,9 @@ HMODULE g_hModule           = NULL;
 HANDLE g_hIpcEvent          = NULL;
 HANDLE g_hSharedMemory      = NULL;
 SharedData *g_pSharedData   = NULL;
+HWND g_hWnd                 = NULL;
+WNDPROC g_oldWndProc        = nullptr;
+tGetCreationParameters g_fnGetCreationParameters   = nullptr;
 
 DWORD g_gameDllSize = 0xF00000;
 DWORD g_gameDllBaseAddress = 0;
@@ -33,9 +36,15 @@ bool g_allHooksInstalled = false;
 std::mutex g_installMutex;
 std::atomic<HookState> g_hookStatus(HookState::IDLE);
 std::atomic<bool> g_isInitialized(false);
+std::atomic<uint64_t> g_msgIdCounter(1);
+std::set<uint64_t> g_processedMsgIds;
+std::mutex g_processedIdsMutex;
+thread_local bool g_isProcessingInternalChat  = false;
 
 std::unordered_map<std::string, TranslatedMessage> g_translatedHistoryMap;
 std::mutex g_translatedHistoryMutex;
+std::queue<TranslatedChatTask> g_translatedChatQueue;
+std::mutex g_translatedChatMutex;
 char g_translateBuffer[1024];
 void *g_chatEditBar = nullptr;
 void *g_chatManager = nullptr;
@@ -45,6 +54,7 @@ DWORD g_offsetForGamePrimaryGameUIVtable_ = 0;
 DWORD g_offsetForGameChatEditBarUIVtable1 = 0;
 DWORD g_offsetForGameChatEditBarUIVtable2 = 0;
 DWORD g_offsetForGameChatEditBarUIEvents_ = 0;
+DWORD g_offsetForGameBeforeD3DXDoEndScene = 0;
 DWORD g_offsetForGameChatRecipientInGame_[2] = {0, 0};
 DWORD g_offsetForGameNetEventChatFromHost[2] = {0, 0};
 void *g_gameChatRecipientInGame_ReturnValue = nullptr;
@@ -52,11 +62,13 @@ void *g_gameNetEventChatFromHostReturnValue = nullptr;
 void *g_gamePrimaryGameUIVtable_ReturnValue = nullptr;
 void *g_gameChatEditBarUIVtable1ReturnValue = nullptr;
 void *g_gameChatEditBarUIVtable2ReturnValue = nullptr;
+void *g_gameBeforeD3DXDoEndSceneReturnValue = nullptr;
 void *g_gameChatRecipientInGame_ReturnAddress = nullptr;
 void *g_gameNetEventChatFromHostReturnAddress = nullptr;
 void *g_gamePrimaryGameUIVtable_ReturnAddress = nullptr;
 void *g_gameChatEditBarUIVtable1ReturnAddress = nullptr;
 void *g_gameChatEditBarUIVtable2ReturnAddress = nullptr;
+void *g_gameBeforeD3DXDoEndSceneReturnAddress = nullptr;
 BYTE g_currentBytesForCallGameChatRecipientInGame_[5] = { 0 };
 BYTE g_originalBytesForCallGameChatRecipientInGame_[5] = { 0 };
 BYTE g_currentBytesForCallGameNetEventChatFromHost[5] = { 0 };
@@ -67,11 +79,14 @@ BYTE g_currentBytesForCallGameChatEditBarUIVtable1[6] = { 0 };
 BYTE g_originalBytesForCallGameChatEditBarUIVtable1[6] = { 0 };
 BYTE g_currentBytesForCallGameChatEditBarUIVtable2[6] = { 0 };
 BYTE g_originalBytesForCallGameChatEditBarUIVtable2[6] = { 0 };
+BYTE g_currentBytesForMoveGameBeforeD3DXDoEndScene[6] = { 0 };
+BYTE g_originalBytesForMoveGameBeforeD3DXDoEndScene[6] = { 0 };
 Trampoline g_trampolinesForCallGameChatRecipientInGame_[1] = {{0}};
 Trampoline g_trampolinesForCallGameNetEventChatFromHost[1] = {{0}};
 Trampoline g_trampolinesForCallGamePrimaryGameUIVtable_[1] = {{0}};
 Trampoline g_trampolinesForCallGameChatEditBarUIVtable1[1] = {{0}};
 Trampoline g_trampolinesForCallGameChatEditBarUIVtable2[1] = {{0}};
+Trampoline g_trampolinesForMoveGameBeforeD3DXDoEndScene[1] = {{0}};
 GameChatRecipientInGame_Func g_originalGameChatRecipientInGame_ = nullptr;
 GameChatRecipientInGame_Func g_originalGameChatRecipientInGame_Ex = nullptr;
 GameNetEventChatFromHostFunc g_originalGameNetEventChatFromHost = nullptr;
@@ -79,6 +94,7 @@ GamePrimaryGameUIVtable_Func g_originalGamePrimaryGameUIVtable_ = nullptr;
 GameChatInputLogicInGameFunc g_originalGameChatInputLogicInGame = nullptr;
 GameChatEditBarUIVtable1Func g_originalGameChatEditBarUIVtable1 = nullptr;
 GameChatEditBarUIVtable2Func g_originalGameChatEditBarUIVtable2 = nullptr;
+GameBeforeD3DXDoEndSceneFunc g_originalGameBeforeD3DXDoEndScene = nullptr;
 std::map<std::string, DWORD> g_offsetsForGameChatRecipientInGame_[2] = {
     {
         {"1.0.17.5988", 0x0F1035},  {"1.0.20.6048", 0x0F1035},  {"1.20.4.6074", 0x0F1035},
@@ -152,6 +168,17 @@ std::map<std::string, DWORD> g_offsetsForGameChatEditBarUIEvents_ = {
 
 std::vector<std::string> g_signForGameChatEditBarUIEvents_ = { "C7 05 ?? ?? ?? ?? 64 00 0B 40 8B 06 8B 50 10",
                                                               "68 ?? ?? ?? ??" };
+
+std::map<std::string, DWORD> g_offsetsForGameBeforeD3DXDoEndScene = {
+    {"1.0.17.5988", 0x0D456F},  {"1.0.20.6048", 0x0D456F},  {"1.20.4.6074", 0x0D456F},
+    {"1.21.0.6263", 0x0D456F},  {"1.22.0.6328", 0x51F5D0},  {"1.23.0.6352", 0x521360},
+    {"1.24.1.6374", 0x52FCF0},  {"1.24.4.6387", 0x52FD70},  {"1.25.1.6397", 0x52F040},
+    {"1.26.0.6401", 0x52F270},  {"1.27.0.52240",0x0ECFF0} /* 1.27 使用 D3D9 */
+};
+
+std::vector<std::string> g_signForGameBeforeD3DXDoEndScene = { "8B 81 84 05 00 00",
+                                                              "8B 08",
+                                                              "?? 91 ?? 00 00 00" };
 void initializeSigns()
 {
     if (isHighWar3Version()) {
@@ -236,6 +263,7 @@ TRANSLATOR_API bool __stdcall initialize()
     g_offsetForGameChatEditBarUIVtable1 = findVersionOffset(g_offsetsForGameChatEditBarUIVtable1, g_detectedWar3Version, g_signForGameChatEditBarUIVtable1);
     g_offsetForGameChatEditBarUIVtable2 = findVersionOffset(g_offsetsForGameChatEditBarUIVtable2, g_detectedWar3Version, g_signForGameChatEditBarUIVtable2);
     g_offsetForGameChatEditBarUIEvents_ = findVersionOffset(g_offsetsForGameChatEditBarUIEvents_, g_detectedWar3Version, g_signForGameChatEditBarUIEvents_);
+    g_offsetForGameBeforeD3DXDoEndScene = findVersionOffset(g_offsetsForGameBeforeD3DXDoEndScene, g_detectedWar3Version, g_signForGameBeforeD3DXDoEndScene, false, true);
     WriteAsyncLogTo(g_wlogWar3HookPath, L"War3Hook 初始化完成");
     g_isInitialized.store(true, std::memory_order_release);
     return true;
@@ -357,6 +385,10 @@ bool shutdownHookSystem(bool isProcessExiting, void* excludeAddress)
 #ifdef GET_TEXTURE_LIST
     g_blpStopThread = true;
 #endif
+
+    if (g_hWnd && IsWindow(g_hWnd)) {
+        KillTimer(g_hWnd, TIMER_CHAT_SENDER);
+    }
 
     // 1. 先卸载钩子，防止新的API调用进来
     WriteAsyncLogTo(g_wlogWar3HookPath, L"开始手动卸载清理...");
@@ -813,6 +845,7 @@ TRANSLATOR_API bool __stdcall installAllHooks()
     task(L"Logic: PrimaryGameUIVtable", []() { return hookGamePrimaryGameUIVtable_(); });
     task(L"Logic: ChatEditBarUIVtable1", []() { return hookGameChatEditBarUIVtable1(); });
     task(L"Logic: ChatEditBarUIVtable2", []() { return hookGameChatEditBarUIVtable2(); });
+    task(L"Draw: DoEndScene", []() { return hookGameBeforeD3DXDoEndScene(); });
 
     g_hookStatus.store(allOk ? HookState::INSTALLED : HookState::IDLE);
 
@@ -850,6 +883,7 @@ TRANSLATOR_API bool __stdcall uninstallAllHooks()
     task(L"Logic: PrimaryGameUIVtable", unhookGamePrimaryGameUIVtable_);
     task(L"Logic: ChatEditBarUIVtable1", unhookGameChatEditBarUIVtable1);
     task(L"Logic: ChatEditBarUIVtable2", unhookGameChatEditBarUIVtable2);
+    task(L"Draw: BeforeD3DXDoEndScene", unhookGameBeforeD3DXDoEndScene);
 
     // 重置状态
     g_hookStatus.store(HookState::IDLE);
@@ -873,6 +907,74 @@ bool verifyWar3HookIdentity()
 
     WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 身份验证失败：发现 hook.dll 但身份验证（Magic）不匹配。");
     return false;
+}
+
+void startupHookWindow(HWND hWnd)
+{
+    // 1. 防止重复挂钩
+    if (g_oldWndProc) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"ℹ [WndProc] 窗口已处于挂钩状态，跳过。当前 g_hWnd: 0x%p", g_hWnd);
+        return;
+    }
+
+    WriteAsyncLogTo(g_wlogWar3HookPath, L"--- [Translator WndProc 挂钩启动] ---");
+
+    if (hWnd == NULL || !IsWindow(hWnd)) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"  ❌ 错误: 无效的窗口句柄，取消挂钩。");
+        return;
+    }
+
+    g_hWnd = hWnd;
+
+    // 2. 执行挂钩
+    SetLastError(0);
+    g_oldWndProc = (WNDPROC)SetWindowLongPtrW(hWnd, GWLP_WNDPROC, (LONG_PTR)newWndProc);
+
+    if (g_oldWndProc == NULL) {
+        DWORD err = GetLastError();
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"  ❌ SetWindowLongPtrW 失败！错误码: %u", err);
+    } else {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"  ✅ WndProc 挂钩成功！原始地址: 0x%p", (void*)g_oldWndProc);
+
+        // 3. --- 挂钩成功后立刻开启定时器 ---
+        SetTimer(hWnd, TIMER_CHAT_SENDER, 1500, NULL);
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"  - [Timer] 已开启翻译自动发送定时器 (1.5s 间隔)");
+    }
+
+    WriteAsyncLogTo(g_wlogWar3HookPath, L"--- [WndProc 挂钩结束] ---");
+}
+
+LRESULT CALLBACK newWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (msg == WM_TIMER && wParam == TIMER_CHAT_SENDER)
+    {
+        TranslatedChatTask task;
+        bool hasTask = false;
+
+        {
+            std::lock_guard<std::mutex> lock(g_translatedChatMutex);
+            if (!g_translatedChatQueue.empty()) {
+                task = g_translatedChatQueue.front();
+                g_translatedChatQueue.pop();
+                hasTask = true;
+            }
+        }
+
+        if (hasTask) {
+            {
+                std::lock_guard<std::mutex> lock(g_processedIdsMutex);
+                g_processedMsgIds.insert(task.msgId);
+                if(g_processedMsgIds.size() > 100) g_processedMsgIds.erase(g_processedMsgIds.begin());
+            }
+
+            g_isProcessingInternalChat  = true;
+            chatSendGeneral(task.message.c_str(), task.recipient);
+            g_isProcessingInternalChat  = false;
+        }
+        return 0;
+    }
+
+    return CallWindowProc(g_oldWndProc, hWnd, msg, wParam, lParam);
 }
 
 // ============================================================================
@@ -1020,6 +1122,9 @@ __attribute__((naked)) void __stdcall jumpWhenCallGameChatRecipientInGame_(){
 
 int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool networkFlag, const char *text, int recipient, float duration)
 {
+    if (g_isProcessingInternalChat) {
+        return 1;
+    }
     // 1. 安全校验
     if (!isReadable(gameUI, sizeof(void*))) {
         WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [对象] GameUI 指针: 0x%p 不可读", gameUI);
@@ -1056,7 +1161,10 @@ int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool 
         if (isCommand(text)) {
             WriteAsyncLogTo(g_wlogWar3HookPath, L"   🚀 检测到地图模式指令输入");
         } else {
-            requestTranslateMessage(text, 0x20, 0, (uint32_t)recipient, 1);
+            uint64_t currentId = g_msgIdCounter.fetch_add(1);
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"   🆔 分配消息ID: %llu，准备发起异步翻译", currentId);
+            requestTranslateMessage(text, 0x20, 0, (uint32_t)recipient, currentId, 1);
+            return 0;
         }
     }
 
@@ -1259,6 +1367,7 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
 
     int textOffset  = 4;
     const char *rawMessage = (const char*)pPayload + textOffset;
+    uint64_t currentId = g_msgIdCounter.fetch_add(1);
 
     if (textOffset < dataSize && *rawMessage == '\0') {
         rawMessage++;
@@ -1289,8 +1398,8 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 从缓存查找翻译");
                 translatedMessage = getTranslationFromCache(rawMessage);
                 if (!translatedMessage) {
-                    WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 缓存未找到，准备请求翻译并等待结果");
-                    requestTranslateMessage(rawMessage, chatFlag, realPid, extraScope);
+                    WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [Request] 分配 ID:%llu 内容: %hs", currentId, rawMessage);
+                    requestTranslateMessage(rawMessage, chatFlag, realPid, extraScope, currentId);
                     return 0;
                 } else {
                     std::wstring wTranslatedMessage = utf8ToWide(translatedMessage);
@@ -1806,6 +1915,152 @@ int __stdcall doSomeThingsBeforeCallGameChatEditBarUIVtable2(void *charEditBar)
     return 1;
 }
 
+// ============================================================================
+// GameBeforeD3DXDoEndScene Hook 实现
+// ============================================================================
+
+bool hookGameBeforeD3DXDoEndScene()
+{
+    WriteAsyncLogTo(g_wlogWar3HookPath, L"开始安装 game.dll GameBeforeD3DXDoEndScene Hook...");
+
+    if(g_gameDllBaseAddress == 0) g_gameDllBaseAddress = getModuleBaseAddress("game.dll");
+    if(g_offsetForGameBeforeD3DXDoEndScene == 0) g_offsetForGameBeforeD3DXDoEndScene = findVersionOffset(g_offsetsForGameBeforeD3DXDoEndScene, g_detectedWar3Version, g_signForGameBeforeD3DXDoEndScene, false, true);
+
+    if(g_gameDllBaseAddress == 0 || g_offsetForGameBeforeD3DXDoEndScene == 0 || !detectAndSetWar3Version()) {
+        return false;
+    }
+
+    DWORD gameBeforeD3DXDoEndSceneAddress = g_gameDllBaseAddress + g_offsetForGameBeforeD3DXDoEndScene;
+
+    if(!isReadable((void*)gameBeforeD3DXDoEndSceneAddress)){
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"地址 0x%p 不可读取 基地址: 0x%08X 偏移: 0x%08X", gameBeforeD3DXDoEndSceneAddress, g_gameDllBaseAddress, g_offsetForGameBeforeD3DXDoEndScene);
+        return false;
+    }
+
+    // 调用 installInlineHook 安装钩子
+    InlineHookResult inlineHookResult;
+    DWORD rva = g_offsetForGameBeforeD3DXDoEndScene;
+    bool success = installInlineHook(
+        "game.dll",
+        "game.dll",
+        "jumpWhenMoveGameBeforeD3DXDoEndScene",
+        (void*)jumpWhenMoveGameBeforeD3DXDoEndScene,
+        rva,
+        rva + 6,
+        0,
+        g_originalBytesForMoveGameBeforeD3DXDoEndScene,
+        g_currentBytesForMoveGameBeforeD3DXDoEndScene,
+        6,
+        HookType::Other,
+        g_trampolinesForMoveGameBeforeD3DXDoEndScene,
+        sizeof(g_trampolinesForMoveGameBeforeD3DXDoEndScene) / sizeof(g_trampolinesForMoveGameBeforeD3DXDoEndScene[0]),
+        inlineHookResult
+        );
+
+
+    if (success) {
+        if(isReadable(inlineHookResult.trampolineAddress, sizeof(void*))) {
+            g_originalGameBeforeD3DXDoEndScene = (GameBeforeD3DXDoEndSceneFunc)(inlineHookResult.trampolineAddress);
+        }
+
+        if(isReadable((void*)inlineHookResult.returnAddress, sizeof(void*))) {
+            g_gameBeforeD3DXDoEndSceneReturnAddress = (void*)inlineHookResult.returnAddress;
+        }
+
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"[game.dll] GameBeforeD3DXDoEndScene 钩子安装成功。");
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"  - 修改地址: 0x%08X", gameBeforeD3DXDoEndSceneAddress);
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"  - 返回地址: 0x%08X", inlineHookResult.returnAddress);
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"  - 跳板地址: 0x%08X", inlineHookResult.trampolineAddress);
+    } else {
+        g_originalGameBeforeD3DXDoEndScene = nullptr;
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"[game.dll] GameBeforeD3DXDoEndScene 钩子安装失败！");
+        freeTrampolineAllocation(&inlineHookResult.trampolineAddress, L"GameBeforeD3DXDoEndScene");
+    }
+
+    return success;
+}
+
+bool unhookGameBeforeD3DXDoEndScene()
+{
+    return uninstallInlineHook((DWORD)g_gameBeforeD3DXDoEndSceneReturnAddress - 6, g_originalBytesForMoveGameBeforeD3DXDoEndScene, 6);
+}
+
+#if defined(_MSC_VER)
+static __declspec(naked) void __stdcall jumpWhenMoveGameBeforeD3DXDoEndScene()
+{
+    __asm {
+        pushad
+                pushfd
+
+                mov eax, [ecx + 0x584]
+                push eax
+                call doSomeThingsBeforeMoveGameBeforeD3DXDoEndScene
+
+                mov dword ptr [g_gameBeforeD3DXDoEndSceneReturnValue], eax
+
+                popfd
+                popad
+
+                jmp g_originalGameBeforeD3DXDoEndScene
+    }
+}
+#elif defined(__GNUC__)
+static __attribute__((naked)) void __stdcall jumpWhenMoveGameBeforeD3DXDoEndScene(){
+    __asm__ __volatile__ (
+        "pusha\n\t"
+        "pushf\n\t"
+
+        "movl 0x584(%%ecx), %%eax\n\t"
+        "pushl %%eax\n\t"
+        "call %0\n\t"
+
+        "movl %%eax, %2\n\t"
+
+        "popf\n\t"
+        "popa\n\t"
+
+        "jmp *%3\n\t"
+        :
+        : "m"(doSomeThingsBeforeMoveGameBeforeD3DXDoEndScene),
+          "m"(g_gameBeforeD3DXDoEndSceneReturnAddress),
+          "m"(g_gameBeforeD3DXDoEndSceneReturnValue),
+          "m"(g_originalGameBeforeD3DXDoEndScene)
+        : "eax", "memory"
+        );
+}
+#endif
+
+int __stdcall doSomeThingsBeforeMoveGameBeforeD3DXDoEndScene(void **vTablePtr)
+{
+    if (g_oldWndProc == nullptr && g_fnGetCreationParameters != nullptr) {
+        D3DDEVICE_CREATION_PARAMETERS params;
+        if (SUCCEEDED(g_fnGetCreationParameters(vTablePtr, &params))) {
+            if (params.hFocusWindow != NULL) {
+                g_hWnd = params.hFocusWindow;
+                startupHookWindow(params.hFocusWindow);
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"成功通过 GetCreationParameters 挂钩窗口: 0x%p", params.hFocusWindow);
+            }
+        }
+    }
+    if (!isReadable(vTablePtr)) return 0;
+    initD3DGlobals(vTablePtr);;
+    return 0;
+}
+
+void initD3DGlobals(void **vTablePtr)
+{
+    if (vTablePtr == nullptr || !isReadable(vTablePtr)) return;
+
+    void **vTable = (void**)*vTablePtr;
+
+    if (vTable == nullptr || !isReadable(vTable, sizeof(void*) * 10)) return;
+
+    if (g_fnGetCreationParameters == nullptr) {
+        g_fnGetCreationParameters = (tGetCreationParameters)vTable[9];
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"已获取 GetCreationParameters 函数地址: 0x%p", g_fnGetCreationParameters);
+    }
+}
+
 // 进程间通信
 void ipcMessageThread()
 {
@@ -1904,9 +2159,14 @@ void dispatchIpcBufferMessage(const MessageSlot &slot)
 
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [IPC/In] 收到他人消息翻译回应 (已更新缓存)");
             }
-            else {
-                WriteAsyncLogTo(g_wlogWar3HookPath, L"🚀 [IPC/Out] 收到自发消息翻译回应 (准备注入发送流)");
-                // chatSendGeneral(payload->translatedMessage, payload->extraScope);
+            else if (payload->direction == 1) {
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [IPC] 翻译完成，塞入窗口任务队列");
+                std::lock_guard<std::mutex> lock(g_translatedChatMutex);
+                g_translatedChatQueue.push({
+                    payload->msgId,
+                    payload->translatedMessage,
+                    payload->extraScope
+                });
             }
 
             WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 方向: %ls", direction == 1 ? L"Outgoing (发)" : L"Incoming (收)");
@@ -2094,7 +2354,7 @@ bool isNotWord(const char *message)
     return true;
 }
 
-void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint32_t direction)
+void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint64_t currentId, uint32_t direction)
 {
     // 1. 基础安全检查
     if (!g_pSharedData) {
@@ -2114,6 +2374,7 @@ void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, u
 
     // 2. 构造数据
     NotifyTranslatePayload payload = { 0 };
+    payload.msgId = currentId;
     payload.pid = pid;
     payload.flag = flag;
     payload.direction = direction;

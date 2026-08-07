@@ -7,6 +7,9 @@
 #define TRANSLATOR_API __declspec(dllimport)
 #endif
 
+// 定义定时器 ID
+#define TIMER_CHAT_SENDER               9999
+
 #define OPCODE_JCC_LONG_MAX             0x8F
 #define OPCODE_JCC_LONG_MIN             0x80
 #define OPCODE_TWO_BYTE_PREFIX          0x0F
@@ -22,12 +25,25 @@
 #include <mutex>
 #include <map>
 #define ENABLED_LOG
+
+struct D3DDEVICE_CREATION_PARAMETERS {
+    UINT adapterOrdinal;
+    int deviceType;
+    HWND hFocusWindow;
+    DWORD behaviorFlags;
+};
+
 typedef void (__fastcall *GameChatRecipientInGame_Func)(bool networkFlag, const char *text, int recipient, float duration);
 typedef void (__fastcall *GameNetEventChatFromHostFunc)(int fromPid, void *pPayload, int dataSize);
 typedef void (__fastcall *GameChatInputLogicInGameFunc)(void *eventObject);
 typedef void (__fastcall *GamePrimaryGameUIVtable_Func)();
 typedef void (__fastcall *GameChatEditBarUIVtable1Func)();
 typedef void (__fastcall *GameChatEditBarUIVtable2Func)();
+typedef void (__stdcall *GameBeforeD3DXDoEndSceneFunc)();
+typedef HRESULT (STDMETHODCALLTYPE *tGetCreationParameters)(
+    void **vTablePtr,
+    D3DDEVICE_CREATION_PARAMETERS *pParameters
+    );
 
 class TrampolineAllocator {
 private:
@@ -138,6 +154,13 @@ struct TranslatedMessage {
     uint64_t expireTime;
 };
 
+struct TranslatedChatTask {
+    uint64_t msgId;
+    std::string message;
+    uint32_t recipient;
+};
+
+LRESULT CALLBACK newWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 std::vector<std::pair<BYTE, bool>> parsePattern(const std::string &pattern);
 bool isLowerWar3Version(std::string version = "", bool includeV122 = false);
 bool isHighWar3Version(std::string version = "", bool includeV126 = false);
@@ -152,8 +175,10 @@ std::string getWar3Version(const char *war3PathA);
 std::wstring getDllDirectoryW(HMODULE hModule);
 DWORD __stdcall startupHookSystem(LPVOID lpParam);
 DWORD getModuleSize(DWORD baseAddress);
+void initD3DGlobals(void **vTablePtr);
 bool isWar3Exe(const char *fullPath);
 std::string getCurrentWar3Version();
+void startupHookWindow(HWND hWnd);
 bool detectAndSetWar3Version();
 bool verifyWar3HookIdentity();
 bool initializeSharedMemory();
@@ -171,6 +196,8 @@ bool hookGameChatEditBarUIVtable1();
 bool unhookGameChatEditBarUIVtable1();
 bool hookGameChatEditBarUIVtable2();
 bool unhookGameChatEditBarUIVtable2();
+bool hookGameBeforeD3DXDoEndScene();
+bool unhookGameBeforeD3DXDoEndScene();
 void cleanupSharedMemory(bool fullCleanup = true);
 bool shutdownHookSystem(bool isProcessExiting, void* excludeAddress = nullptr);
 bool inlineHookFilter(DWORD reviseAddress, BYTE *currentByteCode, size_t reviseByteSize);
@@ -195,7 +222,7 @@ bool isNotWord(const char *message);
 bool isFastMessage(IpcMessageType type);
 bool isReadable(const void *address, size_t size = 4);
 
-void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint32_t direction = 0);
+void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint64_t currentId, uint32_t direction = 0);
 const char *getTranslationFromCache(const char *sourceText);
 const char *getDefaultShoutContent(const char *content);
 
@@ -208,12 +235,14 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
 int __stdcall doSomeThingsBeforeCallGamePrimaryGameUIVtable_(void *primaryGameUI);
 int __stdcall doSomeThingsBeforeCallGameChatEditBarUIVtable1(void *chatManager);
 int __stdcall doSomeThingsBeforeCallGameChatEditBarUIVtable2(void *chatEditBar);
+int __stdcall doSomeThingsBeforeMoveGameBeforeD3DXDoEndScene(void **vTablePtr);
 
 [[maybe_unused]] static void __stdcall jumpWhenCallGameChatRecipientInGame_();
 [[maybe_unused]] static void __stdcall jumpWhenCallGameNetEventChatFromHost();
 [[maybe_unused]] static void __stdcall jumpWhenCallGamePrimaryGameUIVtable_();
 [[maybe_unused]] static void __stdcall jumpWhenCallGameChatEditBarUIVtable1();
 [[maybe_unused]] static void __stdcall jumpWhenCallGameChatEditBarUIVtable2();
+[[maybe_unused]] static void __stdcall jumpWhenMoveGameBeforeD3DXDoEndScene();
 #ifdef ENABLED_LOG
 void logBytecode(const BYTE *data, size_t size, const wchar_t *description, bool uppercase = true);;
 #endif

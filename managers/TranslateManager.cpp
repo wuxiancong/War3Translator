@@ -67,12 +67,16 @@ void TranslateManager::initTranslateManager()
     loadCache();
 }
 
-void TranslateManager::requestTranslationWithMetadata(quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString message, QString language)
+void TranslateManager::requestTranslationWithMetadata(quint64 msgId, quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString message, QString language)
 {
     QElapsedTimer timer;
     timer.start();
 
-    DebugHelper::recordTreeLog("chat_translate", "┌─ ⚙ [TranslateManager] 正在处理元数据翻译请求", 0);
+    DebugHelper::recordTreeLog("chat_translate", QString("┌─ ⚙ [TranslateManager] 正在处理元数据翻译请求 | ID: %1").arg(msgId), 0);
+
+    DebugHelper::recordTreeLog("chat_translate",
+                               QString("├─ 🆔 消息唯一ID: %1")
+                                   .arg(msgId), 1);
 
     DebugHelper::recordTreeLog("chat_translate",
                                QString("├─ 👤 玩家上下文: PID=%1 | Flag=0x%2 | ExtraScope=0x%3")
@@ -93,9 +97,9 @@ void TranslateManager::requestTranslationWithMetadata(quint32 pid, quint32 flag,
     }
 
     DebugHelper::recordTreeLog("chat_translate",
-                               QString("└─ 🏁 任务执行完毕 (API耗时: %1 ms)，正在发射 translationTaskFinished 信号").arg(timer.elapsed()), 0, true);
+                               QString("└─ 🏁 任务执行完毕 (API耗时: %1 ms)，正在发射信号").arg(timer.elapsed()), 0, true);
 
-    emit translationTaskFinished(pid, flag, extraScope, direction, message, translatedMessage, language);
+    emit translationTaskFinished(msgId, pid, flag, extraScope, direction, message, translatedMessage, language);
 }
 
 void TranslateManager::requestAllTranslations(const QString &sourceText, const QString &sourceLangCode)

@@ -29,7 +29,7 @@ public:
     void initTranslateManager();
     bool isProcessing() const { return m_isProcessing; }
 
-    Q_INVOKABLE void requestTranslationWithMetadata(quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString message, QString language);
+    Q_INVOKABLE void requestTranslationWithMetadata(quint64 msgId, quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString message, QString language);
     Q_INVOKABLE void requestAllTranslations(const QString &sourceText, const QString &sourceLangCode);
     Q_INVOKABLE QString translateSingleSync(const QString &sourceText, const QString &targetLangCode);
     Q_INVOKABLE QString getTranslation(const QString &sourceText, const QString &targetLangCode);
@@ -39,7 +39,7 @@ public:
 signals:
     void cacheUpdated();
     void isProcessingChanged();
-    void translationTaskFinished(quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString originalMessage, QString translatedMessage, QString language);
+    void translationTaskFinished(quint64 msgId, quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString originalMessage, QString translatedMessage, QString language);
 
 private:
     explicit TranslateManager(QObject *parent = nullptr);

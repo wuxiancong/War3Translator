@@ -77,22 +77,22 @@ ApplicationWindow {
         function onIncomingMessageIntercepted(pid, sender, text, direction) {
             var currentTime = Qt.formatDateTime(new Date(), "hh:mm:ss")
             chatLogModel.insert(0, {
-                "pid": pid,
-                "sender": sender,
-                "origin": text,
-                "time": currentTime,
-                "translated": "",
-                "isDone": false,
-                "direction": direction
-            })
+                                    "pid": pid,
+                                    "sender": sender,
+                                    "origin": text,
+                                    "time": currentTime,
+                                    "translated": "",
+                                    "isDone": false,
+                                    "direction": direction
+                                })
         }
     }
 
     Connections {
         target: TranslateManager
 
-        function onTranslationTaskFinished(pid, flag, extraScope, direction, originalMessage, translatedMessage, targetLang) {
-            console.log("▶ [QML 翻译回调]");
+        function onTranslationTaskFinished(msgId, pid, flag, extraScope, direction, originalMessage, translatedMessage, targetLang) {
+            console.log("▶ [QML 翻译回调] ID: " + msgId);
             console.log("   ├─ 玩家PID:", pid, " | 方向:", direction, " (1=发送/本地, 0=接收/他人)");
             console.log("   ├─ 目标语种:", targetLang);
             console.log("   └─ 文本内容: \"" + originalMessage + "\" -> \"" + translatedMessage + "\"");
@@ -102,23 +102,25 @@ ApplicationWindow {
             for(var i = 0; i < chatLogModel.count; i++) {
                 var item = chatLogModel.get(i);
 
-                if(item.pid === pid && item.origin === originalMessage) {
+                var isMatch = (item.msgId !== undefined && item.msgId !== 0)
+                        ? (item.msgId === msgId)
+                        : (item.pid === pid && item.origin === originalMessage);
+
+                if(isMatch) {
                     foundMatch = true;
 
-                    console.log("   ✅ 在数据模型索引 " + i + " 处找到对应条目");
+                    console.log("   ✅ 在数据模型索引 " + i + " 处找到对应条目 [ID: " + msgId + "]");
 
                     if (item.direction === 1) {
                         var langName = SettingsManager.getLanguageName(targetLang);
                         var langTag = "[" + langName + "] ";
 
                         console.log("   ├─ 模式: 发送 (多语种追加)");
-                        console.log("   ├─ 当前已存译文:", item.translated);
 
                         var newText = item.translated === "" ? langTag + translatedMessage
                                                              : item.translated + "\n" + langTag + translatedMessage;
 
                         chatLogModel.setProperty(i, "translated", newText);
-                        console.log("   └─ 已成功更新模型中的拼接文本。");
                     }
                     else {
                         console.log("   ├─ 模式: 接收 (单语种替换)");
@@ -126,13 +128,16 @@ ApplicationWindow {
                     }
 
                     chatLogModel.setProperty(i, "isDone", true);
+                    if (item.msgId === undefined || item.msgId === 0) {
+                        chatLogModel.setProperty(i, "msgId", msgId);
+                    }
                     break;
                 }
             }
 
             if (!foundMatch) {
                 console.warn("   ❌ [警告] 在 chatLogModel 中未找到匹配项！");
-                console.warn("      期待的 PID:", pid, " 期待的原文: \"" + originalMessage + "\"");
+                console.warn("      期待的 ID:", msgId, " PID:", pid, " 期待的原文: \"" + originalMessage + "\"");
             }
         }
     }
