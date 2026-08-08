@@ -132,7 +132,7 @@ struct MessageSlot {
 
     union {
         sockaddr_in     addr;                                       // 用于 MSG_TYPE_CONNECT_REQUEST
-        char            data[MAX_UDP_PACKET_SIZE];                      // 用于数据包
+        char            data[MAX_IPC_PACKET_SIZE];                      // 用于数据包
     } payload;
 };
 

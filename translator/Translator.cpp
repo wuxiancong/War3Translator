@@ -1233,7 +1233,7 @@ int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool 
     // 1. 安全校验
     if (!isReadable(gameUI, sizeof(void*))) {
         WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [对象] GameUI 指针: 0x%p 不可读", gameUI);
-        return 0;
+        return 1;
     }
 
     // 2. 实例匹配校验
@@ -1244,7 +1244,7 @@ int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool 
                         L"   ├─ [希望] GameUI 指针: 0x%p", g_primaryGameUI);
         WriteAsyncLogTo(g_wlogWar3HookPath,
                         L"   └─ [实际] GameUI 指针: 0x%p", gameUI);
-        return 0;
+        return 1;
     }
 
     // 3. 过滤掉空文本
