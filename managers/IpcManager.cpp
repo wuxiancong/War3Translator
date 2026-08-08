@@ -384,20 +384,26 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
         const auto *payload = reinterpret_cast<const TranslatedResultPayload*>(message.payload.data);
         quint32 direction = payload->direction;
         quint32 msgId = static_cast<quint32>(payload->msgId);
+
         qDebug().noquote() << QString("✅ [IPC Mapped] 收到 DLL 确认回调 | ID: %1 | 目标PID: %2 | 方向: %3")
-                                  .arg(msgId).arg(payload->pid, direction);
+                                  .arg(msgId).arg(payload->pid).arg(direction);
 
         if (direction == 0) {
-            QString translatedMessage = QString::fromUtf8(payload->translatedMessage).trimmed();
+            QString taggedMessage = QString::fromUtf8(payload->taggedMessage).trimmed();
+            QString cleanMessage = QString::fromUtf8(payload->translatedMessage).trimmed();
 
             DebugHelper::recordTreeLog("ipc_mapped", QString("┌─ ✅ [Mapped] 接收到 DLL 确认 | ID: %1").arg(msgId), 0);
-            DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 目标: PID=%1").arg(payload->pid), 1);
-            DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 内容: \"%1\"").arg(translatedMessage), 1);
-            NetworkManager::instance().sendTranslatedMessage(payload->pid, payload->flag, payload->extraScope, translatedMessage);
-            qDebug().noquote() << QString("   └─ 🌐 ID: %1 的译文已同步至服务器缓冲区").arg(msgId);
-            DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文重发确认已同步至服务器", 0, true);
-        } else {
-            qDebug() << "ℹ [IPC Mapped] 忽略发送端自身的映射确认 | ID:" << payload->msgId;
+            DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 来源: 接收(Incoming) | 目标PID: %1").arg(payload->pid), 1);
+            DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 译文: \"%1\"").arg(cleanMessage), 1);
+            DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 标签: \"%1\"").arg(taggedMessage), 1);
+
+            NetworkManager::instance().sendTranslatedMessage(payload->pid, payload->flag, payload->extraScope, taggedMessage);
+
+            qDebug().noquote() << QString("   └─ 🌐 ID: %1 的带标签译文已同步至服务器").arg(msgId);
+            DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文(带标签)已同步至服务器", 0, true);
+        }
+        else {
+            qDebug() << "ℹ [IPC Mapped] 忽略发送端自身的映射确认 | ID:" << msgId;
         }
         break;
     }

@@ -1210,7 +1210,7 @@ int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool 
     if (isReadable(text, 14) && strlen(text) > 13 && text[0] == '|' && text[1] == 'c') {
         char hexBuf[9] = {0};
         memcpy(hexBuf, text + 2, 8);
-        uint32_t parsedId = (uint32_t)strtoul(hexBuf, nullptr, 16);
+        uint32_t parsedId = static_cast<uint32_t>(strtoul(hexBuf, nullptr, 16));
 
         {
             std::lock_guard<std::mutex> lock(g_loggedIdsMutex);
@@ -1439,17 +1439,15 @@ __attribute__((naked)) void __stdcall jumpWhenCallGameNetEventChatFromHost() {
 int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void **ppPayload, int *pDataSize)
 {
     int realPid = fromPid & 0x000000FF;
-
     bool isPidInvalid = (realPid < 0 || realPid >= MAX_SLOT);
 
     if (isPidInvalid) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ [NetEventChatFromHost] 警告: 检测到异常 PID (原始: 0x%X, 提取: %d)，疑似栈偏移错误",
-                        fromPid, realPid);
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ [NetEventChatFromHost] 警告: 检测到异常 PID (原始: 0x%X, 提取: %d)", fromPid, realPid);
         return 1;
     }
 
     if (!isReadable(ppPayload, sizeof(void*)) || !isReadable(pDataSize, sizeof(void*))) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [NetEventChatFromHost] 错误: 传入的参数不可读");
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [NetEventChatFromHost] 错误: 传入参数不可读");
         return 1;
     }
 
@@ -1457,7 +1455,7 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
     int dataSize = *pDataSize;
 
     if (!isReadable(pPayload, dataSize) || dataSize < 4) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [NetEventChatFromHost] 错误: 数据不可读或长度太短");
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [NetEventChatFromHost] 错误: 数据不可读或过短");
         return 1;
     }
 
@@ -1467,24 +1465,45 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
         extraScope = *(unsigned int*)((unsigned char*)pPayload + 1);
     }
 
-    WriteAsyncLogTo(g_wlogWar3HookPath, L"📥 [NetEventChatFromHost] 收到同步包");
-    WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 原始 PID: 0x%X (提取后: %d)", fromPid, realPid);
-    WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 消息标志: 0x%08X", chatFlag);
-    WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 消息范围: 0x%08X", extraScope);
-    WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 总计长度: %d 字节", dataSize);
-    logBytecode((const BYTE*)pPayload, (size_t)dataSize, L"   ├─ 原始字节", true);
+    WriteAsyncLogTo(g_wlogWar3HookPath, L"📥 [NetEventChatFromHost] 收到同步包 | PID: %d | Flag: 0x%X", realPid, chatFlag);
 
-    int textOffset  = 4;
+    int textOffset = 4;
     const char *rawMessage = (const char*)pPayload + textOffset;
-    uint32_t currentId = g_msgIdCounter.fetch_add(1);
 
     if (textOffset < dataSize && *rawMessage == '\0') {
         rawMessage++;
         textOffset++;
     }
 
+    if (rawMessage && strlen(rawMessage) >= 13 && rawMessage[0] == '|' && rawMessage[1] == 'c')
+    {
+        char hexBuf[9] = {0};
+        memcpy(hexBuf, rawMessage + 2, 8);
+
+        if (rawMessage[10] == ' ' && rawMessage[11] == '|' && rawMessage[12] == 'r')
+        {
+            uint32_t parsedId = static_cast<uint32_t>(strtoul(hexBuf, nullptr, 16));
+
+            if (parsedId == 0xFFFFFFFF) {
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"   🛡 [自屏蔽] 识别到远程固定翻译标记 [FFFFFFFF ]，执行去标记放行");
+            } else {
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"   🛡 [自屏蔽] 识别到流水线翻译标记 [0x%08X ]，执行去标记放行", parsedId);
+            }
+
+            memcpy(g_translateBuffer, pPayload, textOffset);
+            const char *realText = rawMessage + 13;
+            strncpy_s(g_translateBuffer + textOffset, 1024 - textOffset, realText, _TRUNCATE);
+
+            int newLen = textOffset + (int)strlen(realText) + 1;
+            *ppPayload = g_translateBuffer;
+            *pDataSize = newLen;
+
+            return 1;
+        }
+    }
+
     if (isCommand(rawMessage) || isNotWord(rawMessage)) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 检测到无需翻译的消息");
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 检测到指令或纯符号，跳过翻译");
         return 1;
     }
 
@@ -1492,35 +1511,38 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
     std::wstring wText = utf8ToWide(rawMessage);
 
     if (wText.empty()) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 文本内容: [解析失败，首字节为Null]");
-    } else {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 文本内容: %ls", wText.c_str());
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 文本解析为空");
+        return 1;
+    }
 
-        if (realPid == 2) {
-            WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 检测到机器人消息 (PID: %d)", realPid);
-            return 2;
-        }
+    WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 文本内容: %ls", wText.c_str());
 
-        if (g_pSharedData) {
-            translatedMessage = getDefaultShoutContent(rawMessage);
+    if (realPid == 2) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 检测到机器人消息，放行");
+        return 2;
+    }
+
+    if (g_pSharedData) {
+        translatedMessage = getDefaultShoutContent(rawMessage);
+        if (!translatedMessage) {
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 从缓存查找翻译...");
+            translatedMessage = getTranslationFromCache(rawMessage);
             if (!translatedMessage) {
-                WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 从缓存查找翻译");
-                translatedMessage = getTranslationFromCache(rawMessage);
-                if (!translatedMessage) {
-                    WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [Request] 分配 ID: %lu 内容: %hs", currentId, rawMessage);
-                    requestTranslateMessage(rawMessage, chatFlag, realPid, extraScope, currentId, 0);
-                    int isVerified = verifyWar3HookIdentity(g_gameNetEventChatFromHostReviseAddress);
-                    WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 🛡 [身份校验] Hook插件验证: %ls (拦截结果: %d)",
-                                    isVerified > 0 ? L"✅ 通过" : L"❌ 失败", isVerified > 0 ? L"拦截" : L"放行");
-                    return isVerified > 0 ? 0 : 1;
-                } else {
-                    std::wstring wTranslatedMessage = utf8ToWide(translatedMessage);
-                    WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 从缓存中找到翻译，自动转为本地语言: %s", wTranslatedMessage.c_str());
-                }
+                uint32_t fixedId = 0xFFFFFFFF;
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"   🧠 [Request] 分配固定ID: 0x%08X，申请异步翻译", fixedId);
+                requestTranslateMessage(rawMessage, chatFlag, realPid, extraScope, fixedId, 0);
+                int isVerified = verifyWar3HookIdentity(g_gameNetEventChatFromHostReviseAddress);
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 🛡 [Position] 是否为当前模块钩子: %ls (结果: %ls)",
+                                isVerified > 0 ? L"✅ 是" : L"❌ 不是", isVerified > 0 ? L"拦截" : L"放行");
+
+                return isVerified > 0 ? 0 : 1;
             } else {
                 std::wstring wTranslatedMessage = utf8ToWide(translatedMessage);
-                WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 识别到默认喊话，自动转为本地语言: %s", wTranslatedMessage.c_str());
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 命中缓存: %ls", wTranslatedMessage.c_str());
             }
+        } else {
+            std::wstring wTranslatedMessage = utf8ToWide(translatedMessage);
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 命中默认喊话: %ls", wTranslatedMessage.c_str());
         }
     }
 
@@ -1530,8 +1552,9 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
         int newLen = textOffset + (int)strlen(translatedMessage) + 1;
         *ppPayload = g_translateBuffer;
         *pDataSize = newLen;
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ ✅ 内容已重定向，新长度: %d", newLen);
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ ✅ 译文已重定向显示");
     }
+
     return 1;
 }
 
