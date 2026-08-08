@@ -317,7 +317,9 @@ bool NetworkManager::initNetworkManager() {
 bool NetworkManager::isFastMessage(IpcMessageType type) const
 {
     switch (type) {
+    case MSG_TYPE_TRANSLATE_MAPPED:
     case MSG_TYPE_TRANSLATE_REQUEST:
+    case MSG_TYPE_TRANSLATE_RESPONSE:
         return true;
 
     default:
@@ -346,7 +348,7 @@ bool NetworkManager::sendIpcBufferMessage(IpcMessageType type, const QString &da
 
     // 2. 准备数据并校验长度
     QByteArray dataBytes = data.toUtf8();
-    if (dataBytes.size() >= MAX_PACKET_SIZE) {
+    if (dataBytes.size() >= MAX_IPC_PACKET_SIZE) {
         qWarning() << "❌ [IPC] 指令过长，无法发送 (Size:" << dataBytes.size() << ")";
         return false;
     }
@@ -363,15 +365,15 @@ bool NetworkManager::sendIpcBufferMessage(IpcMessageType type, const QString &da
     LONG r = *pReadIdx;
     LONG w = *pWriteIdx;
 
-    int currentUsage = (w >= r) ? (w - r) : (BUFFER_SIZE - r + w);
-    int usagePercent = (currentUsage * 100) / BUFFER_SIZE;
+    int currentUsage = (w >= r) ? (w - r) : (MAX_IPC_PACKET_SIZE - r + w);
+    int usagePercent = (currentUsage * 100) / MAX_IPC_PACKET_SIZE;
 
     if (usagePercent >= 80) {
         qWarning() << QString("⚠ [IPC %1 Load] 负载过高! %2/%3 (%4%) | 类型: %5")
-                          .arg(isFast ? "FAST" : "SLOW").arg(currentUsage).arg(BUFFER_SIZE).arg(usagePercent).arg(type);
+                          .arg(isFast ? "FAST" : "SLOW").arg(currentUsage).arg(MAX_IPC_PACKET_SIZE).arg(usagePercent).arg(type);
     }
 
-    LONG next_write = (w + 1) % BUFFER_SIZE;
+    LONG next_write = (w + 1) % MAX_IPC_PACKET_SIZE;
     if (next_write == r) {
         qWarning() << QString("🔥 [IPC %1 Overload] 缓冲区满！丢弃类型: %2")
                           .arg(isFast ? "FAST" : "SLOW").arg(type);
@@ -390,7 +392,7 @@ bool NetworkManager::sendIpcBufferMessage(IpcMessageType type, const QString &da
         memcpy(slot.payload.data, dataBytes.constData(), dataBytes.size());
     }
     // 确保以 Null 结尾
-    if (slot.size < MAX_PACKET_SIZE) {
+    if (slot.size < MAX_IPC_PACKET_SIZE) {
         slot.payload.data[slot.size] = '\0';
     }
 
@@ -432,7 +434,7 @@ bool NetworkManager::sendIpcBufferMessage(IpcMessageType type, const void *pData
     auto *sharedData = ipc.m_pSharedData;
 
     // 3. 长度检查
-    if (dataSize > MAX_PACKET_SIZE) {
+    if (dataSize > MAX_IPC_PACKET_SIZE) {
         qWarning() << "❌ [IPC Buffer] 数据过长 (" << dataSize << " bytes)";
         DebugHelper::recordTreeLog(logFile, QString("❌ IPC 失败: 载荷过长 (%1)").arg(dataSize), 1, true);
         return false;
@@ -448,16 +450,16 @@ bool NetworkManager::sendIpcBufferMessage(IpcMessageType type, const void *pData
     LONG r = *pReadIdx;
     LONG w = *pWriteIdx;
 
-    int currentUsage = (w >= r) ? (w - r) : (BUFFER_SIZE - r + w);
-    int usagePercent = (currentUsage * 100) / BUFFER_SIZE;
+    int currentUsage = (w >= r) ? (w - r) : (MAX_IPC_PACKET_SIZE - r + w);
+    int usagePercent = (currentUsage * 100) / MAX_IPC_PACKET_SIZE;
 
     if (usagePercent >= 80) {
         qWarning() << QString("⚠ [IPC %1 Load] 负载高! %2/%3 (%4%) | 类型: %5")
-                          .arg(isFast ? "FAST" : "SLOW").arg(currentUsage).arg(BUFFER_SIZE).arg(usagePercent).arg(type);
+                          .arg(isFast ? "FAST" : "SLOW").arg(currentUsage).arg(MAX_IPC_PACKET_SIZE).arg(usagePercent).arg(type);
     }
 
     // 6. 写入位置计算与满位检查
-    LONG next_write = (w + 1) % BUFFER_SIZE;
+    LONG next_write = (w + 1) % MAX_IPC_PACKET_SIZE;
     if (next_write == r) {
         qWarning() << QString("🔥 [IPC %1 Overload] 缓冲区满！丢弃类型: %2").arg(isFast ? "FAST" : "SLOW").arg(type);
         DebugHelper::recordTreeLog(logFile, "❌ IPC 失败: 缓冲区溢出", 1, true);
@@ -474,7 +476,7 @@ bool NetworkManager::sendIpcBufferMessage(IpcMessageType type, const void *pData
     memcpy(slot.payload.data, pData, dataSize);
 
     // 如果空间允许，在末尾补一个零
-    if (dataSize < MAX_PACKET_SIZE) {
+    if (dataSize < MAX_IPC_PACKET_SIZE) {
         slot.payload.data[dataSize] = '\0';
     }
 
@@ -983,12 +985,6 @@ void NetworkManager::onTcpReadyRead()
         PacketHeader header;
         m_tcpSocket->peek(reinterpret_cast<char*>(&header), sizeof(PacketHeader));
 
-        if (header.payloadLen > MAX_PACKET_SIZE) {
-            qWarning() << "❌ [TCP] 收到非法超大包 (Len:" << header.payloadLen << ")，断开连接防攻击";
-            m_tcpSocket->disconnectFromHost();
-            return;
-        }
-
         // 3. 校验魔数
         if (header.magic != PROTOCOL_MAGIC) {
             qWarning() << "❌ [TCP] 协议头错误，断开连接";
@@ -1116,32 +1112,39 @@ void NetworkManager::onPublicSocketReadyRead()
     }
 }
 
-void NetworkManager::onTranslationFinished(quint64 msgId, quint32 pid, quint32 flag, quint32 extraScope,
+void NetworkManager::onTranslationFinished(quint32 msgId, quint32 pid, quint32 flag, quint32 extraScope,
                                            quint32 direction, QString originalMessage, QString translatedMessage, QString language)
 {
-    DebugHelper::recordTreeLog("chat_translate", QString("┌─ 🔔 [NetworkManager] 接收到翻译任务结果 | ID: %1").arg(msgId), 0);
+    DebugHelper::recordTreeLog("chat_translate", QString("┌─ 🔔 [任务完成] ID: %1 | 目标语言: %2").arg(msgId).arg(language), 0);
 
-    QString finalMessage = translatedMessage;
-
-    if (finalMessage.isEmpty()) {
-        finalMessage = originalMessage;
-        DebugHelper::recordTreeLog("chat_translate", "├─ ⚠ 翻译失败/结果为空，执行原文回退策略", 1);
+    // 如果翻译失败则回退原文
+    QString standardTranslated = translatedMessage;
+    bool isFallback = false;
+    if (standardTranslated.isEmpty()) {
+        standardTranslated = originalMessage;
+        isFallback = true;
     }
 
+    // 生成唯一标识符标签 (|c + AARRGGBB + 空格 + |r)
+    QString hexId = QString("%1").arg(msgId, 8, 16, QChar('0')).toUpper();
+    QString tag = QString("|c%1 |r").arg(hexId);
+
+    // 生成带标签的译文
+    QString taggedMessage = tag + standardTranslated;
     QString dirStr = (direction == 1) ? "Outgoing (发送)" : "Incoming (接收)";
-    DebugHelper::recordTreeLog("chat_translate", QString("├─ 方向: %1").arg(dirStr), 1);
-
+    DebugHelper::recordTreeLog("chat_translate", QString("├─ 🚩 状态: %1 | 来自 PID: %2").arg(dirStr).arg(pid), 1);
     DebugHelper::recordTreeLog("chat_translate",
-                               QString("├─ 👤 上下文: PID=%1 | Flag=0x%2 | Scope=0x%3")
-                                   .arg(pid)
-                                   .arg(QString::number(flag, 16).toUpper())
-                                   .arg(QString::number(extraScope, 16).toUpper()), 1);
+                               QString("├─ 🛠 协议: Flag=0x%1 | Scope=0x%2")
+                                   .arg(QString::number(flag, 16).toUpper(), QString::number(extraScope, 16).toUpper()), 1);
 
-    DebugHelper::recordTreeLog("chat_translate",
-                               QString("├─ 📝 内容: \"%1\" -> \"%2\"")
-                                   .arg(originalMessage, finalMessage), 1);
+    if (isFallback) {
+        DebugHelper::recordTreeLog("chat_translate", "├─ ⚠ 策略: 翻译结果为空，已自动回退至原文", 1);
+    }
 
-    // 填充 IPC 载荷
+    DebugHelper::recordTreeLog("chat_translate", QString("├─ 📝 原文: %1").arg(originalMessage), 1);
+    DebugHelper::recordTreeLog("chat_translate", QString("├─ ⚙ 译文: %1").arg(standardTranslated), 1);
+    DebugHelper::recordTreeLog("chat_translate", QString("├─ 🏷 最终: %1").arg(taggedMessage), 1);
+
     TranslatedResultPayload payload;
     memset(&payload, 0, sizeof(payload));
 
@@ -1152,15 +1155,17 @@ void NetworkManager::onTranslationFinished(quint64 msgId, quint32 pid, quint32 f
     payload.direction = direction;
 
     QByteArray srcBa = originalMessage.toUtf8();
-    QByteArray dstBa = finalMessage.toUtf8();
+    QByteArray dstBa = standardTranslated.toUtf8();
+    QByteArray tagBa = taggedMessage.toUtf8();
 
-    qstrncpy(payload.originalMessage, srcBa.data(), sizeof(payload.originalMessage));
-    qstrncpy(payload.translatedMessage, dstBa.data(), sizeof(payload.translatedMessage));
+    qstrncpy(payload.originalMessage, srcBa.constData(), sizeof(payload.originalMessage));
+    qstrncpy(payload.translatedMessage, dstBa.constData(), sizeof(payload.translatedMessage));
+    qstrncpy(payload.taggedMessage, tagBa.constData(), sizeof(payload.taggedMessage));
 
     IpcManager::instance().sendIpcBufferMessage(MSG_TYPE_TRANSLATE_RESPONSE, &payload, sizeof(payload));
 
     DebugHelper::recordTreeLog("chat_translate",
-                               QString("└─ 🚀 译文(ID:%1) 已通过 IPC 回传 DLL").arg(msgId), 0, true);
+                               QString("└─ 🚀 译文(ID:%1) 复合载荷已推送到 IPC 队列").arg(msgId), 0, true);
 }
 
 void NetworkManager::handleIncomingDatagram(const QNetworkDatagram &datagram)

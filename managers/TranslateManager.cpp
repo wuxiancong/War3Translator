@@ -67,7 +67,7 @@ void TranslateManager::initTranslateManager()
     loadCache();
 }
 
-void TranslateManager::requestTranslationWithMetadata(quint64 msgId, quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString message, QString language)
+void TranslateManager::requestTranslationWithMetadata(quint32 msgId, quint32 pid, quint32 flag, quint32 extraScope, quint32 direction, QString message, QString language)
 {
     QElapsedTimer timer;
     timer.start();

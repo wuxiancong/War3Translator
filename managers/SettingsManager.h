@@ -26,6 +26,7 @@ class SettingsManager : public QObject
     Q_PROPERTY(QString translateLanguage READ translateLanguage WRITE setTranslateLanguage NOTIFY translateLanguageChanged)
     Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
+    Q_PROPERTY(QString appName READ appName CONSTANT)
 
 public:
     static SettingsManager &instance();
@@ -54,6 +55,7 @@ public:
     Q_INVOKABLE void setTranslateSendInterval(quint32 interval);
     Q_INVOKABLE bool isDefaultShoutContent(const QString &content);
     Q_INVOKABLE bool isDefaultSchemeName(const QString &name) const;
+    Q_INVOKABLE QString appName() const { return tr("War3 翻译助手"); }
     Q_INVOKABLE QString serverAddresses(quint32 index = 0) const;
     Q_INVOKABLE quint16 serverPort() const;
     Q_INVOKABLE QString hardwareId() const;

@@ -35,7 +35,7 @@ static void logWriterThread() {
     auto GetHandle = [&](const std::wstring& path) -> HANDLE {
         auto it = handleCache.find(path);
         if (it != handleCache.end()) return it->second;
-        HANDLE hFile = CreateFileW(path.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        HANDLE hFile = CreateFileW(path.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hFile != INVALID_HANDLE_VALUE) handleCache[path] = hFile;
         return hFile;
     };

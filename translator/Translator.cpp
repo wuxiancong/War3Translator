@@ -36,9 +36,11 @@ bool g_allHooksInstalled = false;
 std::mutex g_installMutex;
 std::atomic<HookState> g_hookStatus(HookState::IDLE);
 std::atomic<bool> g_isInitialized(false);
-std::atomic<uint64_t> g_msgIdCounter(1);
-std::set<uint64_t> g_processedMsgIds;
+std::atomic<uint32_t> g_msgIdCounter(1);
+std::set<uint32_t> g_loggedTaggedMsgIds;
+std::set<uint32_t> g_processedMsgIds;
 std::mutex g_processedIdsMutex;
+std::mutex g_loggedIdsMutex;
 thread_local bool g_isProcessingInternalChat  = false;
 uint32_t g_lastTranslateSendInterval = 0;
 
@@ -65,6 +67,7 @@ void *g_gameChatEditBarUIVtable1ReturnValue = nullptr;
 void *g_gameChatEditBarUIVtable2ReturnValue = nullptr;
 void *g_gameBeforeD3DXDoEndSceneReturnValue = nullptr;
 void *g_gameChatRecipientInGame_ReturnAddress = nullptr;
+void *g_gameNetEventChatFromHostReviseAddress = nullptr;
 void *g_gameNetEventChatFromHostReturnAddress = nullptr;
 void *g_gamePrimaryGameUIVtable_ReturnAddress = nullptr;
 void *g_gameChatEditBarUIVtable1ReturnAddress = nullptr;
@@ -893,21 +896,58 @@ TRANSLATOR_API bool __stdcall uninstallAllHooks()
     return totalSuccess;
 }
 
-bool verifyWar3HookIdentity()
+int verifyWar3HookIdentity(void *reviseAddress)
 {
     HMODULE hModule = GetModuleHandleW(L"hook.dll");
-    if (!hModule) return false;
+    if (!hModule) return -1;
 
     typedef uint32_t (__stdcall *tGetMagic)();
     auto pfn = (tGetMagic)GetProcAddress(hModule, "isWar3HookInitialized");
 
-    if (pfn && pfn() == WAR3HOOK_MAGIC) {
-        WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 身份验证成功：发现正版 War3Hook 模块。");
-        return true;
+    if (!pfn || pfn() != WAR3HOOK_MAGIC) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 身份验证失败：发现 hook.dll 但 Magic 不匹配。");
+        return -1;
     }
 
-    WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ 身份验证失败：发现 hook.dll 但身份验证（Magic）不匹配。");
-    return false;
+    int result = checkJumpTargetInModule(hModule, reviseAddress);
+    if (result == 1) {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 验证通过：正版 War3Hook 且跳转目标合法。");
+    } else {
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ 验证提示：War3Hook 身份正确，但跳转地址 0x%p 已被劫持至模块外。", reviseAddress);
+    }
+
+    return result;
+}
+
+int checkJumpTargetInModule(HMODULE hModule, void *reviseAddress)
+{
+    if (reviseAddress == nullptr) return 0;
+
+    // 1. 确保地址可读
+    if (!isReadable(reviseAddress, 5)) return 0;
+
+    BYTE *pOpcode = (BYTE*)reviseAddress;
+
+    // 2. 检查是否为 E9 (JMP relative)
+    if (pOpcode[0] != 0xE9) {
+        return 0;
+    }
+
+    // 3. 计算跳转目标地址
+    int32_t relativeOffset = *(int32_t*)(pOpcode + 1);
+    DWORD jumpTarget = (DWORD)pOpcode + 5 + relativeOffset;
+
+    // 4. 获取目标模块的范围
+    DWORD base = (DWORD)hModule;
+    DWORD size = getModuleSize(base);
+    DWORD end = base + size;
+
+    // 5. 判断目标是否在范围内
+    if (jumpTarget >= base && jumpTarget < end) {
+        return 1;
+    }
+
+    return 0;
 }
 
 void startupHookWindow(HWND hWnd)
@@ -954,39 +994,60 @@ LRESULT CALLBACK newWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_TIMER && wParam == TIMER_CHAT_SENDER)
     {
+        // 1. 动态调整定时器间隔
         if (g_pSharedData) {
             uint32_t currentSharedInterval = g_pSharedData->translate_send_interval;
             if (currentSharedInterval < MIN_SEND_INTERVAL) currentSharedInterval = MIN_SEND_INTERVAL;
             if (currentSharedInterval != g_lastTranslateSendInterval) {
                 SetTimer(hWnd, TIMER_CHAT_SENDER, currentSharedInterval, NULL);
                 g_lastTranslateSendInterval = currentSharedInterval;
-                WriteAsyncLogTo(g_wlogWar3HookPath, L"⏱ [Timer] 检测到配置变更，间隔重置为: %u ms", currentSharedInterval);
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"⏱ [Timer] 检测到配置变更，发送间隔重置为: %u ms", currentSharedInterval);
             }
         }
 
         TranslatedChatTask task;
         bool hasTask = false;
+        size_t remainingTasks = 0;
 
+        // 2. 从任务队列中提取一条翻译结果
         {
             std::lock_guard<std::mutex> lock(g_translatedChatMutex);
             if (!g_translatedChatQueue.empty()) {
                 task = g_translatedChatQueue.front();
                 g_translatedChatQueue.pop();
                 hasTask = true;
+                remainingTasks = g_translatedChatQueue.size();
             }
         }
 
+        // 3. 执行发送逻辑
         if (hasTask) {
             {
                 std::lock_guard<std::mutex> lock(g_processedIdsMutex);
                 g_processedMsgIds.insert(task.msgId);
-                if(g_processedMsgIds.size() > 500) g_processedMsgIds.erase(g_processedMsgIds.begin());
+                if(g_processedMsgIds.size() > MAX_SEND_MSG_IDS) {
+                    g_processedMsgIds.erase(g_processedMsgIds.begin());
+                }
             }
 
-            g_isProcessingInternalChat  = true;
-            chatSendGeneral(task.message.c_str(), task.recipient);
-            g_isProcessingInternalChat  = false;
+            std::wstring wCleanMsg = utf8ToWide(task.translatedMessage);
+            std::wstring wTaggedMsg = utf8ToWide(task.taggedMessage);
+
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"┌─ 🚀 [自动发送] 轮次 ID: %u", task.msgId);
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"├─ 📝 翻译的消息: %ls", wCleanMsg.c_str());
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"├─ 🏷 标记的消息: %ls", wTaggedMsg.c_str());
+
+            g_isProcessingInternalChat = true;
+            chatSendGeneral(task.taggedMessage.c_str(), task.recipient);
+            g_isProcessingInternalChat = false;
+
+            if (remainingTasks > 0) {
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"└─ ✅ 已发送，队列余量: %zu", remainingTasks);
+            } else {
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"└─ ✨ 队列已清空");
+            }
         }
+
         return 0;
     }
 
@@ -1091,7 +1152,8 @@ static __declspec(naked) void __stdcall jumpWhenCallGameChatRecipientInGame_()
 
                 push dword ptr [esi + 0x0C]
                 push dword ptr [esi + 0x08]
-                push dword ptr [esi + 0x04]
+                lea eax, [esi + 0x04]
+                push eax
                 push dword ptr [esi + 0x00]
                 push ecx
 
@@ -1111,12 +1173,13 @@ __attribute__((naked)) void __stdcall jumpWhenCallGameChatRecipientInGame_(){
         "pusha\n\t"
         "pushf\n\t"
 
-        "leal 0x24(%%esp), %%eax\n\t"
+        "leal 0x24(%%esp), %%esi\n\t"
 
-        "pushl 0x0C(%%eax)\n\t"
-        "pushl 0x08(%%eax)\n\t"
-        "pushl 0x04(%%eax)\n\t"
-        "pushl 0x00(%%eax)\n\t"
+        "pushl 0x0C(%%esi)\n\t"
+        "pushl 0x08(%%esi)\n\t"
+        "leal  0x04(%%esi), %%eax\n\t"
+        "pushl %%eax\n\t"
+        "pushl 0x00(%%esi)\n\t"
         "pushl %%ecx\n\t"
 
         "call %0\n\t"
@@ -1131,16 +1194,42 @@ __attribute__((naked)) void __stdcall jumpWhenCallGameChatRecipientInGame_(){
         : "m"(doSomeThingsBeforeCallGameChatRecipientInGame_),
           "m"(g_gameChatRecipientInGame_ReturnValue),
           "m"(g_originalGameChatRecipientInGame_)
-        : "eax", "memory"
+        : "eax", "esi", "memory"
         );
 }
 #endif
 
-int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool networkFlag, const char *text, int recipient, float duration)
+int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool networkFlag, const char **ppText, int recipient, float duration)
 {
+    const char *text = *ppText;
+
     if (g_isProcessingInternalChat) {
         return 1;
     }
+
+    if (isReadable(text, 14) && strlen(text) > 13 && text[0] == '|' && text[1] == 'c') {
+        char hexBuf[9] = {0};
+        memcpy(hexBuf, text + 2, 8);
+        uint32_t parsedId = (uint32_t)strtoul(hexBuf, nullptr, 16);
+
+        {
+            std::lock_guard<std::mutex> lock(g_loggedIdsMutex);
+            if (g_loggedTaggedMsgIds.find(parsedId) == g_loggedTaggedMsgIds.end()) {
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"   🛡 [自屏蔽] 识别到自身翻译轮次 ID: %u (0x%08X)", parsedId, parsedId);
+                g_loggedTaggedMsgIds.insert(parsedId);
+                if (g_loggedTaggedMsgIds.size() > MAX_SEND_MSG_IDS) {
+                    g_loggedTaggedMsgIds.erase(g_loggedTaggedMsgIds.begin());
+                }
+            }
+        }
+
+        *ppText = text + 13;
+
+        WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 🧹 已剥离标记，实际分发: %hs", *ppText);
+
+        return 1;
+    }
+
     // 1. 安全校验
     if (!isReadable(gameUI, sizeof(void*))) {
         WriteAsyncLogTo(g_wlogWar3HookPath, L"❌ [对象] GameUI 指针: 0x%p 不可读", gameUI);
@@ -1177,8 +1266,8 @@ int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool 
         if (isCommand(text)) {
             WriteAsyncLogTo(g_wlogWar3HookPath, L"   🚀 检测到地图模式指令输入");
         } else {
-            uint64_t currentId = g_msgIdCounter.fetch_add(1);
-            WriteAsyncLogTo(g_wlogWar3HookPath, L"   🆔 分配消息ID: %llu，准备发起异步翻译", currentId);
+            uint32_t currentId = g_msgIdCounter.fetch_add(1);
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"   🆔 分配消息ID: %lu，准备发起异步翻译", currentId);
             requestTranslateMessage(text, 0x20, 0, (uint32_t)recipient, currentId, 1);
             return 0;
         }
@@ -1244,6 +1333,10 @@ bool hookGameNetEventChatFromHost()
     if (success) {
         if(isReadable(inlineHookResult.trampolineAddress, sizeof(void*))) {
             g_originalGameNetEventChatFromHost = (GameNetEventChatFromHostFunc)(inlineHookResult.trampolineAddress);
+        }
+
+        if(isReadable((void*)inlineHookResult.reviseAddress, sizeof(void*))) {
+            g_gameNetEventChatFromHostReviseAddress = (void*)inlineHookResult.reviseAddress;
         }
 
         if(isReadable((void*)inlineHookResult.returnAddress, sizeof(void*))) {
@@ -1383,7 +1476,7 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
 
     int textOffset  = 4;
     const char *rawMessage = (const char*)pPayload + textOffset;
-    uint64_t currentId = g_msgIdCounter.fetch_add(1);
+    uint32_t currentId = g_msgIdCounter.fetch_add(1);
 
     if (textOffset < dataSize && *rawMessage == '\0') {
         rawMessage++;
@@ -1414,9 +1507,12 @@ int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void *
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"🔍 从缓存查找翻译");
                 translatedMessage = getTranslationFromCache(rawMessage);
                 if (!translatedMessage) {
-                    WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [Request] 分配 ID:%llu 内容: %hs", currentId, rawMessage);
-                    requestTranslateMessage(rawMessage, chatFlag, realPid, extraScope, currentId);
-                    return 0;
+                    WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [Request] 分配 ID: %lu 内容: %hs", currentId, rawMessage);
+                    requestTranslateMessage(rawMessage, chatFlag, realPid, extraScope, currentId, 0);
+                    int isVerified = verifyWar3HookIdentity(g_gameNetEventChatFromHostReviseAddress);
+                    WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 🛡 [身份校验] Hook插件验证: %ls (拦截结果: %d)",
+                                    isVerified > 0 ? L"✅ 通过" : L"❌ 失败", isVerified > 0 ? L"拦截" : L"放行");
+                    return isVerified > 0 ? 0 : 1;
                 } else {
                     std::wstring wTranslatedMessage = utf8ToWide(translatedMessage);
                     WriteAsyncLogTo(g_wlogWar3HookPath, L"✅ 从缓存中找到翻译，自动转为本地语言: %s", wTranslatedMessage.c_str());
@@ -2127,7 +2223,7 @@ void handleIpcMessages()
         dispatchIpcBufferMessage(slot);
 
         // 更新 Fast 读指针
-        LONG next_read = (currentReadIdx + 1) % BUFFER_SIZE;
+        LONG next_read = (currentReadIdx + 1) % MAX_IPC_PACKET_SIZE;
         InterlockedExchange(&g_pSharedData->fast_read_index_l2d, next_read);
     }
 
@@ -2140,7 +2236,7 @@ void handleIpcMessages()
         dispatchIpcBufferMessage(slot);
 
         // 更新 Slow 读指针
-        LONG next_read = (currentReadIdx + 1) % BUFFER_SIZE;
+        LONG next_read = (currentReadIdx + 1) % MAX_IPC_PACKET_SIZE;
         InterlockedExchange(&g_pSharedData->slow_read_index_l2d, next_read);
     }
 }
@@ -2159,6 +2255,7 @@ void dispatchIpcBufferMessage(const MessageSlot &slot)
 
             std::wstring wOriginalMessage = utf8ToWide(payload->originalMessage);
             std::wstring wTranslatedMessage = utf8ToWide(payload->translatedMessage);
+            std::wstring wTaggedMessage = utf8ToWide(payload->taggedMessage);
 
             if (direction == 0) {
                 std::string translateLanguage = g_pSharedData->translate_language;
@@ -2175,27 +2272,31 @@ void dispatchIpcBufferMessage(const MessageSlot &slot)
 
                 WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [IPC/In] 收到他人消息翻译回应 (已更新缓存)");
             }
-            else if (payload->direction == 1) {
-                WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [IPC] 翻译完成，塞入窗口任务队列");
+            else if (direction == 1) {
+                WriteAsyncLogTo(g_wlogWar3HookPath, L"🧠 [IPC] 翻译完成，塞入窗口任务队列 (注入标识符)");
+
                 std::lock_guard<std::mutex> lock(g_translatedChatMutex);
                 g_translatedChatQueue.push({
                     payload->msgId,
                     payload->translatedMessage,
+                    payload->taggedMessage,
                     payload->extraScope
                 });
             }
 
+            sendIpcBufferMessage(MSG_TYPE_TRANSLATE_MAPPED, payload, sizeof(TranslatedResultPayload), L"翻译映射/发送完成");
             WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 方向: %ls", direction == 1 ? L"Outgoing (发)" : L"Incoming (收)");
             WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 原文: %ls", wOriginalMessage.c_str());
-            WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 译文: %ls", wTranslatedMessage.c_str());
-
-            sendIpcBufferMessage(MSG_TYPE_TRANSLATE_MAPPED, payload, sizeof(TranslatedResultPayload), L"翻译映射/发送完成");
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"   ├─ 译文: %ls", wTranslatedMessage.c_str());
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"   └─ 最终: %ls", wTaggedMessage.c_str());
         }
         else {
-            WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ [IPC/Cache] 翻译结果包大小异常");
+            WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ [IPC/Cache] 翻译结果包大小异常 (Expected: %zu, Actual: %u)",
+                            sizeof(TranslatedResultPayload), slot.size);
         }
         break;
     }
+
 
     default:
         WriteAsyncLogTo(g_wlogWar3HookPath, L"⚠ [IPC Buffer] 未知消息类型: %d", slot.type);
@@ -2269,7 +2370,9 @@ void safeCopyString(char *target, const char *source, size_t size)
 bool isFastMessage(IpcMessageType type)
 {
     switch (type) {
+    case MSG_TYPE_TRANSLATE_MAPPED:
     case MSG_TYPE_TRANSLATE_REQUEST:
+    case MSG_TYPE_TRANSLATE_RESPONSE:
         return true;
 
     default:
@@ -2370,7 +2473,7 @@ bool isNotWord(const char *message)
     return true;
 }
 
-void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint64_t currentId, uint32_t direction)
+void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint32_t currentId, uint32_t direction)
 {
     // 1. 基础安全检查
     if (!g_pSharedData) {
@@ -2601,10 +2704,10 @@ bool sendIpcBufferMessage(IpcMessageType msgType, const void *data, size_t dataS
 
     LONG current_write = *pWriteIdx;
     LONG current_read  = *pReadIdx;
-    LONG next_write = (current_write + 1) % BUFFER_SIZE;
+    LONG next_write = (current_write + 1) % MAX_IPC_PACKET_SIZE;
 
     // 详细记录当前队列深度
-    int pendingCount = (current_write - current_read + BUFFER_SIZE) % BUFFER_SIZE;
+    int pendingCount = (current_write - current_read + MAX_IPC_PACKET_SIZE) % MAX_IPC_PACKET_SIZE;
 
     // 4. 检查缓冲区空间
     if (next_write == current_read) {
@@ -2620,9 +2723,9 @@ bool sendIpcBufferMessage(IpcMessageType msgType, const void *data, size_t dataS
     slot.isFast = isFast;
 
     if (dataSize > 0 && data != nullptr) {
-        size_t copyLen = (dataSize > MAX_PACKET_SIZE) ? MAX_PACKET_SIZE : dataSize;
+        size_t copyLen = (dataSize > MAX_IPC_PACKET_SIZE) ? MAX_IPC_PACKET_SIZE : dataSize;
         memcpy(slot.payload.data, data, copyLen);
-        if (copyLen < MAX_PACKET_SIZE) slot.payload.data[copyLen] = '\0';
+        if (copyLen < MAX_IPC_PACKET_SIZE) slot.payload.data[copyLen] = '\0';
     }
 
     // 6. 原子提交索引

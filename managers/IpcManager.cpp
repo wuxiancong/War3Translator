@@ -148,7 +148,7 @@ bool IpcManager::sendIpcBufferMessage(IpcMessageType type, const void *data, qui
     // 4. 计算索引并检查溢出
     LONG writeIdx = *pWriteIdx;
     LONG readIdx  = *pReadIdx;
-    LONG nextWriteIdx = (writeIdx + 1) % BUFFER_SIZE;
+    LONG nextWriteIdx = (writeIdx + 1) % MAX_IPC_PACKET_SIZE;
 
     if (nextWriteIdx == readIdx) {
         qWarning() << QString("⚠ [IPC %1] 缓冲区已满！丢弃类型: %2")
@@ -165,10 +165,10 @@ bool IpcManager::sendIpcBufferMessage(IpcMessageType type, const void *data, qui
 
     if (data && size > 0) {
         // 限制最大长度
-        quint32 copySize = qMin(size, (quint32)MAX_PACKET_SIZE);
+        quint32 copySize = qMin(size, (quint32)MAX_IPC_PACKET_SIZE);
         memcpy(slot.payload.data, data, copySize);
         // 字符串安全处理
-        if (copySize < MAX_PACKET_SIZE) {
+        if (copySize < MAX_IPC_PACKET_SIZE) {
             slot.payload.data[copySize] = '\0';
         }
     }
@@ -204,8 +204,8 @@ void IpcManager::onIpcMessageReceived()
         DebugHelper::recordTreeLog("ipc_Message", "  ✅ [Success] 共享内存已重新挂载", 1);
     }
 
-    int fastWaiting = (sharedData->fast_write_index_d2l - sharedData->fast_read_index_d2l + BUFFER_SIZE) % BUFFER_SIZE;
-    int slowWaiting = (sharedData->slow_write_index_d2l - sharedData->slow_read_index_d2l + BUFFER_SIZE) % BUFFER_SIZE;
+    int fastWaiting = (sharedData->fast_write_index_d2l - sharedData->fast_read_index_d2l + MAX_IPC_PACKET_SIZE) % MAX_IPC_PACKET_SIZE;
+    int slowWaiting = (sharedData->slow_write_index_d2l - sharedData->slow_read_index_d2l + MAX_IPC_PACKET_SIZE) % MAX_IPC_PACKET_SIZE;
 
     DebugHelper::recordTreeLog("ipc_Message",
                                QString("  🔍 缓冲区快照: Fast(R:%1, W:%2, Pending:%3) | Slow(R:%4, W:%5, Pending:%6)")
@@ -232,7 +232,7 @@ void IpcManager::onIpcMessageReceived()
 
         dispatchIpcBufferMessage(msg);
 
-        LONG next_read = (currentIdx + 1) % BUFFER_SIZE;
+        LONG next_read = (currentIdx + 1) % MAX_IPC_PACKET_SIZE;
         InterlockedExchange(&sharedData->fast_read_index_d2l, next_read);
         fastCount++;
     }
@@ -249,7 +249,7 @@ void IpcManager::onIpcMessageReceived()
 
         dispatchIpcBufferMessage(msg);
 
-        LONG next_read = (currentIdx + 1) % BUFFER_SIZE;
+        LONG next_read = (currentIdx + 1) % MAX_IPC_PACKET_SIZE;
         InterlockedExchange(&sharedData->slow_read_index_d2l, next_read);
         slowProcessed++;
     }
@@ -269,75 +269,79 @@ void IpcManager::onIpcMessageReceived()
 void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
 {
     // 基础长度校验
-    if (message.size > MAX_PACKET_SIZE) {
-        DebugHelper::recordTreeLog("ipc_Message", QString("❌ [Error] 非法包大小: %1 (已丢弃)").arg(message.size), 1);
+    if (message.size > MAX_IPC_PACKET_SIZE) {
+        DebugHelper::recordTreeLog("ipc_Message",
+                                   QString("❌ [Error] 非法包大小: %1 字节 | 类型: %2 (已丢弃)")
+                                       .arg(message.size).arg(ipcMessageTypeToString(message.type)), 1);
         return;
     }
 
     switch (message.type) {
     case MSG_TYPE_TRANSLATE_REQUEST:
     {
-        // 1. 解析基础数据
+        // 1. 基础数据解析
         const auto *payload = reinterpret_cast<const NotifyTranslatePayload*>(message.payload.data);
 
-        quint64 msgId = payload->msgId;
-        quint32 pid = payload->pid;
-        quint32 flag = payload->flag;
-        quint32 extraScope = payload->extraScope;
-        quint32 direction = payload->direction; // 0: 接收, 1: 发送
+        const quint32 msgId      = static_cast<quint32>(payload->msgId);
+        const quint32 pid        = payload->pid;
+        const quint32 flag       = payload->flag;
+        const quint32 extraScope = payload->extraScope;
+        const quint32 direction  = payload->direction; // 0: 接收, 1: 发送
 
-        // 转换原始文本并清理
+        // 2. 文本清洗
         QString rawText = QString::fromUtf8(payload->message, strnlen(payload->message, sizeof(payload->message))).trimmed();
 
-        // 2. 日志头：记录方向和 ID
+        // 3. 开启日志树
         QString dirStr = (direction == 1) ? "Outgoing (发送)" : "Incoming (接收)";
-        DebugHelper::recordTreeLog("chat_translate", QString("┌─ 📥 [Translate Request] %1 | ID: %2").arg(dirStr).arg(msgId), 0);
-        DebugHelper::recordTreeLog("chat_translate", QString("├─ 原始文本: \"%1\"").arg(rawText), 1);
-        DebugHelper::recordTreeLog("chat_translate", QString("├─ 消息属性: PID=%1 | Flag=0x%2 | Scope=0x%3")
-                                                         .arg(pid)
-                                                         .arg(QString::number(flag, 16).toUpper())
-                                                         .arg(QString::number(extraScope, 16).toUpper()), 1);
+        DebugHelper::recordTreeLog("chat_translate", QString("┌─ 📥 [翻译请求] %1 | ID: %2").arg(dirStr).arg(msgId), 0);
+        DebugHelper::recordTreeLog("chat_translate", QString("├─ 📝 原始文本: \"%1\"").arg(rawText), 1);
 
-        // 3. 噪音拦截
+        // 4. 噪音拦截
         static QRegularExpression noiseRegex("[\\p{L}\\p{N}]");
         if (!rawText.contains(noiseRegex)) {
-            DebugHelper::recordTreeLog("chat_translate", "└─ ⏩ [跳过] 文本为纯符号噪音", 0, true);
+            DebugHelper::recordTreeLog("chat_translate", "└─ ⏩ [跳过] 文本为纯符号/噪音，不触发翻译", 0, true);
             break;
         }
 
-        // 4. 确定显示名称
+        // 5. 记录消息属性
+        DebugHelper::recordTreeLog("chat_translate",
+                                   QString("├─ 🛠 属性: PID=%1 | Flag=0x%2 | Scope=0x%3")
+                                       .arg(pid).arg(QString::number(flag, 16).toUpper(), QString::number(extraScope, 16).toUpper()), 1);
+
+        // 6. 确定发送者名称
         QString senderName;
         if (direction == 1) {
-            senderName = "Me (我)";
+            senderName = tr("我");
         } else {
             senderName = QString("Player(%1)").arg(pid);
-            if (m_pSharedData && pid < MAX_SLOT) {
-                QString nameFromMem = QString::fromLocal8Bit(m_pSharedData->pid_to_name[pid]);
+            if (IpcManager::instance().m_pSharedData && pid < MAX_SLOT) {
+                QString nameFromMem = QString::fromLocal8Bit(IpcManager::instance().m_pSharedData->pid_to_name[pid]);
                 if (!nameFromMem.isEmpty()) senderName = nameFromMem;
             }
         }
         DebugHelper::recordTreeLog("chat_translate", QString("├─ 👤 发送者识别: %1").arg(senderName), 1);
 
-        // 5. 在 UI 上显示拦截信息
-        QMetaObject::invokeMethod(this,
-                                  "incomingMessageIntercepted",
-                                  Qt::QueuedConnection,
+        // 7. 更新 UI 拦截列表
+        QMetaObject::invokeMethod(this, "incomingMessageIntercepted", Qt::QueuedConnection,
                                   Q_ARG(quint32, pid),
                                   Q_ARG(QString, senderName),
                                   Q_ARG(QString, rawText),
                                   Q_ARG(quint32, direction));
 
-        // 6. 执行翻译任务分发
+        // 8. 翻译任务分发中心
         if (direction == 0) {
+            // --- 模式 A: 接收模式 (单语种翻译) ---
             QString targetLang = SettingsManager::instance().translateLanguage();
-            if (targetLang.isEmpty()) break;
+            if (targetLang.isEmpty()) {
+                DebugHelper::recordTreeLog("chat_translate", "└─ ❌ 中止: 目标语言未配置", 0, true);
+                break;
+            }
 
-            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 接收模式: 翻译至 %1").arg(targetLang), 1);
+            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 接收模式: 翻译至 [%1]").arg(targetLang), 1);
 
-            QMetaObject::invokeMethod(&TranslateManager::instance(),
-                                      "requestTranslationWithMetadata",
+            QMetaObject::invokeMethod(&TranslateManager::instance(), "requestTranslationWithMetadata",
                                       Qt::QueuedConnection,
-                                      Q_ARG(quint64, msgId),
+                                      Q_ARG(quint32, msgId),
                                       Q_ARG(quint32, pid),
                                       Q_ARG(quint32, flag),
                                       Q_ARG(quint32, extraScope),
@@ -346,17 +350,21 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
                                       Q_ARG(QString, targetLang));
         }
         else {
+            // --- 模式 B: 发送模式 (多语种广播) ---
             QStringList targetLangs = SettingsManager::instance().translateLanguages();
-            if (targetLangs.isEmpty()) break;
+            if (targetLangs.isEmpty()) {
+                DebugHelper::recordTreeLog("chat_translate", "└─ ❌ 中止: 待广播语种列表为空", 0, true);
+                break;
+            }
 
-            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 发送模式: 语种总数 %1").arg(targetLangs.size()), 1);
+            DebugHelper::recordTreeLog("chat_translate", QString("├─ 🎯 发送模式: 广播总数 %1").arg(targetLangs.size()), 1);
 
-            for (const QString &lang : targetLangs) {
-                DebugHelper::recordTreeLog("chat_translate", QString("│  ├─ 分派任务: [%1]").arg(lang), 1);
-                QMetaObject::invokeMethod(&TranslateManager::instance(),
-                                          "requestTranslationWithMetadata",
+            for (const QString &lang : qAsConst(targetLangs)) {
+                DebugHelper::recordTreeLog("chat_translate", QString("│  ├─ 🚀 分派: [%1]").arg(lang), 1);
+
+                QMetaObject::invokeMethod(&TranslateManager::instance(), "requestTranslationWithMetadata",
                                           Qt::QueuedConnection,
-                                          Q_ARG(quint64, msgId),
+                                          Q_ARG(quint32, msgId),
                                           Q_ARG(quint32, pid),
                                           Q_ARG(quint32, flag),
                                           Q_ARG(quint32, extraScope),
@@ -366,7 +374,8 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
             }
         }
 
-        DebugHelper::recordTreeLog("chat_translate", "└─ 🚀 任务已进入异步翻译流水线", 0, true);
+        // 9. 任务结束
+        DebugHelper::recordTreeLog("chat_translate", "└─ ✅ 翻译流水线已成功启动", 0, true);
         break;
     }
 
@@ -374,16 +383,21 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
     {
         const auto *payload = reinterpret_cast<const TranslatedResultPayload*>(message.payload.data);
         quint32 direction = payload->direction;
+        quint32 msgId = static_cast<quint32>(payload->msgId);
+        qDebug().noquote() << QString("✅ [IPC Mapped] 收到 DLL 确认回调 | ID: %1 | 目标PID: %2 | 方向: %3")
+                                  .arg(msgId).arg(payload->pid, direction);
+
         if (direction == 0) {
-            quint64 msgId = payload->msgId;
             QString translatedMessage = QString::fromUtf8(payload->translatedMessage).trimmed();
+
             DebugHelper::recordTreeLog("ipc_mapped", QString("┌─ ✅ [Mapped] 接收到 DLL 确认 | ID: %1").arg(msgId), 0);
             DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 目标: PID=%1").arg(payload->pid), 1);
             DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 内容: \"%1\"").arg(translatedMessage), 1);
-
             NetworkManager::instance().sendTranslatedMessage(payload->pid, payload->flag, payload->extraScope, translatedMessage);
-
+            qDebug().noquote() << QString("   └─ 🌐 ID: %1 的译文已同步至服务器缓冲区").arg(msgId);
             DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文重发确认已同步至服务器", 0, true);
+        } else {
+            qDebug() << "ℹ [IPC Mapped] 忽略发送端自身的映射确认 | ID:" << payload->msgId;
         }
         break;
     }
@@ -404,4 +418,14 @@ void IpcManager::updateTranslateLanguage(const QString &code)
     strncpy(m_pSharedData->translate_language, ba.constData(), qMin((int)ba.size(), 15));
 
     qDebug() << "📢 [IPC] 已同步翻译目标语言至 DLL:" << code;
+}
+
+QString IpcManager::ipcMessageTypeToString(IpcMessageType type) const
+{
+    switch (type) {
+    case MSG_TYPE_TRANSLATE_MAPPED:           return "TRANSLATE_MAPPED (翻译映射完成确认: DLL -> Launcher)";
+    case MSG_TYPE_TRANSLATE_REQUEST:          return "TRANSLATE_REQUEST (请求文本翻译: DLL -> Launcher)";
+    case MSG_TYPE_TRANSLATE_RESPONSE:         return "TRANSLATE_RESPONSE (返回翻译译文: Launcher -> DLL)";
+    default: return QString("UNKNOWN_TYPE (%1)").arg(static_cast<DWORD>(type));
+    }
 }

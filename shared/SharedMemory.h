@@ -10,13 +10,14 @@
 #define SHARED_MEM_NAME L"Global\\War3Translator_SharedMemory"
 #define IPC_EVENTS_NAME L"Global\\War3Translator_L2D_Event"
 
-#define BUFFER_SIZE 1024
 #define MAX_SLOT 16
-#define MAX_PACKET_SIZE 1500
 #define MAX_SHOUT_ITEMS 7
 #define MAX_SHOUT_TEXT_LEN 128
 #define MAX_TARGET_LANGUAGES 25
 #define MIN_SEND_INTERVAL 500
+#define MAX_SEND_MSG_IDS 1000
+#define MAX_UDP_PACKET_SIZE 1472
+#define MAX_IPC_PACKET_SIZE 2048
 #define WAR3HOOK_MAGIC 0x5733484B
 #define TRANSLATOR_MAGIC 0x57335431
 
@@ -97,7 +98,7 @@ struct InlineHookResult {
 };
 
 struct NotifyTranslatePayload {
-    uint64_t            msgId;                                      // 消息唯一 ID
+    uint32_t            msgId;                                      // 消息唯一 ID
     uint32_t            pid;                                        // 发送者 PID
     uint32_t            flag;                                       // 消息标志 (0x10/0x20)
     uint32_t            extraScope;                                 // 消息范围 (0/1/2/3/A)
@@ -106,13 +107,14 @@ struct NotifyTranslatePayload {
 };
 
 struct TranslatedResultPayload {
-    uint64_t            msgId;                                      // 消息唯一 ID
+    uint32_t            msgId;                                      // 消息唯一 ID
     uint32_t            pid;                                        // 发送者 PID
     uint32_t            flag;                                       // 消息标志 (0x10/0x20)
     uint32_t            extraScope;                                 // 消息范围 (0/1/2/3/A)
     uint32_t            direction;                                  // 0: 接收(Incoming), 1: 发送(Outgoing)
     char                originalMessage[512];                       // 原文 (作为 Map 的 Key)
-    char                translatedMessage[512];                     // 译文 (作为 Map 的 Value)
+    char                translatedMessage[512];                     // 标准译文 (无标签)
+    char                taggedMessage[512];                         // 带标签的译文 (用于游戏内显示/去重)
 };
 
 struct CSTranslatedMessagePacket {
@@ -130,7 +132,7 @@ struct MessageSlot {
 
     union {
         sockaddr_in     addr;                                       // 用于 MSG_TYPE_CONNECT_REQUEST
-        char            data[MAX_PACKET_SIZE];                      // 用于数据包
+        char            data[MAX_UDP_PACKET_SIZE];                      // 用于数据包
     } payload;
 };
 
@@ -145,19 +147,19 @@ struct SharedData {
 
     volatile LONG       fast_read_index_d2l;
     volatile LONG       fast_write_index_d2l;
-    MessageSlot         fast_buffer_d2l[BUFFER_SIZE];
+    MessageSlot         fast_buffer_d2l[MAX_IPC_PACKET_SIZE];
 
     volatile LONG       fast_read_index_l2d;
     volatile LONG       fast_write_index_l2d;
-    MessageSlot         fast_buffer_l2d[BUFFER_SIZE];
+    MessageSlot         fast_buffer_l2d[MAX_IPC_PACKET_SIZE];
 
     volatile LONG       slow_read_index_d2l;
     volatile LONG       slow_write_index_d2l;
-    MessageSlot         slow_buffer_d2l[BUFFER_SIZE];
+    MessageSlot         slow_buffer_d2l[MAX_IPC_PACKET_SIZE];
 
     volatile LONG       slow_read_index_l2d;
     volatile LONG       slow_write_index_l2d;
-    MessageSlot         slow_buffer_l2d[BUFFER_SIZE];
+    MessageSlot         slow_buffer_l2d[MAX_IPC_PACKET_SIZE];
 };
 #pragma pack(pop)
 #endif // SHARED_MEMORY_H

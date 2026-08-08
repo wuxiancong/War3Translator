@@ -43,6 +43,7 @@ private:
 
 public:
     bool sendIpcBufferMessage(IpcMessageType type, const void* data = nullptr, quint32 size = 0);
+    QString ipcMessageTypeToString(IpcMessageType type) const;
     void dispatchIpcBufferMessage(const MessageSlot &message);
     void updateTranslateLanguage(const QString &code);
 };

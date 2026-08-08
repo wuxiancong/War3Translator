@@ -8,7 +8,7 @@
 #endif
 
 // 定义定时器 ID
-#define TIMER_CHAT_SENDER               9999
+#define TIMER_CHAT_SENDER               5678
 
 #define OPCODE_JCC_LONG_MAX             0x8F
 #define OPCODE_JCC_LONG_MIN             0x80
@@ -155,8 +155,9 @@ struct TranslatedMessage {
 };
 
 struct TranslatedChatTask {
-    uint64_t msgId;
-    std::string message;
+    uint32_t msgId;
+    std::string translatedMessage;
+    std::string taggedMessage;
     uint32_t recipient;
 };
 
@@ -164,23 +165,24 @@ LRESULT CALLBACK newWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 std::vector<std::pair<BYTE, bool>> parsePattern(const std::string &pattern);
 bool isLowerWar3Version(std::string version = "", bool includeV122 = false);
 bool isHighWar3Version(std::string version = "", bool includeV126 = false);
+int checkJumpTargetInModule(HMODULE hModule, void *reviseAddress);
 unsigned __int64 parseVersionToNumber(const std::string &version);
 std::string getFileVersionInternal(const std::wstring &filePath);
 DWORD getModuleBaseAddressByToolHelp(const char *moduleName);
+int verifyWar3HookIdentity(void *reviseAddress = nullptr);
 DWORD getModuleBaseAddressByEnum(const char *moduleName);
 void dispatchIpcBufferMessage(const MessageSlot &slot);
 bool isCommonWar3Version(const std::string &version);
 DWORD getModuleBaseAddress(const char *moduleName);
+DWORD __stdcall startupHookSystem(LPVOID lpParam);
 std::string getWar3Version(const char *war3PathA);
 std::wstring getDllDirectoryW(HMODULE hModule);
-DWORD __stdcall startupHookSystem(LPVOID lpParam);
 DWORD getModuleSize(DWORD baseAddress);
 void initD3DGlobals(void **vTablePtr);
 bool isWar3Exe(const char *fullPath);
 std::string getCurrentWar3Version();
 void startupHookWindow(HWND hWnd);
 bool detectAndSetWar3Version();
-bool verifyWar3HookIdentity();
 bool initializeSharedMemory();
 void handleIpcMessages();
 void ipcMessageThread();
@@ -222,7 +224,7 @@ bool isNotWord(const char *message);
 bool isFastMessage(IpcMessageType type);
 bool isReadable(const void *address, size_t size = 4);
 
-void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint64_t currentId, uint32_t direction = 0);
+void requestTranslateMessage(const char *message, uint32_t flag, uint32_t pid, uint32_t extraScope, uint32_t currentId, uint32_t direction = 0);
 const char *getTranslationFromCache(const char *sourceText);
 const char *getDefaultShoutContent(const char *content);
 
@@ -230,7 +232,7 @@ void chatSendGeneral(const char *message, DWORD recipient);
 void chatSendInternal(const char *message, DWORD recipient);
 bool sendIpcBufferMessage(IpcMessageType msgType, const void *data, size_t dataSize, const wchar_t *logTag);
 
-int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool networkFlag, const char *text, int recipient, float duration);
+int __stdcall doSomeThingsBeforeCallGameChatRecipientInGame_(void *gameUI, bool networkFlag, const char **ppText, int recipient, float duration);
 int __stdcall doSomeThingsBeforeCallGameNetEventChatFromHost(int fromPid, void **ppPayload, int *pDataSize);
 int __stdcall doSomeThingsBeforeCallGamePrimaryGameUIVtable_(void *primaryGameUI);
 int __stdcall doSomeThingsBeforeCallGameChatEditBarUIVtable1(void *chatManager);

@@ -16,7 +16,8 @@ ApplicationWindow {
     height: 750
     visible: true
     color: "transparent"
-    flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint
+    title: SettingsManager.appName
+    flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
 
     // ===== 托盘图标 =====
     SystemTrayIcon {
@@ -25,7 +26,7 @@ ApplicationWindow {
         icon.source: (typeof appDirPath !== "undefined")
                      ? appDirPath + "/images/translator-app.ico"
                      : "qrc:/images/translator-app.ico"
-        tooltip: qsTr("War3 翻译助手")
+        tooltip: SettingsManager.appName
         menu: Menu {
             MenuItem { text: qsTr("显示窗口"); onTriggered: { mainWindow.show(); mainWindow.raise(); mainWindow.requestActivate() } }
             MenuItem { text: qsTr("退出程序"); onTriggered: Qt.quit() }
