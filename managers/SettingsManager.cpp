@@ -45,7 +45,7 @@ SettingsManager::SettingsManager(QObject *parent)
     m_languageCode          = readChain("Base/languageCode", "zh_CN").toString();
     m_translateLanguage     = readChain("Base/translateLanguage", "zh_CN").toString();
     m_translateLanguages = readChain("Base/translateLanguages", QStringList()).toStringList();
-    m_translateSendInterval = readChain("Base/translateSendInterval", 1500).toUInt();
+    m_translateSendInterval = readChain("Base/translateSendInterval", 5000).toUInt();
 
     // 4. 保持你原本的主实例化指针指向本地
     m_settings = new QSettings(localPath, QSettings::IniFormat, this);

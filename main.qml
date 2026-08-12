@@ -9,6 +9,7 @@ import War3Translator.IpcManager 1.0
 import War3Translator.ThemeManager 1.0
 import War3Translator.SettingsManager 1.0
 import War3Translator.TranslateManager 1.0
+import War3Translator.MessagePopupComponent 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -40,6 +41,10 @@ ApplicationWindow {
     }
 
     onClosing: { close.accepted = false; mainWindow.hide() }
+
+    Component.onCompleted: {
+        MessagePopupComponent.init(mainWindow)
+    }
 
     // ===== 数据模型 =====
     ListModel { id: chatLogModel }
@@ -95,6 +100,9 @@ ApplicationWindow {
         target: TranslateManager
 
         function onTranslationTaskFinished(msgId, pid, flag, extraScope, direction, originalMessage, translatedMessage, targetLang) {
+            if (translatedMessage === "") {
+                MessagePopupComponentComponent.show(qsTr("翻译失败，请检查网络"), 3);
+            }
             console.log("▶ [QML 翻译回调] ID: " + msgId);
             console.log("   ├─ 玩家PID:", pid, " | 方向:", direction, " (1=发送/本地, 0=接收/他人)");
             console.log("   ├─ 目标语种:", targetLang);
@@ -434,6 +442,40 @@ ApplicationWindow {
                             }
                         }
                     }
+
+                    CustomIconButton {
+                        id: fixedBackToTop
+                        text: "↑"
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.rightMargin: 20
+                        anchors.bottomMargin: 20
+
+                        visible: logListView.contentY > 100
+
+                        opacity: visible ? 1.0 : 0.0
+                        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                        background: Rectangle {
+                            implicitWidth: 36
+                            implicitHeight: 36
+                            radius: 18
+                            color: ThemeManager.alpha(ThemeManager.cardBackgroundColor, 0.9)
+                            border.color: ThemeManager.accentColor
+                            border.width: 1
+
+                            layer.enabled: fixedBackToTop.hovered
+                            layer.effect: DropShadow {
+                                radius: 8
+                                samples: 16
+                                color: ThemeManager.shadowColor
+                            }
+                        }
+
+                        onClicked: {
+                            logListView.contentY = -logListView.topMargin
+                        }
+                    }
                 }
 
                 // ---------- 设置页面 ----------
@@ -561,59 +603,46 @@ ApplicationWindow {
                                 width: parent.width
 
                                 Text {
-                                    text: qsTr("发送语言：")
+                                    text: qsTr("发送语言 (最多选5种)：")
                                     color: ThemeManager.textColor
                                     font.pixelSize: 13
                                     font.bold: true
                                     Layout.fillWidth: true
                                 }
 
-                                // 全选按钮
-                                CheckBox {
-                                    id: selectAllCheckBox
-                                    text: qsTr("全选")
-                                    checked: SettingsManager.translateLanguages.length === languageModel.count
+                                Text {
+                                    text: SettingsManager.translateLanguages.length + " / 5"
+                                    color: SettingsManager.translateLanguages.length >= 5 ? ThemeManager.accentColor : ThemeManager.textMutedColor
+                                    font.pixelSize: 12
+                                }
 
-                                    indicator: Rectangle {
-                                        implicitWidth: 16
-                                        implicitHeight: 16
-                                        radius: 3
-                                        color: selectAllCheckBox.checked ? ThemeManager.accentColor : "transparent"
-                                        border.color: selectAllCheckBox.checked ? ThemeManager.accentColor : ThemeManager.borderColor
-                                        border.width: 2
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: "✓"
-                                            color: "white"
-                                            font.pixelSize: 10
-                                            visible: selectAllCheckBox.checked
-                                        }
-                                    }
+                                Button {
+                                    id: clearBtn
+                                    text: qsTr("清空")
+                                    visible: SettingsManager.translateLanguages.length > 0
 
+                                    // 修改按钮背景适配主题
                                     contentItem: Text {
-                                        text: selectAllCheckBox.text
-                                        color: ThemeManager.textColor
+                                        text: clearBtn.text
+                                        color: clearBtn.hovered ? ThemeManager.accentColor : ThemeManager.textMutedColor
                                         font.pixelSize: 12
-                                        verticalAlignment: Text.AlignVCenter
-                                        leftPadding: 22
+                                    }
+                                    background: Rectangle {
+                                        color: clearBtn.hovered ? ThemeManager.alpha(ThemeManager.accentColor, 0.1) : "transparent"
+                                        radius: 4
                                     }
 
                                     onClicked: {
-                                        if (checked) {
-                                            var allLangs = []
-                                            for (var i = 0; i < languageModel.count; i++) {
-                                                allLangs.push(languageModel.get(i).value)
-                                            }
-                                            SettingsManager.setTranslateLanguages(allLangs)
-                                        } else {
-                                            SettingsManager.setTranslateLanguages([])
-                                        }
+                                        MessagePopupComponentComponent.showConfirm(qsTr("确定要清空所有已选语言吗？"), function() {
+                                            SettingsManager.setTranslateLanguages([]);
+                                            MessagePopupComponentComponent.show(qsTr("已清空"), 1);
+                                        });
                                     }
                                 }
                             }
 
                             Text {
-                                text: qsTr("备注：如果多选将会依次发送所有已翻译语言给玩家")
+                                text: qsTr("备注：多选将按顺序发送，最多选择5种语言以防止被系统识别为刷屏或者socket错误导致断线")
                                 color: ThemeManager.textMutedColor
                                 font.pixelSize: 11
                                 font.italic: true
@@ -655,34 +684,36 @@ ApplicationWindow {
                                         var langValue = model.value
                                         var indexInList = currentList.indexOf(langValue)
 
-                                        if (checked) {
-                                            if (indexInList === -1) {
-                                                currentList.push(langValue)
+                                        if (indexInList === -1) {
+                                            if (currentList.length >= 5) {
+                                                langCheckBox.checked = false;
+                                                MessagePopupComponent.show(qsTr("最多只能选择 5 种发送语言"), 2);
+                                                return;
                                             }
+                                            currentList.push(langValue);
                                         } else {
-                                            if (indexInList !== -1) {
-                                                currentList.splice(indexInList, 1)
-                                            }
+                                            currentList.splice(indexInList, 1);
                                         }
 
-                                        SettingsManager.setTranslateLanguages(currentList)
+                                        SettingsManager.setTranslateLanguages(currentList);
+                                    }
+
+                                    background: Rectangle {
+                                        color: "transparent"
+                                        radius: ThemeManager.borderRadiusSm
                                     }
 
                                     indicator: Rectangle {
                                         implicitWidth: 18
                                         implicitHeight: 18
-                                        x: 2
-                                        y: parent.height / 2 - height / 2
                                         radius: 3
                                         color: langCheckBox.checked ? ThemeManager.accentColor : "transparent"
                                         border.color: langCheckBox.checked ? ThemeManager.accentColor : ThemeManager.borderColor
                                         border.width: 2
-
                                         Text {
                                             anchors.centerIn: parent
                                             text: "✓"
                                             color: "white"
-                                            font.pixelSize: 12
                                             font.bold: true
                                             visible: langCheckBox.checked
                                         }
@@ -694,11 +725,6 @@ ApplicationWindow {
                                         font.pixelSize: 12
                                         verticalAlignment: Text.AlignVCenter
                                         leftPadding: 28
-                                    }
-
-                                    background: Rectangle {
-                                        color: langCheckBox.hovered ? ThemeManager.alpha(ThemeManager.textColor, 0.05) : "transparent"
-                                        radius: 4
                                     }
                                 }
                             }

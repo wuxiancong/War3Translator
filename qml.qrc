@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>components/LanguageComponent.qml</file>
         <file>managers/ThemeManager.qml</file>
+        <file>MessagePopupComponent.qml</file>
     </qresource>
 </RCC>

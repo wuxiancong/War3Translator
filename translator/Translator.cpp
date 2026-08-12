@@ -978,7 +978,7 @@ void startupHookWindow(HWND hWnd)
         WriteAsyncLogTo(g_wlogWar3HookPath, L"  ✅ WndProc 挂钩成功！原始地址: 0x%p", (void*)g_oldWndProc);
 
         // 3. --- 挂钩成功后立刻开启定时器 ---
-        uint32_t interval = 1500;
+        uint32_t interval = 5000;
         if (g_pSharedData && g_pSharedData->translate_send_interval > 0) {
             interval = g_pSharedData->translate_send_interval;
             if (interval < MIN_SEND_INTERVAL) interval = MIN_SEND_INTERVAL;

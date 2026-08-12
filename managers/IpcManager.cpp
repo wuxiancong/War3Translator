@@ -396,11 +396,8 @@ void IpcManager::dispatchIpcBufferMessage(const MessageSlot &message)
             DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 来源: 接收(Incoming) | 目标PID: %1").arg(payload->pid), 1);
             DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 译文: \"%1\"").arg(cleanMessage), 1);
             DebugHelper::recordTreeLog("ipc_mapped", QString("├─ 标签: \"%1\"").arg(taggedMessage), 1);
-
-            NetworkManager::instance().sendTranslatedMessage(payload->pid, payload->flag, payload->extraScope, taggedMessage);
-
-            qDebug().noquote() << QString("   └─ 🌐 ID: %1 的带标签译文已同步至服务器").arg(msgId);
-            DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文(带标签)已同步至服务器", 0, true);
+            qDebug().noquote() << QString("   └─ 🌐 ID: %1 的带标签译文已同步至游戏").arg(msgId);
+            DebugHelper::recordTreeLog("ipc_mapped", "└─ 🌐 译文(带标签)已同步至游戏", 0, true);
         }
         else {
             qDebug() << "ℹ [IPC Mapped] 忽略发送端自身的映射确认 | ID:" << msgId;

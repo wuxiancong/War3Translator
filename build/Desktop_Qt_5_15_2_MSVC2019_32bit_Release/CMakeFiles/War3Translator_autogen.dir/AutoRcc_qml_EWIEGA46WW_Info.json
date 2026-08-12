@@ -9,6 +9,7 @@
 	"INCLUDE_DIR" : "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/War3Translator_autogen/include",
 	"INPUTS" : 
 	[
+		"D:/Qt/workplace/War3Translator/MessagePopupComponent.qml",
 		"D:/Qt/workplace/War3Translator/main.qml",
 		"D:/Qt/workplace/War3Translator/components/LanguageComponent.qml",
 		"D:/Qt/workplace/War3Translator/managers/ThemeManager.qml"

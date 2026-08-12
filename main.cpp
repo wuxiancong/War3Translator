@@ -134,6 +134,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("appDirPath", QUrl::fromLocalFile(QCoreApplication::applicationDirPath()).toString());
 
     // 4. 注册核心单例
+    qmlRegisterSingletonType(QUrl("qrc:/MessagePopupComponent.qml"), "War3Translator.MessagePopupComponent", 1, 0, "MessagePopupComponent");
     qmlRegisterSingletonType(QUrl("qrc:/managers/ThemeManager.qml"), "War3Translator.ThemeManager", 1, 0, "ThemeManager");
 
     qmlRegisterSingletonType<IpcManager>("War3Translator.IpcManager", 1, 0, "IpcManager",
