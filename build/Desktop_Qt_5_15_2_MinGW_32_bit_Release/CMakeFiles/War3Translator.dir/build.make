@@ -77,6 +77,7 @@ War3Translator_autogen/timestamp: CMakeFiles/War3Translator.dir/compiler_depend.
 
 War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp: D:/Qt/workplace/War3Translator/qml.qrc
 War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp: CMakeFiles/War3Translator_autogen.dir/AutoRcc_qml_EWIEGA46WW_Info.json
+War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp: D:/Qt/workplace/War3Translator/MessagePopupComponent.qml
 War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp: D:/Qt/workplace/War3Translator/main.qml
 War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp: D:/Qt/workplace/War3Translator/components/LanguageComponent.qml
 War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp: D:/Qt/workplace/War3Translator/managers/ThemeManager.qml
