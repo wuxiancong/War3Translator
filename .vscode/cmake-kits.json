@@ -1,17 +1,21 @@
 [
   {
-    "name": "vscode-msvc",
+    "name": "Desktop_Qt_5_15_2_VSCode_MSVC2019_32bit",
+    "visualStudio": "a1edffdd",
+    "visualStudioArchitecture": "x86",
     "preferredGenerator": {
-      "name": "Visual Studio 18 2026"
+      "name": "Ninja"
     },
-    "toolset": "host=x64",
-    "architecture": "x86",
     "cmakeSettings": {
       "CMAKE_PREFIX_PATH": "D:/Qt/5.15.2/msvc2019"
+    },
+    "environmentVariables": {
+      "VSCODE_QT_INSTALLATION": "D:/Qt/5.15.2/msvc2019",
+      "PATH": "D:/Qt/5.15.2/msvc2019/bin;${env:PATH};D:/Qt/Tools/Ninja"
     }
   },
   {
-    "name": "vscode-mingw",
+    "name": "Desktop_Qt_5_15_2_VSCode_MinGW_32_bit",
     "preferredGenerator": {
       "name": "MinGW Makefiles"
     },

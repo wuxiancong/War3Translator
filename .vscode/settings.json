@@ -1,6 +1,6 @@
 {
     "cmake.useCMakePresets": "never",
-    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKit}",
+    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKit}_${buildType}",
     "cmake.additionalKits": [
         "${workspaceFolder}/.vscode/cmake-kits.json"
     ]
