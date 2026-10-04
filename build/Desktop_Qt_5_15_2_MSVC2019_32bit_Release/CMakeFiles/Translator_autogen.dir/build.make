@@ -33,19 +33,19 @@ NULL=nul
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = D:\Qt\Tools\CMake_64\bin\cmake.exe
+CMAKE_COMMAND = C:\Qt\Tools\CMake_64\bin\cmake.exe
 
 # The command to remove a file.
-RM = D:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
+RM = C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\Qt\workplace\War3Translator
+CMAKE_SOURCE_DIR = D:\Qt\workspace\War3Translator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release
+CMAKE_BINARY_DIR = D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release
 
 # Utility rule file for Translator_autogen.
 
@@ -57,12 +57,12 @@ include CMakeFiles\Translator_autogen.dir\progress.make
 
 CMakeFiles\Translator_autogen: Translator_autogen\timestamp
 
-Translator_autogen\timestamp: D:\Qt\5.15.2\msvc2019\bin\moc.exe
-Translator_autogen\timestamp: D:\Qt\5.15.2\msvc2019\bin\uic.exe
+Translator_autogen\timestamp: C:\Qt\5.15.2\msvc2019\bin\moc.exe
+Translator_autogen\timestamp: C:\Qt\5.15.2\msvc2019\bin\uic.exe
 Translator_autogen\timestamp: CMakeFiles\Translator_autogen.dir\compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target Translator"
-	D:\Qt\Tools\CMake_64\bin\cmake.exe -E cmake_autogen D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/Translator_autogen.dir/AutogenInfo.json Release
-	D:\Qt\Tools\CMake_64\bin\cmake.exe -E touch D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/Translator_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target Translator"
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -E cmake_autogen D:/Qt/workspace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/CMakeFiles/Translator_autogen.dir/AutogenInfo.json Release
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -E touch D:/Qt/workspace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/Translator_autogen/timestamp
 
 Translator_autogen: CMakeFiles\Translator_autogen
 Translator_autogen: Translator_autogen\timestamp
@@ -78,6 +78,6 @@ CMakeFiles\Translator_autogen.dir\clean:
 .PHONY : CMakeFiles\Translator_autogen.dir\clean
 
 CMakeFiles\Translator_autogen.dir\depend:
-	$(CMAKE_COMMAND) -E cmake_depends "NMake Makefiles JOM" D:\Qt\workplace\War3Translator D:\Qt\workplace\War3Translator D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles\Translator_autogen.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "NMake Makefiles JOM" D:\Qt\workspace\War3Translator D:\Qt\workspace\War3Translator D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles\Translator_autogen.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles\Translator_autogen.dir\depend
 

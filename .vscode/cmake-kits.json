@@ -1,0 +1,26 @@
+[
+  {
+    "name": "vscode-msvc",
+    "preferredGenerator": {
+      "name": "Visual Studio 18 2026"
+    },
+    "toolset": "host=x64",
+    "architecture": "x86",
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "D:/Qt/5.15.2/msvc2019"
+    }
+  },
+  {
+    "name": "vscode-mingw",
+    "preferredGenerator": {
+      "name": "MinGW Makefiles"
+    },
+    "compilers": {
+      "C": "D:/Qt/Tools/mingw810_32/bin/gcc.exe",
+      "CXX": "D:/Qt/Tools/mingw810_32/bin/g++.exe"
+    },
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "D:/Qt/5.15.2/mingw81_32"
+    }
+  }
+]

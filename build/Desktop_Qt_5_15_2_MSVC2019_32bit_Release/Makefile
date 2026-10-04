@@ -37,19 +37,19 @@ NULL=nul
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = D:\Qt\Tools\CMake_64\bin\cmake.exe
+CMAKE_COMMAND = C:\Qt\Tools\CMake_64\bin\cmake.exe
 
 # The command to remove a file.
-RM = D:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
+RM = C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\Qt\workplace\War3Translator
+CMAKE_SOURCE_DIR = D:\Qt\workspace\War3Translator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release
+CMAKE_BINARY_DIR = D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -57,7 +57,7 @@ CMAKE_BINARY_DIR = D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC20
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	D:\Qt\Tools\CMake_64\bin\cmake-gui.exe -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	C:\Qt\Tools\CMake_64\bin\cmake-gui.exe -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -67,7 +67,7 @@ edit_cache\fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake to regenerate build system..."
-	D:\Qt\Tools\CMake_64\bin\cmake.exe --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	C:\Qt\Tools\CMake_64\bin\cmake.exe --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -86,32 +86,32 @@ list_install_components\fast: list_install_components
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	D:\Qt\Tools\CMake_64\bin\cmake.exe -P cmake_install.cmake
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -P cmake_install.cmake
 .PHONY : install
 
 # Special rule for the target install
 install\fast: preinstall\fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	D:\Qt\Tools\CMake_64\bin\cmake.exe -P cmake_install.cmake
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -P cmake_install.cmake
 .PHONY : install\fast
 
 # Special rule for the target install/local
 install\local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	D:\Qt\Tools\CMake_64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install\local
 
 # Special rule for the target install/local
 install\local\fast: preinstall\fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	D:\Qt\Tools\CMake_64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install\local\fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\\CMakeFiles\progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) all
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles 0
 .PHONY : all
 
 # The main clean target

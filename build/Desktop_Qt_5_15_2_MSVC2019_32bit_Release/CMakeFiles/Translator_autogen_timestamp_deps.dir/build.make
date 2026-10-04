@@ -33,19 +33,19 @@ NULL=nul
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = D:\Qt\Tools\CMake_64\bin\cmake.exe
+CMAKE_COMMAND = C:\Qt\Tools\CMake_64\bin\cmake.exe
 
 # The command to remove a file.
-RM = D:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
+RM = C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\Qt\workplace\War3Translator
+CMAKE_SOURCE_DIR = D:\Qt\workspace\War3Translator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release
+CMAKE_BINARY_DIR = D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release
 
 # Utility rule file for Translator_autogen_timestamp_deps.
 
@@ -67,6 +67,6 @@ CMakeFiles\Translator_autogen_timestamp_deps.dir\clean:
 .PHONY : CMakeFiles\Translator_autogen_timestamp_deps.dir\clean
 
 CMakeFiles\Translator_autogen_timestamp_deps.dir\depend:
-	$(CMAKE_COMMAND) -E cmake_depends "NMake Makefiles JOM" D:\Qt\workplace\War3Translator D:\Qt\workplace\War3Translator D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workplace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles\Translator_autogen_timestamp_deps.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "NMake Makefiles JOM" D:\Qt\workspace\War3Translator D:\Qt\workspace\War3Translator D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release D:\Qt\workspace\War3Translator\build\Desktop_Qt_5_15_2_MSVC2019_32bit_Release\CMakeFiles\Translator_autogen_timestamp_deps.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles\Translator_autogen_timestamp_deps.dir\depend
 

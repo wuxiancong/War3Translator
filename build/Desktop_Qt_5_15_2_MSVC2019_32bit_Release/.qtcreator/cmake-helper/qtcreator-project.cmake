@@ -75,6 +75,12 @@ if (CMAKE_VERSION GREATER_EQUAL "3.19")
   cmake_language(DEFER CALL set CMAKE_CXX_OUTPUT_EXTENSION "${CMAKE_CXX_OUTPUT_EXTENSION}" CACHE STRING "" FORCE)
 endif()
 
+# Store the localized prefix that cl.exe prints for every /showIncludes line
+if (CMAKE_VERSION GREATER_EQUAL "3.19")
+  cmake_language(DEFER CALL set CMAKE_C_CL_SHOWINCLUDES_PREFIX "${CMAKE_C_CL_SHOWINCLUDES_PREFIX}" CACHE STRING "" FORCE)
+  cmake_language(DEFER CALL set CMAKE_CXX_CL_SHOWINCLUDES_PREFIX "${CMAKE_CXX_CL_SHOWINCLUDES_PREFIX}" CACHE STRING "" FORCE)
+endif()
+
 #
 # QML Debugging
 #
@@ -99,8 +105,11 @@ if (QT_CREATOR_ENABLE_MAINTENANCE_TOOL_PROVIDER)
                   "To disable this message set QT_CREATOR_ENABLE_MAINTENANCE_TOOL_PROVIDER to OFF.")
   endfunction()
 
-  if (NOT QT_QMAKE_EXECUTABLE)
-    qtc_maintenance_provider_missing_variable_message(QT_QMAKE_EXECUTABLE)
+  # Either one carries the Qt version and the build flavor that name the
+  # packages of the installer. A Qt identified by qtpaths does not have to ship
+  # qmake, and then QT_QMAKE_EXECUTABLE is empty.
+  if (NOT QT_QMAKE_EXECUTABLE AND NOT CMAKE_PREFIX_PATH)
+    qtc_maintenance_provider_missing_variable_message("QT_QMAKE_EXECUTABLE or CMAKE_PREFIX_PATH")
     return()
   endif()
 

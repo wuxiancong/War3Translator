@@ -1,4 +1,4 @@
-# Install script for directory: D:/Qt/workplace/War3Translator
+# Install script for directory: D:/Qt/workspace/War3Translator
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -33,7 +33,7 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/War3Translator.exe")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "D:/Qt/workspace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/War3Translator.exe")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -51,6 +51,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "D:/Qt/workplace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "D:/Qt/workspace/War3Translator/build/Desktop_Qt_5_15_2_MSVC2019_32bit_Release/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
