@@ -1,6 +1,0 @@
-# Hashes of file build rules.
-cbc32b2aa9a1953b34138e2c45dd1ae7 CMakeFiles/Translator_autogen
-cbc32b2aa9a1953b34138e2c45dd1ae7 CMakeFiles/War3Translator_autogen
-030bacce312d058efbd0579c607d5675 Translator_autogen/timestamp
-51510dbe4127f090f37c68136625b116 War3Translator_autogen/EWIEGA46WW/qrc_qml.cpp
-4fd177c53a5cfb8478e5685511c4728a War3Translator_autogen/timestamp

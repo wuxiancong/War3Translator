@@ -1,5 +1,8 @@
 {
     "cmake.useCMakePresets": "never",
+    "cmake.defaultVariants": {
+        "buildType": "Release"
+    },
     "cmake.buildDirectory": "${workspaceFolder}/build/${buildKit}_${buildType}",
     "cmake.additionalKits": [
         "${workspaceFolder}/.vscode/cmake-kits.json"

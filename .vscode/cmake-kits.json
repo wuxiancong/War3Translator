@@ -1,7 +1,7 @@
 [
   {
-    "name": "Desktop_Qt_5_15_2_VSCode_MSVC2019_32bit",
-    "visualStudio": "a1edffdd",
+    "name": "Desktop_Qt_5_15_2_VSCode_MSVC_32bit",
+    "visualStudio": "67ff55f6",
     "visualStudioArchitecture": "x86",
     "preferredGenerator": {
       "name": "Ninja"
