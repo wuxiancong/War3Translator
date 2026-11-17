@@ -1,30 +1,29 @@
 [
-  {
-    "name": "Desktop_Qt_5_15_2_VSCode_MSVC_32bit",
-    "visualStudio": "67ff55f6",
-    "visualStudioArchitecture": "x86",
-    "preferredGenerator": {
-      "name": "Ninja"
+    {
+        "name":  "Desktop_Qt_5_15_2_VSCode_MSVC_32bit",
+        "preferredGenerator":  {
+                                   "name":  "Ninja"
+                               },
+        "cmakeSettings":  {
+                              "CMAKE_PREFIX_PATH":  "D:/Qt/5.15.2/msvc2019"
+                          },
+        "environmentVariables":  {
+                                     "VSCODE_QT_INSTALLATION":  "D:/Qt/5.15.2/msvc2019",
+                                     "PATH":  "D:/Qt/5.15.2/msvc2019/bin;${env:PATH};D:/Qt/Tools/Ninja"
+                                 },
+        "environmentSetupScript":  "C:/Program Files (x86)/Microsoft Visual Studio/18/BuildTools/VC/Auxiliary/Build/vcvars32.bat"
     },
-    "cmakeSettings": {
-      "CMAKE_PREFIX_PATH": "D:/Qt/5.15.2/msvc2019"
-    },
-    "environmentVariables": {
-      "VSCODE_QT_INSTALLATION": "D:/Qt/5.15.2/msvc2019",
-      "PATH": "D:/Qt/5.15.2/msvc2019/bin;${env:PATH};D:/Qt/Tools/Ninja"
+    {
+        "name":  "Desktop_Qt_5_15_2_VSCode_MinGW_32_bit",
+        "preferredGenerator":  {
+                                   "name":  "MinGW Makefiles"
+                               },
+        "compilers":  {
+                          "C":  "D:/Qt/Tools/mingw810_32/bin/gcc.exe",
+                          "CXX":  "D:/Qt/Tools/mingw810_32/bin/g++.exe"
+                      },
+        "cmakeSettings":  {
+                              "CMAKE_PREFIX_PATH":  "D:/Qt/5.15.2/mingw81_32"
+                          }
     }
-  },
-  {
-    "name": "Desktop_Qt_5_15_2_VSCode_MinGW_32_bit",
-    "preferredGenerator": {
-      "name": "MinGW Makefiles"
-    },
-    "compilers": {
-      "C": "D:/Qt/Tools/mingw810_32/bin/gcc.exe",
-      "CXX": "D:/Qt/Tools/mingw810_32/bin/g++.exe"
-    },
-    "cmakeSettings": {
-      "CMAKE_PREFIX_PATH": "D:/Qt/5.15.2/mingw81_32"
-    }
-  }
 ]

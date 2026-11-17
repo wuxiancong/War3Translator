@@ -1330,8 +1330,8 @@ void NetworkManager::handleChatCommand(const QString &fullText, const QString &u
     QString param = fullText.section(' ', 1).trimmed();
     QString finalCmd = cmd;
 
-    if (cmd == "/bot") {
-        // 1. 转换
+    if (cmd == "/bots" || cmd == "/bot") {
+        // 1. 转换（/bots 为主；/bot 兼容旧别名）
         ServerName serverName = SettingsManager::stringToServerName(param);
 
         // 2. 判断是否合法
